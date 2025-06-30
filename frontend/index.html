@@ -1,0 +1,739 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EMS Tampa-FL Amptier Dashboard</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header h1 {
+            color: #2c3e50;
+            text-align: center;
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+
+        .header p {
+            text-align: center;
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .stat-card {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .stat-card:hover {
+            transform: translateY(-5px);
+        }
+
+        .stat-card i {
+            font-size: 2.5rem;
+            margin-bottom: 15px;
+            color: #3498db;
+        }
+
+        .stat-card h3 {
+            font-size: 2rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .stat-card p {
+            color: #7f8c8d;
+            font-size: 1rem;
+        }
+
+        .tabs {
+            display: flex;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 5px;
+            margin-bottom: 20px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 15px 20px;
+            text-align: center;
+            cursor: pointer;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+
+        .tab.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .tab:hover:not(.active) {
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .content {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn:hover {
+            background: #2980b9;
+            transform: translateY(-2px);
+        }
+
+        .btn-danger {
+            background: #e74c3c;
+        }
+
+        .btn-danger:hover {
+            background: #c0392b;
+        }
+
+        .btn-success {
+            background: #27ae60;
+        }
+
+        .btn-success:hover {
+            background: #229954;
+        }
+
+        .list-container {
+            max-height: 500px;
+            overflow-y: auto;
+        }
+
+        .item-card {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 15px;
+            border-left: 4px solid #3498db;
+            transition: all 0.3s ease;
+        }
+
+        .item-card:hover {
+            transform: translateX(5px);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .item-card h4 {
+            color: #2c3e50;
+            margin-bottom: 10px;
+        }
+
+        .item-card p {
+            color: #7f8c8d;
+            margin-bottom: 5px;
+        }
+
+        .status-badge {
+            display: inline-block;
+            padding: 4px 12px;
+            border-radius: 20px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-active {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .status-available {
+            background: #27ae60;
+            color: white;
+        }
+
+        .priority-high {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .priority-medium {
+            background: #f39c12;
+            color: white;
+        }
+
+        .priority-low {
+            background: #27ae60;
+            color: white;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+            color: #7f8c8d;
+        }
+
+        .error {
+            background: #e74c3c;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        .success {
+            background: #27ae60;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            margin-bottom: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 10px;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+            
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1><i class="fas fa-ambulance"></i> EMS Tampa-FL Amptier</h1>
+            <p>Emergency Management System Dashboard</p>
+        </div>
+
+        <div class="stats-grid" id="statsGrid">
+            <div class="stat-card">
+                <i class="fas fa-exclamation-triangle"></i>
+                <h3 id="totalIncidents">0</h3>
+                <p>Total Incidents</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-user-md"></i>
+                <h3 id="totalResponders">0</h3>
+                <p>Total Responders</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-tools"></i>
+                <h3 id="totalEquipment">0</h3>
+                <p>Total Equipment</p>
+            </div>
+            <div class="stat-card">
+                <i class="fas fa-clock"></i>
+                <h3 id="activeIncidents">0</h3>
+                <p>Active Incidents</p>
+            </div>
+        </div>
+
+        <div class="tabs">
+            <div class="tab active" onclick="showTab('incidents')">
+                <i class="fas fa-exclamation-triangle"></i> Incidents
+            </div>
+            <div class="tab" onclick="showTab('responders')">
+                <i class="fas fa-user-md"></i> Responders
+            </div>
+            <div class="tab" onclick="showTab('equipment')">
+                <i class="fas fa-tools"></i> Equipment
+            </div>
+        </div>
+
+        <div class="content">
+            <!-- Incidents Tab -->
+            <div id="incidentsTab">
+                <div class="form-grid">
+                    <div>
+                        <h3>Create New Incident</h3>
+                        <form id="incidentForm">
+                            <div class="form-group">
+                                <label for="incidentType">Type</label>
+                                <select id="incidentType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Medical Emergency">Medical Emergency</option>
+                                    <option value="Traffic Accident">Traffic Accident</option>
+                                    <option value="Fire">Fire</option>
+                                    <option value="Natural Disaster">Natural Disaster</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="incidentLocation">Location</label>
+                                <input type="text" id="incidentLocation" placeholder="Enter location" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="incidentDescription">Description</label>
+                                <textarea id="incidentDescription" rows="3" placeholder="Enter description" required></textarea>
+                            </div>
+                            <div class="form-group">
+                                <label for="incidentPriority">Priority</label>
+                                <select id="incidentPriority" required>
+                                    <option value="">Select Priority</option>
+                                    <option value="high">High</option>
+                                    <option value="medium">Medium</option>
+                                    <option value="low">Low</option>
+                                </select>
+                            </div>
+                            <button type="submit" class="btn">Create Incident</button>
+                        </form>
+                    </div>
+                    <div>
+                        <h3>Recent Incidents</h3>
+                        <div id="incidentsList" class="list-container">
+                            <div class="loading">Loading incidents...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Responders Tab -->
+            <div id="respondersTab" class="hidden">
+                <div class="form-grid">
+                    <div>
+                        <h3>Add New Responder</h3>
+                        <form id="responderForm">
+                            <div class="form-group">
+                                <label for="responderName">Name</label>
+                                <input type="text" id="responderName" placeholder="Enter name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="responderRole">Role</label>
+                                <select id="responderRole" required>
+                                    <option value="">Select Role</option>
+                                    <option value="Paramedic">Paramedic</option>
+                                    <option value="EMT">EMT</option>
+                                    <option value="Firefighter">Firefighter</option>
+                                    <option value="Police Officer">Police Officer</option>
+                                    <option value="Dispatcher">Dispatcher</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="responderContact">Contact Number</label>
+                                <input type="tel" id="responderContact" placeholder="Enter contact number" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="responderLocation">Current Location</label>
+                                <input type="text" id="responderLocation" placeholder="Enter current location">
+                            </div>
+                            <button type="submit" class="btn">Add Responder</button>
+                        </form>
+                    </div>
+                    <div>
+                        <h3>Available Responders</h3>
+                        <div id="respondersList" class="list-container">
+                            <div class="loading">Loading responders...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Equipment Tab -->
+            <div id="equipmentTab" class="hidden">
+                <div class="form-grid">
+                    <div>
+                        <h3>Add Equipment</h3>
+                        <form id="equipmentForm">
+                            <div class="form-group">
+                                <label for="equipmentName">Equipment Name</label>
+                                <input type="text" id="equipmentName" placeholder="Enter equipment name" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="equipmentType">Type</label>
+                                <select id="equipmentType" required>
+                                    <option value="">Select Type</option>
+                                    <option value="Medical">Medical</option>
+                                    <option value="Transport">Transport</option>
+                                    <option value="Communication">Communication</option>
+                                    <option value="Safety">Safety</option>
+                                    <option value="Other">Other</option>
+                                </select>
+                            </div>
+                            <div class="form-group">
+                                <label for="equipmentQuantity">Quantity</label>
+                                <input type="number" id="equipmentQuantity" min="1" placeholder="Enter quantity" required>
+                            </div>
+                            <div class="form-group">
+                                <label for="equipmentLocation">Location</label>
+                                <input type="text" id="equipmentLocation" placeholder="Enter storage location">
+                            </div>
+                            <button type="submit" class="btn">Add Equipment</button>
+                        </form>
+                    </div>
+                    <div>
+                        <h3>Equipment Inventory</h3>
+                        <div id="equipmentList" class="list-container">
+                            <div class="loading">Loading equipment...</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+        let currentTab = 'incidents';
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            loadDashboardStats();
+            loadIncidents();
+            setupEventListeners();
+        });
+
+        function setupEventListeners() {
+            // Incident form
+            document.getElementById('incidentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                createIncident();
+            });
+
+            // Responder form
+            document.getElementById('responderForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                createResponder();
+            });
+
+            // Equipment form
+            document.getElementById('equipmentForm').addEventListener('submit', function(e) {
+                e.preventDefault();
+                createEquipment();
+            });
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.getElementById('incidentsTab').classList.add('hidden');
+            document.getElementById('respondersTab').classList.add('hidden');
+            document.getElementById('equipmentTab').classList.add('hidden');
+
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+
+            // Show selected tab
+            document.getElementById(tabName + 'Tab').classList.remove('hidden');
+            event.target.classList.add('active');
+
+            currentTab = tabName;
+
+            // Load data for the selected tab
+            switch(tabName) {
+                case 'incidents':
+                    loadIncidents();
+                    break;
+                case 'responders':
+                    loadResponders();
+                    break;
+                case 'equipment':
+                    loadEquipment();
+                    break;
+            }
+        }
+
+        async function loadDashboardStats() {
+            try {
+                const response = await fetch(`${API_BASE}/dashboard/stats`);
+                const data = await response.json();
+                
+                document.getElementById('totalIncidents').textContent = data.total_incidents;
+                document.getElementById('totalResponders').textContent = data.total_responders;
+                document.getElementById('totalEquipment').textContent = data.total_equipment;
+                document.getElementById('activeIncidents').textContent = data.active_incidents;
+            } catch (error) {
+                console.error('Error loading dashboard stats:', error);
+            }
+        }
+
+        async function loadIncidents() {
+            try {
+                const response = await fetch(`${API_BASE}/incidents`);
+                const data = await response.json();
+                
+                const incidentsList = document.getElementById('incidentsList');
+                if (data.incidents.length === 0) {
+                    incidentsList.innerHTML = '<p>No incidents found.</p>';
+                    return;
+                }
+
+                incidentsList.innerHTML = data.incidents.map(incident => `
+                    <div class="item-card">
+                        <h4>${incident.type}</h4>
+                        <p><strong>Location:</strong> ${incident.location}</p>
+                        <p><strong>Description:</strong> ${incident.description}</p>
+                        <p><strong>Priority:</strong> <span class="status-badge priority-${incident.priority}">${incident.priority}</span></p>
+                        <p><strong>Status:</strong> <span class="status-badge status-${incident.status}">${incident.status}</span></p>
+                        <p><strong>Created:</strong> ${new Date(incident.created_at).toLocaleString()}</p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading incidents:', error);
+                document.getElementById('incidentsList').innerHTML = '<div class="error">Error loading incidents</div>';
+            }
+        }
+
+        async function loadResponders() {
+            try {
+                const response = await fetch(`${API_BASE}/responders`);
+                const data = await response.json();
+                
+                const respondersList = document.getElementById('respondersList');
+                if (data.responders.length === 0) {
+                    respondersList.innerHTML = '<p>No responders found.</p>';
+                    return;
+                }
+
+                respondersList.innerHTML = data.responders.map(responder => `
+                    <div class="item-card">
+                        <h4>${responder.name}</h4>
+                        <p><strong>Role:</strong> ${responder.role}</p>
+                        <p><strong>Contact:</strong> ${responder.contact_number}</p>
+                        <p><strong>Location:</strong> ${responder.current_location || 'Not specified'}</p>
+                        <p><strong>Status:</strong> <span class="status-badge status-${responder.status}">${responder.status}</span></p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading responders:', error);
+                document.getElementById('respondersList').innerHTML = '<div class="error">Error loading responders</div>';
+            }
+        }
+
+        async function loadEquipment() {
+            try {
+                const response = await fetch(`${API_BASE}/equipment`);
+                const data = await response.json();
+                
+                const equipmentList = document.getElementById('equipmentList');
+                if (data.equipment.length === 0) {
+                    equipmentList.innerHTML = '<p>No equipment found.</p>';
+                    return;
+                }
+
+                equipmentList.innerHTML = data.equipment.map(equipment => `
+                    <div class="item-card">
+                        <h4>${equipment.name}</h4>
+                        <p><strong>Type:</strong> ${equipment.type}</p>
+                        <p><strong>Quantity:</strong> ${equipment.quantity}</p>
+                        <p><strong>Available:</strong> ${equipment.available_quantity}</p>
+                        <p><strong>Location:</strong> ${equipment.location || 'Not specified'}</p>
+                        <p><strong>Status:</strong> <span class="status-badge status-${equipment.status}">${equipment.status}</span></p>
+                    </div>
+                `).join('');
+            } catch (error) {
+                console.error('Error loading equipment:', error);
+                document.getElementById('equipmentList').innerHTML = '<div class="error">Error loading equipment</div>';
+            }
+        }
+
+        async function createIncident() {
+            const formData = {
+                type: document.getElementById('incidentType').value,
+                location: document.getElementById('incidentLocation').value,
+                description: document.getElementById('incidentDescription').value,
+                priority: document.getElementById('incidentPriority').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/incidents`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    document.getElementById('incidentForm').reset();
+                    loadIncidents();
+                    loadDashboardStats();
+                    showMessage('Incident created successfully!', 'success');
+                } else {
+                    const error = await response.json();
+                    showMessage(`Error: ${error.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error creating incident:', error);
+                showMessage('Error creating incident', 'error');
+            }
+        }
+
+        async function createResponder() {
+            const formData = {
+                name: document.getElementById('responderName').value,
+                role: document.getElementById('responderRole').value,
+                contact_number: document.getElementById('responderContact').value,
+                current_location: document.getElementById('responderLocation').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/responders`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    document.getElementById('responderForm').reset();
+                    loadResponders();
+                    loadDashboardStats();
+                    showMessage('Responder added successfully!', 'success');
+                } else {
+                    const error = await response.json();
+                    showMessage(`Error: ${error.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error creating responder:', error);
+                showMessage('Error adding responder', 'error');
+            }
+        }
+
+        async function createEquipment() {
+            const formData = {
+                name: document.getElementById('equipmentName').value,
+                type: document.getElementById('equipmentType').value,
+                quantity: parseInt(document.getElementById('equipmentQuantity').value),
+                location: document.getElementById('equipmentLocation').value
+            };
+
+            try {
+                const response = await fetch(`${API_BASE}/equipment`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(formData)
+                });
+
+                if (response.ok) {
+                    document.getElementById('equipmentForm').reset();
+                    loadEquipment();
+                    loadDashboardStats();
+                    showMessage('Equipment added successfully!', 'success');
+                } else {
+                    const error = await response.json();
+                    showMessage(`Error: ${error.error}`, 'error');
+                }
+            } catch (error) {
+                console.error('Error creating equipment:', error);
+                showMessage('Error adding equipment', 'error');
+            }
+        }
+
+        function showMessage(message, type) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = type;
+            messageDiv.textContent = message;
+            
+            const content = document.querySelector('.content');
+            content.insertBefore(messageDiv, content.firstChild);
+            
+            setTimeout(() => {
+                messageDiv.remove();
+            }, 5000);
+        }
+    </script>
+</body>
+</html> 
