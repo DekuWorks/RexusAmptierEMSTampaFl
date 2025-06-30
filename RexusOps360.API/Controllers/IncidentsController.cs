@@ -32,6 +32,7 @@ namespace RexusOps360.API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin,Dispatcher")]
         public IActionResult Create([FromBody] Incident incident)
         {
             if (!ModelState.IsValid)
@@ -46,6 +47,7 @@ namespace RexusOps360.API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin,Dispatcher")]
         public IActionResult Update(int id, [FromBody] Incident updatedIncident)
         {
             if (!ModelState.IsValid)
@@ -60,6 +62,17 @@ namespace RexusOps360.API.Controllers
                 message = "Incident updated successfully",
                 incident = existingIncident
             });
+        }
+
+        [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
+        public IActionResult Delete(int id)
+        {
+            var deleted = InMemoryStore.DeleteIncident(id);
+            if (!deleted)
+                return NotFound(new { error = "Incident not found" });
+
+            return Ok(new { message = "Incident deleted successfully" });
         }
     }
 } 

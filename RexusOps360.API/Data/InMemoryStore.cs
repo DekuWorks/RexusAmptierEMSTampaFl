@@ -48,6 +48,14 @@ namespace RexusOps360.API.Data
             return existing;
         }
 
+        public static bool DeleteIncident(int id)
+        {
+            var incident = _incidents.FirstOrDefault(i => i.Id == id);
+            if (incident == null) return false;
+            
+            return _incidents.Remove(incident);
+        }
+
         // Responder operations
         public static List<Responder> GetAllResponders() => _responders.ToList();
         
