@@ -467,3 +467,46 @@ For support and questions:
 ---
 
 **EMS Tampa-FL Amptier** - Empowering Emergency Response in Tampa, Florida 
+
+## 🚧 Feature Roadmap & TODOs
+
+# 🔒 SECURITY & COMPLIANCE
+- [ ] Implement OAuth2 or Google/Microsoft SSO for secure login
+- [ ] Add audit logging for all admin actions (create, update, delete, login)
+- [ ] Enforce Role-Based Access Control (RBAC) with roles: Admin, Dispatcher, Responder
+- [ ] Encrypt sensitive data at rest using AES encryption
+
+# 📊 ANALYTICS & REPORTING
+- [ ] Create real-time KPI dashboard (response time, incident count, etc.)
+- [ ] Generate downloadable PDF/Excel reports for incident history and responder stats
+- [ ] Add live incident heatmap using Mapbox or Leaflet
+
+# 📱 REAL-TIME FEATURES
+- [ ] Integrate WebSockets for real-time incident updates
+- [ ] Add Firebase push notifications for dispatch alerts
+- [ ] Implement live chat between dispatcher and responder (optional socket-based)
+
+# 📍 LOCATION-BASED CAPABILITIES
+- [ ] Add GPS tracking for responders (mock location or future mobile integration)
+- [ ] Implement auto-assignment of nearest available responder
+- [ ] Add optional geo-fencing with alerts (stretch goal)
+
+# 📦 OPERATIONAL ENHANCEMENTS
+- [ ] Build equipment inventory management system (CRUD + barcode/QR scanning)
+- [ ] Add shift scheduling UI for responders (calendar view)
+- [ ] Display incident lifecycle timeline (status updates visualised)
+
+# 🧪 TESTING & MAINTENANCE TOOLS
+- [ ] Create 'Test Mode' toggle to simulate incidents for training
+- [ ] Build system health dashboard (API uptime, DB status, error logs)
+- [ ] Add incident replay/log viewer with timestamped activity
+
+# 🌐 DEVOPS & ARCHITECTURE
+- [ ] Refactor backend to support multi-tenant setup (Tampa, Orlando, etc.)
+- [ ] Set up GitHub Actions CI/CD pipeline (build, test, deploy)
+- [ ] Add Docker + Docker Compose for local development and portability
+
+# 🧠 SMART FEATURES (FUTURE / STRETCH)
+- [ ] Build basic ML model to predict incident severity from report input
+- [ ] Auto-tag incident types from freeform text (using regex or ML)
+- [ ] Add support for audio uploads + speech-to-text transcription logs 
