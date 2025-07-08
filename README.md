@@ -1,8 +1,14 @@
 # EMS Tampa-FL Amptier Emergency Management System
 
-A comprehensive Emergency Management System designed for Tampa, Florida, featuring real-time incident management, responder coordination, equipment tracking, and interactive mapping capabilities.
+![Rexus Logo](frontend/assets/rexus-logo.png) ![Amptier Logo](frontend/assets/amptier-logo.png)
+
+A comprehensive Emergency Management System designed for Tampa, Florida, featuring real-time incident management, responder coordination, equipment tracking, interactive mapping, and robust event management capabilities. Powered by Rexus and Amptier.
 
 ## 🌟 Features
+
+### 🔗 Branding & Integration
+- **Rexus & Amptier Branding**: Unified branding across all pages
+- **RexusOps360 Integration**: Ready for advanced enterprise features
 
 ### 🔐 Authentication & User Management
 - **Multi-role User System**: Admin, Dispatcher, Responder, and Public User roles
@@ -53,6 +59,16 @@ A comprehensive Emergency Management System designed for Tampa, Florida, featuri
 - **Category-based Alerts**: Incident, Weather, System notifications
 - **Area-specific Messages**: Targeted notifications by location
 - **Auto-refresh**: Automatic notification updates
+
+### 📅 Event Management (Planned/Prototype)
+- **Multi-event Support**: Manage multiple concurrent events (in-person, virtual, hybrid)
+- **Session Scheduling**: Plan sessions, speakers, and agendas
+- **Registration & Payment**: Online attendee registration, group registration, payment processing (future)
+- **Check-in Functionality**: On-site or virtual check-in (future)
+- **Communication Tools**: Email invites, reminders, calendar integration
+- **Travel & Lodging**: Collect travel preferences, manage accommodations
+- **Analytics & Reporting**: Real-time attendee data, exportable reports
+- **Role-based Event Access**: Admin, organizer, attendee roles
 
 ## 🚀 Quick Start
 
@@ -427,7 +443,7 @@ This project is licensed under the MIT License - see the LICENSE file for detail
 ## 📞 Support
 
 For support and questions:
-- **Email**: support@ems-tampa.com
+- **Email**: marcusb0611@gmail.com
 - **Documentation**: See inline code comments
 - **Issues**: Use GitHub Issues for bug reports
 
