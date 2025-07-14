@@ -480,3 +480,31 @@ def create_notification():
         }), 201
     except Exception as e:
         return jsonify({'error': str(e)}), 500 
+
+@api_bp.route('/complaint', methods=['POST'])
+def submit_complaint():
+    """Handle user complaint form submission with reCAPTCHA verification"""
+    import requests
+    recaptcha_secret = 'YOUR_SECRET_KEY'  # Replace with your actual secret key
+    name = request.form.get('name')
+    email = request.form.get('email')
+    complaint = request.form.get('complaint')
+    recaptcha_response = request.form.get('g-recaptcha-response')
+
+    if not (name and email and complaint and recaptcha_response):
+        return jsonify({'error': 'All fields and reCAPTCHA are required.'}), 400
+
+    # Verify reCAPTCHA
+    verify_url = 'https://www.google.com/recaptcha/api/siteverify'
+    payload = {
+        'secret': recaptcha_secret,
+        'response': recaptcha_response
+    }
+    r = requests.post(verify_url, data=payload)
+    result = r.json()
+    if not result.get('success'):
+        return jsonify({'error': 'Invalid reCAPTCHA. Please try again.'}), 400
+
+    # Here you would save the complaint to the database or send an email, etc.
+    # For now, just return a success message.
+    return jsonify({'message': 'Complaint submitted successfully!'}), 200 

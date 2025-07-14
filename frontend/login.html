@@ -185,8 +185,8 @@
 <body>
     <div class="login-container">
         <div style="display: flex; justify-content: center; align-items: center; gap: 16px; margin-bottom: 16px;">
-            <img src="assets/rexus-logo.png" alt="Rexus Logo" style="height:40px;">
-            <img src="assets/amptier-logo.png" alt="Amptier Logo" style="height:48px;">
+            <img src="/frontend/assets/rexus_logo.png" alt="Rexus Logo" style="height:40px;">
+            <img src="/frontend/assets/amptier_logo.png" alt="Amptier Logo" style="height:48px;">
         </div>
         <div class="logo">
             <i class="fas fa-ambulance"></i>
@@ -218,12 +218,27 @@
         </div>
     </div>
     <script>
-        // Example JS for flash messages (replace with real logic as needed)
-        // document.getElementById('flash-messages').innerHTML = '<div class="flash-message flash-success">Welcome!</div>';
-        document.getElementById('loginForm').addEventListener('submit', function(e) {
+        document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
-            // TODO: Implement login logic (API call)
-            alert('Login submitted!');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            const response = await fetch('/api/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const result = await response.json();
+            const flash = document.getElementById('flash-messages');
+            flash.innerHTML = '';
+
+            if (response.ok) {
+                flash.innerHTML = '<div class="flash-message flash-success">Login successful! Redirecting...</div>';
+                setTimeout(() => window.location.href = 'dashboard.html', 1000);
+            } else {
+                flash.innerHTML = `<div class="flash-message flash-error">${result.error || 'Login failed.'}</div>`;
+            }
         });
     </script>
 </body>
