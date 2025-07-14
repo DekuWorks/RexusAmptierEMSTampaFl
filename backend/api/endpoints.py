@@ -6,6 +6,7 @@ from datetime import datetime
 import requests
 from geopy.geocoders import Nominatim
 from functools import wraps
+from werkzeug.security import check_password_hash
 
 api_bp = Blueprint('api', __name__)
 
@@ -508,3 +509,21 @@ def submit_complaint():
     # Here you would save the complaint to the database or send an email, etc.
     # For now, just return a success message.
     return jsonify({'message': 'Complaint submitted successfully!'}), 200 
+
+@api_bp.route('/login', methods=['POST'])
+def api_login():
+    data = request.get_json()
+    username = data.get('username')
+    password = data.get('password')
+
+    if not username or not password:
+        return jsonify({'error': 'Username and password required.'}), 400
+
+    db = get_db()
+    user = db.execute('SELECT * FROM users WHERE username = ? AND is_active = 1', (username,)).fetchone()
+    db.close()
+
+    if user and check_password_hash(user['password_hash'], password):
+        return jsonify({'message': 'Login successful', 'role': user['role'], 'full_name': user['full_name']}), 200
+    else:
+        return jsonify({'error': 'Invalid username or password.'}), 401 
