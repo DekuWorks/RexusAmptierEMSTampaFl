@@ -12,6 +12,10 @@ namespace RexusOps360.API.Models
 
         [Required]
         [StringLength(100)]
+        public string Email { get; set; } = string.Empty;
+
+        [Required]
+        [StringLength(255)]
         public string PasswordHash { get; set; } = string.Empty;
 
         [Required]
@@ -19,13 +23,16 @@ namespace RexusOps360.API.Models
         public string Role { get; set; } = "Dispatcher"; // Admin, Dispatcher, Responder
 
         [StringLength(50)]
+        public string? FirstName { get; set; }
+
+        [StringLength(50)]
+        public string? LastName { get; set; }
+
+        [StringLength(50)]
+        public string? Department { get; set; }
+
+        [StringLength(50)]
         public string? TenantId { get; set; } // For multi-tenant support
-
-        [StringLength(100)]
-        public string? FullName { get; set; }
-
-        [StringLength(100)]
-        public string? Email { get; set; }
 
         [StringLength(20)]
         public string? Phone { get; set; }

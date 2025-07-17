@@ -24,6 +24,9 @@ builder.Services.AddScoped<IAuditService, AuditService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<IGpsTrackingService, GpsTrackingService>();
 builder.Services.AddScoped<IShiftSchedulingService, ShiftSchedulingService>();
+builder.Services.AddScoped<IIncidentClusteringService, IncidentClusteringService>();
+builder.Services.AddScoped<IHotspotDetectionService, HotspotDetectionService>();
+builder.Services.AddScoped<ISystemIntegrationService, SystemIntegrationService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -138,5 +141,15 @@ app.MapControllers();
 
 // Map SignalR hub
 app.MapHub<EmsHub>("/emsHub");
+
+// Health check endpoint
+app.MapGet("/health", () => new { status = "healthy", timestamp = DateTime.UtcNow });
+
+// Ensure database is created and migrations are applied
+using (var scope = app.Services.CreateScope())
+{
+    var context = scope.ServiceProvider.GetRequiredService<EmsDbContext>();
+    context.Database.EnsureCreated();
+}
 
 app.Run();

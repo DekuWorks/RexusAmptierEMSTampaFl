@@ -1,6 +1,5 @@
 using Microsoft.EntityFrameworkCore;
 using RexusOps360.API.Models;
-using RexusOps360.API.Services;
 
 namespace RexusOps360.API.Data
 {
@@ -15,6 +14,10 @@ namespace RexusOps360.API.Data
         public DbSet<Responder> Responders { get; set; }
         public DbSet<Equipment> Equipment { get; set; }
         public DbSet<AuditLog> AuditLogs { get; set; }
+        public DbSet<SystemIntegration> SystemIntegrations { get; set; }
+        public DbSet<IntegrationData> IntegrationData { get; set; }
+        public DbSet<Hotspot> Hotspots { get; set; }
+        public DbSet<HotspotAlert> HotspotAlerts { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -26,24 +29,32 @@ namespace RexusOps360.API.Data
                 entity.HasKey(e => e.Id);
                 entity.Property(e => e.Username).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Email).IsRequired().HasMaxLength(100);
-                entity.Property(e => e.FullName).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.PasswordHash).IsRequired().HasMaxLength(255);
                 entity.Property(e => e.Role).IsRequired().HasMaxLength(20);
-                entity.Property(e => e.Phone).HasMaxLength(20);
-                entity.Property(e => e.Address).HasMaxLength(200);
+                entity.Property(e => e.FirstName).HasMaxLength(50);
+                entity.Property(e => e.LastName).HasMaxLength(50);
+                entity.Property(e => e.Department).HasMaxLength(50);
                 
                 entity.HasIndex(e => e.Username).IsUnique();
                 entity.HasIndex(e => e.Email).IsUnique();
+                entity.HasIndex(e => e.Role);
             });
 
             // Incident configuration
             modelBuilder.Entity<Incident>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.Type).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Type).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Location).IsRequired().HasMaxLength(200);
-                entity.Property(e => e.Description).HasMaxLength(500);
+                entity.Property(e => e.Description).HasMaxLength(1000);
                 entity.Property(e => e.Priority).IsRequired().HasMaxLength(20);
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
+                entity.Property(e => e.UtilityType).HasMaxLength(50);
+                entity.Property(e => e.Category).HasMaxLength(100);
+                entity.Property(e => e.Zone).HasMaxLength(50);
+                entity.Property(e => e.ClusterId).HasMaxLength(50);
+                entity.Property(e => e.ContactInfo).HasMaxLength(500);
+                entity.Property(e => e.Remarks).HasMaxLength(500);
                 entity.Property(e => e.PhotoPath).HasMaxLength(500);
                 entity.Property(e => e.AssignedResponders).HasMaxLength(500);
                 entity.Property(e => e.EquipmentNeeded).HasMaxLength(500);
@@ -52,6 +63,9 @@ namespace RexusOps360.API.Data
                 entity.HasIndex(e => e.CreatedAt);
                 entity.HasIndex(e => e.Status);
                 entity.HasIndex(e => e.Priority);
+                entity.HasIndex(e => e.UtilityType);
+                entity.HasIndex(e => e.ClusterId);
+                entity.HasIndex(e => e.Zone);
             });
 
             // Responder configuration
@@ -76,74 +90,136 @@ namespace RexusOps360.API.Data
                 entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
                 entity.Property(e => e.Type).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Location).HasMaxLength(200);
-                entity.Property(e => e.Barcode).HasMaxLength(50);
                 entity.Property(e => e.Status).IsRequired().HasMaxLength(20);
+                entity.Property(e => e.MaintenanceNotes).HasMaxLength(500);
                 
-                entity.HasIndex(e => e.Type);
                 entity.HasIndex(e => e.Status);
-                entity.HasIndex(e => e.Barcode).IsUnique();
+                entity.HasIndex(e => e.Type);
             });
 
-            // AuditLog configuration
+            // Audit Log configuration
             modelBuilder.Entity<AuditLog>(entity =>
             {
                 entity.HasKey(e => e.Id);
-                entity.Property(e => e.UserId).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.UserId).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Action).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.EntityType).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.EntityId).IsRequired().HasMaxLength(50);
                 entity.Property(e => e.Details).HasMaxLength(1000);
-                entity.Property(e => e.IpAddress).HasMaxLength(50);
-                entity.Property(e => e.EventType).IsRequired().HasMaxLength(50);
-                entity.Property(e => e.Severity).IsRequired().HasMaxLength(20);
+                entity.Property(e => e.IpAddress).HasMaxLength(45);
+                entity.Property(e => e.UserAgent).HasMaxLength(500);
                 
                 entity.HasIndex(e => e.Timestamp);
                 entity.HasIndex(e => e.UserId);
-                entity.HasIndex(e => e.EventType);
-                entity.HasIndex(e => e.Severity);
+                entity.HasIndex(e => e.Action);
+                entity.HasIndex(e => e.EntityType);
             });
 
-            // Seed data
-            SeedData(modelBuilder);
-        }
+            // System Integration configuration
+            modelBuilder.Entity<SystemIntegration>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Type).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Endpoint).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.ApiKey).HasMaxLength(100);
+                entity.Property(e => e.Username).HasMaxLength(100);
+                entity.Property(e => e.Password).HasMaxLength(100);
+                entity.Property(e => e.Status).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Description).HasMaxLength(500);
+                entity.Property(e => e.Protocol).HasMaxLength(50);
+                
+                entity.HasIndex(e => e.Type);
+                entity.HasIndex(e => e.Status);
+            });
 
-        private void SeedData(ModelBuilder modelBuilder)
-        {
+            // Integration Data configuration
+            modelBuilder.Entity<IntegrationData>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.DataType).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.DataValue).IsRequired().HasMaxLength(500);
+                entity.Property(e => e.Unit).HasMaxLength(100);
+                entity.Property(e => e.Location).HasMaxLength(200);
+                entity.Property(e => e.AlertLevel).HasMaxLength(50);
+                
+                entity.HasIndex(e => e.IntegrationId);
+                entity.HasIndex(e => e.DataType);
+                entity.HasIndex(e => e.Timestamp);
+                entity.HasIndex(e => e.IsAlert);
+            });
+
+            // Hotspot configuration
+            modelBuilder.Entity<Hotspot>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Type).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.UtilityType).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Location).HasMaxLength(200);
+                entity.Property(e => e.Severity).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Description).HasMaxLength(500);
+                entity.Property(e => e.Status).IsRequired().HasMaxLength(50);
+                
+                entity.HasIndex(e => e.UtilityType);
+                entity.HasIndex(e => e.Severity);
+                entity.HasIndex(e => e.Status);
+                entity.HasIndex(e => e.FirstDetected);
+            });
+
+            // Hotspot Alert configuration
+            modelBuilder.Entity<HotspotAlert>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Message).IsRequired().HasMaxLength(1000);
+                entity.Property(e => e.AlertLevel).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.Status).IsRequired().HasMaxLength(50);
+                entity.Property(e => e.AcknowledgedBy).HasMaxLength(100);
+                
+                entity.HasIndex(e => e.HotspotId);
+                entity.HasIndex(e => e.AlertLevel);
+                entity.HasIndex(e => e.Status);
+                entity.HasIndex(e => e.CreatedAt);
+            });
+
             // Seed Users
             modelBuilder.Entity<User>().HasData(
                 new User
                 {
                     Id = 1,
                     Username = "admin",
-                    Email = "admin@emstampa.com",
-                    FullName = "System Administrator",
+                    Email = "admin@rexusops360.com",
+                    PasswordHash = "hashed_password_here",
                     Role = "Admin",
-                    Phone = "813-555-0001",
-                    Address = "Tampa, FL",
-                    IsActive = true,
+                    FirstName = "System",
+                    LastName = "Administrator",
+                    Department = "IT",
                     CreatedAt = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Utc)
                 },
                 new User
                 {
                     Id = 2,
-                    Username = "dispatcher",
-                    Email = "dispatcher@emstampa.com",
-                    FullName = "Emergency Dispatcher",
+                    Username = "dispatcher1",
+                    Email = "dispatcher1@rexusops360.com",
+                    PasswordHash = "hashed_password_here",
                     Role = "Dispatcher",
-                    Phone = "813-555-0002",
-                    Address = "Tampa, FL",
-                    IsActive = true,
-                    CreatedAt = new DateTime(2024, 6, 1, 8, 5, 0, DateTimeKind.Utc)
+                    FirstName = "John",
+                    LastName = "Dispatcher",
+                    Department = "Operations",
+                    CreatedAt = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Utc)
                 },
                 new User
                 {
                     Id = 3,
-                    Username = "responder",
-                    Email = "responder@emstampa.com",
-                    FullName = "Emergency Responder",
+                    Username = "responder1",
+                    Email = "responder1@rexusops360.com",
+                    PasswordHash = "hashed_password_here",
                     Role = "Responder",
-                    Phone = "813-555-0003",
-                    Address = "Tampa, FL",
-                    IsActive = true,
-                    CreatedAt = new DateTime(2024, 6, 1, 8, 10, 0, DateTimeKind.Utc)
+                    FirstName = "Sarah",
+                    LastName = "Responder",
+                    Department = "Emergency Response",
+                    CreatedAt = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Utc)
                 }
             );
 
@@ -153,34 +229,34 @@ namespace RexusOps360.API.Data
                 {
                     Id = 1,
                     Name = "John Smith",
-                    Role = "Paramedic",
-                    ContactNumber = "813-555-0101",
+                    Role = "EMT",
+                    ContactNumber = "555-0101",
                     CurrentLocation = "Downtown Tampa",
                     Status = "Available",
-                    Specializations = "Cardiac,Trauma",
-                    CreatedAt = new DateTime(2024, 6, 1, 8, 15, 0, DateTimeKind.Utc)
+                    Specializations = "Medical Emergency,Trauma",
+                    CreatedAt = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Utc)
                 },
                 new Responder
                 {
                     Id = 2,
-                    Name = "Sarah Johnson",
-                    Role = "EMT",
-                    ContactNumber = "813-555-0102",
-                    CurrentLocation = "Airport Area",
+                    Name = "Maria Garcia",
+                    Role = "Firefighter",
+                    ContactNumber = "555-0102",
+                    CurrentLocation = "West Tampa",
                     Status = "Available",
-                    Specializations = "Basic Life Support",
-                    CreatedAt = new DateTime(2024, 6, 1, 8, 20, 0, DateTimeKind.Utc)
+                    Specializations = "Fire Emergency,Rescue",
+                    CreatedAt = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Utc)
                 },
                 new Responder
                 {
                     Id = 3,
-                    Name = "Mike Davis",
-                    Role = "Firefighter",
-                    ContactNumber = "813-555-0103",
-                    CurrentLocation = "West Tampa",
-                    Status = "Available",
-                    Specializations = "Fire Suppression,Rescue",
-                    CreatedAt = new DateTime(2024, 6, 1, 8, 25, 0, DateTimeKind.Utc)
+                    Name = "David Johnson",
+                    Role = "Police Officer",
+                    ContactNumber = "555-0103",
+                    CurrentLocation = "North Tampa",
+                    Status = "On Call",
+                    Specializations = "Traffic Control,Security",
+                    CreatedAt = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Utc)
                 }
             );
 
@@ -189,42 +265,42 @@ namespace RexusOps360.API.Data
                 new Equipment
                 {
                     Id = 1,
-                    Name = "Defibrillator",
-                    Type = "Medical",
-                    Quantity = 5,
-                    AvailableQuantity = 4,
-                    Location = "Main Station",
-                    Barcode = "DEF001",
+                    Name = "Ambulance Unit 1",
+                    Type = "Vehicle",
+                    Quantity = 1,
+                    AvailableQuantity = 1,
+                    Location = "Downtown Station",
                     Status = "Available",
-                    CreatedAt = new DateTime(2024, 6, 1, 8, 30, 0, DateTimeKind.Utc)
+                    LastMaintenance = new DateTime(2024, 5, 15, 8, 0, 0, DateTimeKind.Utc),
+                    CreatedAt = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Utc)
                 },
                 new Equipment
                 {
                     Id = 2,
-                    Name = "Ambulance",
-                    Type = "Transport",
-                    Quantity = 3,
-                    AvailableQuantity = 2,
-                    Location = "Downtown Station",
-                    Barcode = "AMB001",
+                    Name = "Fire Truck 1",
+                    Type = "Vehicle",
+                    Quantity = 1,
+                    AvailableQuantity = 1,
+                    Location = "West Tampa Station",
                     Status = "Available",
-                    CreatedAt = new DateTime(2024, 6, 1, 8, 35, 0, DateTimeKind.Utc)
+                    LastMaintenance = new DateTime(2024, 5, 20, 8, 0, 0, DateTimeKind.Utc),
+                    CreatedAt = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Utc)
                 },
                 new Equipment
                 {
                     Id = 3,
-                    Name = "Radio Communication",
-                    Type = "Communication",
-                    Quantity = 10,
-                    AvailableQuantity = 8,
-                    Location = "Communication Center",
-                    Barcode = "RAD001",
+                    Name = "Defibrillator",
+                    Type = "Medical",
+                    Quantity = 5,
+                    AvailableQuantity = 5,
+                    Location = "Central Warehouse",
                     Status = "Available",
-                    CreatedAt = new DateTime(2024, 6, 1, 8, 40, 0, DateTimeKind.Utc)
+                    LastMaintenance = new DateTime(2024, 5, 25, 8, 0, 0, DateTimeKind.Utc),
+                    CreatedAt = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Utc)
                 }
             );
 
-            // Seed Incidents
+            // Seed Incidents with enhanced data
             modelBuilder.Entity<Incident>().HasData(
                 new Incident
                 {
@@ -234,6 +310,12 @@ namespace RexusOps360.API.Data
                     Description = "Cardiac arrest reported at office building",
                     Priority = "High",
                     Status = "Active",
+                    UtilityType = "Combined",
+                    Category = "Medical Emergency",
+                    Zone = "Downtown",
+                    SeverityLevel = 4,
+                    ContactInfo = "John Doe, 555-1234",
+                    Remarks = "Patient conscious, responding to treatment",
                     AssignedResponders = "1",
                     EquipmentNeeded = "Defibrillator,Ambulance",
                     ReportedBy = "John Doe",
@@ -242,29 +324,81 @@ namespace RexusOps360.API.Data
                 new Incident
                 {
                     Id = 2,
-                    Type = "Traffic Accident",
-                    Location = "I-275, Tampa, FL",
-                    Description = "Multi-vehicle collision on highway",
-                    Priority = "Medium",
+                    Type = "Sewer Overflow",
+                    Location = "West Tampa, FL",
+                    Description = "Multiple sewer overflow reports in residential area",
+                    Priority = "High",
                     Status = "Active",
+                    UtilityType = "Sewer",
+                    Category = "Sewer Overflow",
+                    Zone = "West Tampa",
+                    SeverityLevel = 5,
+                    ContactInfo = "Multiple residents affected",
+                    Remarks = "Heavy rainfall causing system overload",
                     AssignedResponders = "2,3",
-                    EquipmentNeeded = "Ambulance,Fire Truck",
-                    ReportedBy = "Highway Patrol",
+                    EquipmentNeeded = "Pump Truck,Vacuum Truck",
+                    ReportedBy = "City Inspector",
                     CreatedAt = new DateTime(2024, 6, 1, 9, 15, 0, DateTimeKind.Utc)
                 },
                 new Incident
                 {
                     Id = 3,
-                    Type = "Fire Emergency",
-                    Location = "West Tampa, FL",
-                    Description = "Kitchen fire in residential building",
-                    Priority = "High",
-                    Status = "Resolved",
-                    AssignedResponders = "3",
-                    EquipmentNeeded = "Fire Truck,Water Tanker",
-                    ReportedBy = "Building Manager",
-                    CreatedAt = new DateTime(2024, 6, 1, 7, 0, 0, DateTimeKind.Utc),
-                    UpdatedAt = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Utc)
+                    Type = "Water Main Break",
+                    Location = "North Tampa, FL",
+                    Description = "Water main break causing low pressure",
+                    Priority = "Medium",
+                    Status = "Active",
+                    UtilityType = "Water",
+                    Category = "Water Main Break",
+                    Zone = "North Tampa",
+                    SeverityLevel = 3,
+                    ContactInfo = "Utility Department",
+                    Remarks = "Crew dispatched, estimated repair time 4 hours",
+                    AssignedResponders = "2",
+                    EquipmentNeeded = "Excavator,Water Truck",
+                    ReportedBy = "Utility Worker",
+                    CreatedAt = new DateTime(2024, 6, 1, 7, 0, 0, DateTimeKind.Utc)
+                }
+            );
+
+            // Seed System Integrations
+            modelBuilder.Entity<SystemIntegration>().HasData(
+                new SystemIntegration
+                {
+                    Id = 1,
+                    Name = "SCADA System",
+                    Type = "SCADA",
+                    Endpoint = "https://scada.rexusops360.com/api",
+                    Status = "Active",
+                    Description = "Main SCADA system for water and sewer operations",
+                    Protocol = "REST",
+                    PollingIntervalSeconds = 30,
+                    CreatedAt = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Utc)
+                },
+                new SystemIntegration
+                {
+                    Id = 2,
+                    Name = "GPS Tracking System",
+                    Type = "GPS",
+                    Endpoint = "https://gps.rexusops360.com/api",
+                    Status = "Active",
+                    Description = "Vehicle and asset GPS tracking system",
+                    Protocol = "REST",
+                    PollingIntervalSeconds = 15,
+                    CreatedAt = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Utc)
+                },
+                new SystemIntegration
+                {
+                    Id = 3,
+                    Name = "Weather Service",
+                    Type = "Weather",
+                    Endpoint = "https://api.openweathermap.org/data/2.5/weather",
+                    ApiKey = "demo_api_key",
+                    Status = "Active",
+                    Description = "Weather data integration for predictive alerts",
+                    Protocol = "REST",
+                    PollingIntervalSeconds = 300,
+                    CreatedAt = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Utc)
                 }
             );
         }

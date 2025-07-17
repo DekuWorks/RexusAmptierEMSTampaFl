@@ -2,7 +2,7 @@
 
 ## 🚨 Overview
 
-A comprehensive, production-ready Emergency Management System built with **C# ASP.NET Core** and modern cloud technologies. This system provides real-time incident management, responder coordination, and emergency response capabilities for the Tampa-FL area.
+A comprehensive, production-ready Emergency Management System built with **C# ASP.NET Core** and modern cloud technologies. This system provides real-time incident management, responder coordination, and emergency response capabilities for the Tampa-FL area with advanced features for combined utilities like WSSC Water.
 
 ## ✨ Key Features
 
@@ -12,11 +12,41 @@ A comprehensive, production-ready Emergency Management System built with **C# AS
 - **Equipment Management** - Inventory tracking, maintenance schedules, and barcode scanning
 - **Real-time Communication** - SignalR-powered live updates and notifications
 
+### 🔄 **Advanced Incident Clustering & Management**
+- **Automatic Incident Clustering** - Groups similar incidents based on location, category, and time window
+- **Multiple Customer Calls Handling** - Manages multiple reports for similar problems with individual access
+- **Contact Information Tracking** - Stores customer contact details and remarks for each report
+- **Geographic Clustering** - 1km radius clustering with 30-minute time windows
+- **Severity Assessment** - Automatic severity level calculation based on priority and category
+
+### 🔗 **System Integration Framework**
+- **SCADA Integration** - Real-time monitoring of water and sewer systems
+- **GPS Tracking** - Vehicle and asset location tracking with route optimization
+- **GIS Integration** - Geographic Information Systems for spatial analysis
+- **Weather Services** - NOAA and OpenWeatherMap integration for predictive alerts
+- **Asset Management** - CMMS integration for equipment and maintenance tracking
+- **Multi-Protocol Support** - REST, MQTT, SOAP, and other communication protocols
+
+### 🔥 **Hotspot Detection & Early Alerting**
+- **Automatic Hotspot Detection** - Identifies potential problems before they escalate
+- **Configurable Thresholds** - Customizable incident count and time window settings
+- **Real-time Alerts** - Immediate notifications when thresholds are exceeded
+- **Severity Classification** - Low, Medium, High, and Critical priority levels
+- **Geographic Analysis** - Heatmaps and zone-based alerting
+
+### 🏭 **Combined Utility Support**
+- **Water & Sewer Operations** - Separate management for water distribution and wastewater
+- **Role-Based Access** - Different dashboards for water and sewer teams
+- **Domain-Based Routing** - Incidents automatically routed to correct utility type
+- **Utility-Specific Analytics** - Operational health viewed separately or combined
+- **WSSC Water Optimization** - Specialized workflows for combined utilities
+
 ### 📊 **Advanced Analytics & Dashboard**
 - **Real-time Dashboard** - Live incident maps, responder locations, and system status
 - **Analytics Engine** - Response time analysis, incident trends, and performance metrics
 - **Interactive Charts** - Incident distribution, responder status, and equipment utilization
 - **Mobile-First Design** - Responsive UI with dark mode support
+- **Cluster Analytics** - Detailed analysis of incident clusters and patterns
 
 ### 🔒 **Security & Compliance**
 - **JWT Authentication** - Secure API endpoints with role-based access
@@ -35,45 +65,72 @@ A comprehensive, production-ready Emergency Management System built with **C# AS
 | Category | Technology | Purpose |
 |----------|------------|---------|
 | **Backend** | C# ASP.NET Core 9.0 | High-performance API framework |
-| **Database** | SQL Server 2022 | Production data persistence |
-| **Real-time** | SignalR | Live updates and notifications |
-| **Frontend** | HTML5, CSS3, JavaScript | Modern responsive UI |
-| **Charts** | Chart.js | Interactive analytics dashboard |
-| **Container** | Docker & Docker Compose | Consistent deployment |
-| **Cloud** | AWS (EC2, RDS, ALB, CloudWatch) | Scalable production infrastructure |
-| **Security** | JWT, HTTPS, Audit Logging | Enterprise-grade security |
+| **Database** | SQL Server 2019 | Production data persistence |
+| **Real-time** | SignalR | WebSocket connections for live updates |
+| **Authentication** | JWT Bearer Tokens | Secure API access |
+| **Containerization** | Docker | Consistent deployment |
+| **Cloud Platform** | AWS (ECS, RDS, ALB) | Scalable infrastructure |
+| **Monitoring** | CloudWatch | Application monitoring |
+| **CI/CD** | GitHub Actions | Automated deployment |
+
+## 🚨 Enhanced Features for Utility Operations
+
+### **Multiple Customer Calls Management**
+When multiple customers report similar problems (e.g., sewer overflow in a zone), the system:
+- **Automatically clusters** incidents based on location, category, and time
+- **Maintains individual access** to each report with contact info and remarks
+- **Shows clustered view** on dashboard with higher priority indicators
+- **Preserves all details** including photos, contact info, and specific remarks
+
+### **System Integration Capabilities**
+- **API-First Approach** - Ready to integrate with existing customer information systems
+- **SCADA Integration** - Real-time monitoring of pressure, flow, and system status
+- **GPS Tracking** - Vehicle and asset location with route optimization
+- **GIS Support** - Esri, PostGIS, or custom spatial analysis
+- **Weather Integration** - NOAA/OpenWeatherMap for flood tracking and predictive alerts
+- **Asset Management** - CMMS integration for equipment and maintenance
+
+### **Hotspot Detection & Early Alerting**
+- **Automatic Detection** - Identifies potential problems before human operators
+- **Configurable Thresholds** - 3+ incidents in 2 hours triggers hotspot
+- **Real-time Alerts** - Immediate notifications to operations team
+- **Severity Classification** - Color-coded alerts by severity and type
+- **Geographic Analysis** - Heatmaps and zone-based monitoring
+
+### **Combined Utility Differentiation**
+- **Domain-Based Categorization** - Water, Sewer, Combined operations
+- **Role-Based Access** - Separate dashboards for water and sewer teams
+- **Utility-Specific Routing** - Incidents automatically routed to correct team
+- **Operational Health Views** - Separate or combined analytics as needed
 
 ## 📁 Project Structure
 
 ```
 EMS_Tampa-FL_Amptier/
-├── RexusOps360.API/                 # Main ASP.NET Core application
-│   ├── Controllers/                  # API endpoints
-│   ├── Models/                      # Data models
-│   ├── Services/                    # Business logic services
-│   ├── Data/                        # Database context and migrations
-│   ├── Hubs/                        # SignalR real-time hubs
-│   └── wwwroot/                     # Static files and frontend
-├── .github/workflows/               # CI/CD pipeline
-├── Dockerfile                       # Container configuration
-├── docker-compose.yml              # Local development setup
-├── aws-deploy.yml                  # AWS CloudFormation template
-├── deploy-aws.sh                   # Automated AWS deployment
-└── README-AWS-DEPLOYMENT.md        # Detailed deployment guide
+├── RexusOps360.API/           # Main ASP.NET Core application
+│   ├── Controllers/           # API endpoints
+│   ├── Models/               # Data models
+│   ├── Services/             # Business logic services
+│   ├── Data/                 # Database context
+│   ├── Hubs/                 # SignalR hubs
+│   └── wwwroot/              # Static files
+├── .github/workflows/        # CI/CD pipeline
+├── deploy-aws-enhanced.sh    # AWS deployment script
+├── aws-deploy.yml           # CloudFormation template
+└── README.md                # This file
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
 - .NET 9.0 SDK
-- SQL Server (LocalDB for development)
+- SQL Server LocalDB
 - Docker (for containerized deployment)
-- AWS CLI (for cloud deployment)
 
 ### Local Development
 ```bash
 # Clone the repository
-git clone <repository-url>
+git clone https://github.com/DekuWorks/RexusAmptierEMSTampaFl.git
 cd EMS_Tampa-FL_Amptier
 
 # Navigate to API project
@@ -82,55 +139,52 @@ cd RexusOps360.API
 # Restore dependencies
 dotnet restore
 
-# Apply database migrations
+# Build the application
+dotnet build
+
+# Run database migrations
 dotnet ef database update
 
-# Run the application
+# Start the application
 dotnet run
 ```
 
 ### Docker Deployment
 ```bash
-# Build and run with Docker Compose
-docker-compose up -d
+# Build Docker image
+docker build -t ems-tampa-amptier .
 
-# Access the application
-# Dashboard: http://localhost:5169
-# API: http://localhost:5169/api
+# Run container
+docker run -p 5169:80 ems-tampa-amptier
 ```
 
-### AWS Production Deployment
+### AWS Deployment
 ```bash
-# Configure AWS CLI
-aws configure
+# Make deployment script executable
+chmod +x deploy-aws-enhanced.sh
 
-# Run automated deployment
-chmod +x deploy-aws.sh
-./deploy-aws.sh
+# Deploy to AWS
+./deploy-aws-enhanced.sh production
 ```
 
-## 📊 System Architecture
+## 📊 API Endpoints
 
-### Backend Services
-- **Incident Management** - CRUD operations for emergency incidents
-- **Responder Coordination** - GPS tracking and availability management
-- **Equipment Tracking** - Inventory and maintenance management
-- **Analytics Engine** - Real-time metrics and reporting
-- **Notification Service** - Multi-channel alert system
-- **Audit Service** - Security compliance and logging
+### Core Endpoints
+- `GET /api/incidents` - Get all incidents
+- `POST /api/incidents` - Create new incident
+- `GET /api/incidents/clusters` - Get incident clusters
+- `GET /api/incidents/utility/{utilityType}` - Get incidents by utility type
 
-### Database Schema
-- **Users** - Authentication and role management
-- **Incidents** - Emergency event tracking
-- **Responders** - Personnel management and GPS data
-- **Equipment** - Asset tracking and maintenance
-- **AuditLogs** - Security event tracking
+### Advanced Features
+- `GET /api/hotspot` - Get active hotspots
+- `POST /api/hotspot/detect` - Detect new hotspots
+- `GET /api/systemintegration` - Get system integrations
+- `POST /api/systemintegration/sync/scada` - Sync SCADA data
 
 ### Real-time Features
-- **Live Incident Updates** - Real-time status changes
-- **GPS Tracking** - Responder location monitoring
-- **Push Notifications** - Instant alert delivery
-- **Dashboard Updates** - Live metrics and charts
+- `GET /emsHub` - SignalR hub for real-time updates
+- `GET /api/analytics/dashboard` - Dashboard analytics
+- `GET /api/location/responders` - GPS tracking data
 
 ## 🔧 Configuration
 
@@ -138,39 +192,23 @@ chmod +x deploy-aws.sh
 ```json
 {
   "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=EmsTampaDb;Trusted_Connection=true"
+    "DefaultConnection": "Server=localhost;Database=EmsTampaDb;Trusted_Connection=true;"
   },
   "Jwt": {
-    "Key": "YourSuperSecretKeyHere12345678901234567890",
+    "Key": "YourSuperSecretKeyHere",
     "Issuer": "RexusOps360",
-    "Audience": "RexusOps360Users"
+    "Audience": "RexusOps360Users",
+    "ExpiryHours": 8
+  },
+  "SystemIntegrations": {
+    "ScadaEndpoint": "https://scada.rexusops360.com/api",
+    "WeatherApiKey": "your_weather_api_key"
+  },
+  "HotspotDetection": {
+    "Threshold": 3,
+    "TimeWindowMinutes": 120
   }
 }
-```
-
-### API Endpoints
-- `GET /api/incidents` - List all incidents
-- `POST /api/incidents` - Create new incident
-- `GET /api/responders` - List all responders
-- `GET /api/analytics/dashboard` - Dashboard metrics
-- `GET /api/equipment` - Equipment inventory
-
-## 🧪 Testing
-
-### Unit Tests
-```bash
-# Run unit tests
-cd RexusOps360.API.Tests
-dotnet test
-```
-
-### API Testing
-```bash
-# Test health endpoint
-curl http://localhost:5169/health
-
-# Test incidents API
-curl http://localhost:5169/api/incidents
 ```
 
 ## 📈 Performance & Scalability
@@ -210,10 +248,11 @@ curl http://localhost:5169/api/incidents
 ## 🚨 Emergency Response Features
 
 ### Incident Management
-- **Real-time Reporting** - Instant incident creation
+- **Real-time Reporting** - Instant incident creation with clustering
 - **Priority Classification** - High, Medium, Low priority levels
 - **Status Tracking** - Active, Resolved, Pending states
 - **Photo Attachments** - Visual documentation support
+- **Contact Information** - Customer contact details and remarks
 
 ### Responder Coordination
 - **GPS Tracking** - Real-time location monitoring
@@ -234,12 +273,14 @@ curl http://localhost:5169/api/incidents
 - **Interactive Charts** - Incident trends and analytics
 - **Dark Mode** - User preference support
 - **Mobile Responsive** - Cross-device compatibility
+- **Cluster Visualization** - Geographic clustering display
 
 ### Admin Interface
-- **Incident Management** - Full CRUD operations
+- **Incident Management** - Full CRUD operations with clustering
 - **Responder Management** - Personnel administration
 - **Equipment Control** - Asset management
-- **Analytics Dashboard** - Performance metrics
+- **Analytics Dashboard** - Performance metrics and hotspots
+- **System Integration** - External system management
 
 ## 🚀 Deployment Options
 
@@ -295,58 +336,43 @@ curl http://localhost:5169/api/incidents
 ### Regular Maintenance
 - **Security Updates** - Monthly patches
 - **Database Maintenance** - Weekly backups
-- **Performance Monitoring** - Daily metrics review
-- **Cost Optimization** - Monthly cost analysis
+- **Performance Monitoring** - Real-time metrics
+- **System Integration** - External system health checks
 
-### Troubleshooting
-- **Application Logs** - CloudWatch integration
-- **Database Monitoring** - RDS performance insights
-- **Network Diagnostics** - VPC flow logs
-- **Security Monitoring** - CloudTrail audit logs
+### Support Channels
+- **Documentation** - Comprehensive guides and API docs
+- **Issue Tracking** - GitHub Issues for bug reports
+- **Feature Requests** - GitHub Discussions for enhancements
+- **Emergency Support** - 24/7 critical issue response
 
-## 🎯 Roadmap
+## 🤝 Contributing
 
-### Phase 1 (Current) ✅
-- [x] Core EMS functionality
-- [x] SQL Server database
-- [x] Real-time features
-- [x] AWS deployment
-- [x] Security implementation
+### Development Guidelines
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests for new features
+5. Submit a pull request
 
-### Phase 2 (Planned)
-- [ ] Mobile application
-- [ ] Advanced analytics
-- [ ] Machine learning integration
-- [ ] Multi-tenant support
-- [ ] Advanced reporting
-
-### Phase 3 (Future)
-- [ ] AI-powered incident prediction
-- [ ] IoT device integration
-- [ ] Advanced GIS mapping
-- [ ] Integration with external systems
+### Code Standards
+- Follow C# coding conventions
+- Include XML documentation
+- Write unit tests for new features
+- Update documentation as needed
 
 ## 📄 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🤝 Contributing
+## 🙏 Acknowledgments
 
-1. Fork the repository
-2. Create a feature branch
-3. Make your changes
-4. Add tests for new functionality
-5. Submit a pull request
-
-## 📞 Contact
-
-- **Project Lead**: EMS Tampa-FL Team
-- **Email**: support@emstampa.com
-- **Documentation**: [AWS Deployment Guide](README-AWS-DEPLOYMENT.md)
+- **Tampa Emergency Services** - For domain expertise and requirements
+- **WSSC Water** - For combined utility operation insights
+- **ASP.NET Core Team** - For the excellent framework
+- **AWS** - For cloud infrastructure and services
 
 ---
 
-**Last Updated**: July 2024  
-**Version**: 1.0.0  
-**Status**: Production Ready  
-**Environment**: AWS Production 
+**Built with ❤️ for the Tampa-FL community**
+
+*For emergency support, contact: support@rexusops360.com* 

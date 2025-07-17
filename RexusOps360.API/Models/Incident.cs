@@ -20,15 +20,40 @@ namespace RexusOps360.API.Models
         
         [Required(ErrorMessage = "Priority is required")]
         [RegularExpression("^(High|Medium|Low)$", ErrorMessage = "Priority must be High, Medium, or Low")]
-        public string Priority { get; set; } = string.Empty; // "high", "medium", "low"
+        public string Priority { get; set; } = string.Empty;
         
         [Required(ErrorMessage = "Status is required")]
         [RegularExpression("^(Active|Resolved|Pending)$", ErrorMessage = "Status must be Active, Resolved, or Pending")]
-        public string Status { get; set; } = "Active"; // "active", "resolved", "closed"
+        public string Status { get; set; } = "Active";
         
-        public string AssignedResponders { get; set; } = string.Empty; // Stored as comma-separated string
+        // Enhanced fields for clustering and utility differentiation
+        [StringLength(50)]
+        public string? UtilityType { get; set; } = string.Empty; // "Water", "Sewer", "Combined"
         
-        public string EquipmentNeeded { get; set; } = string.Empty; // Stored as comma-separated string
+        [StringLength(100)]
+        public string? Category { get; set; } = string.Empty; // "Sewer Overflow", "Water Main Break", "Flooding"
+        
+        [StringLength(50)]
+        public string? Zone { get; set; } = string.Empty; // Geographic zone for clustering
+        
+        [StringLength(50)]
+        public string? ClusterId { get; set; } = string.Empty; // For grouping similar incidents
+        
+        public double? Latitude { get; set; }
+        
+        public double? Longitude { get; set; }
+        
+        public int? SeverityLevel { get; set; } // 1-5 scale for impact assessment
+        
+        [StringLength(500)]
+        public string? ContactInfo { get; set; } = string.Empty; // Customer contact information
+        
+        [StringLength(500)]
+        public string? Remarks { get; set; } = string.Empty; // Additional notes from reports
+        
+        public string AssignedResponders { get; set; } = string.Empty;
+        
+        public string EquipmentNeeded { get; set; } = string.Empty;
         
         [StringLength(500)]
         public string? PhotoPath { get; set; }
@@ -39,5 +64,10 @@ namespace RexusOps360.API.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         
         public DateTime? UpdatedAt { get; set; }
+        
+        // Computed properties for clustering logic
+        public bool IsClustered => !string.IsNullOrEmpty(ClusterId);
+        
+        public bool IsHotspot => SeverityLevel >= 4 || Priority == "High";
     }
 } 

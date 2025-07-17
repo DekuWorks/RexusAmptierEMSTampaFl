@@ -25,12 +25,12 @@ namespace RexusOps360.API.Models
         [StringLength(200, ErrorMessage = "Location cannot exceed 200 characters")]
         public string Location { get; set; } = string.Empty;
         
-        [StringLength(50, ErrorMessage = "Barcode cannot exceed 50 characters")]
-        public string Barcode { get; set; } = string.Empty;
-        
         [Required(ErrorMessage = "Status is required")]
         [RegularExpression("^(Available|InUse|Maintenance|Retired)$", ErrorMessage = "Status must be Available, InUse, Maintenance, or Retired")]
         public string Status { get; set; } = "Available";
+        
+        [StringLength(500)]
+        public string? MaintenanceNotes { get; set; }
         
         public DateTime? LastMaintenance { get; set; }
         
