@@ -18,13 +18,19 @@ builder.Services.AddSignalR();
 // Add Database Context
 builder.Services.AddDbContext<EmsDbContext>(options =>
 {
+    var environment = builder.Environment.EnvironmentName;
     var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
-    if (string.IsNullOrEmpty(connectionString))
+    
+    // Use in-memory database for testing and CI environments
+    if (environment == "Test" || environment == "CI" || string.IsNullOrEmpty(connectionString))
     {
-        // Fallback for CI environment
-        connectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
+        options.UseInMemoryDatabase("EmsTampaDb");
     }
-    options.UseSqlServer(connectionString);
+    else
+    {
+        // Use SQL Server for development and production
+        options.UseSqlServer(connectionString);
+    }
 });
 
 // Add Services

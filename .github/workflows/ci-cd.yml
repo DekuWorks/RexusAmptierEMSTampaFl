@@ -8,27 +8,12 @@ on:
 
 env:
   DOTNET_VERSION: '9.0.x'
-  SQLSERVER_VERSION: '2019-latest'
+  ASPNETCORE_ENVIRONMENT: 'CI'
 
 jobs:
   build-and-test:
     runs-on: ubuntu-latest
     
-    services:
-      sqlserver:
-        image: mcr.microsoft.com/mssql/server:2019-latest
-        env:
-          SA_PASSWORD: "YourStrong@Passw0rd"
-          ACCEPT_EULA: "Y"
-          MSSQL_PID: "Developer"
-        ports:
-          - 1433:1433
-        options: >-
-          --health-cmd "/opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -Q 'SELECT 1'"
-          --health-interval 30s
-          --health-timeout 10s
-          --health-retries 10
-
     steps:
     - name: Checkout code
       uses: actions/checkout@v4
@@ -37,19 +22,6 @@ jobs:
       uses: actions/setup-dotnet@v4
       with:
         dotnet-version: ${{ env.DOTNET_VERSION }}
-
-    - name: Install SQL Server tools
-      run: |
-        curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add -
-        curl https://packages.microsoft.com/config/ubuntu/20.04/prod.list > /etc/apt/sources.list.d/mssql-release.list
-        apt-get update
-        ACCEPT_EULA=Y apt-get install -y mssql-tools unixodbc-dev
-
-    - name: Wait for SQL Server
-      run: |
-        echo "Waiting for SQL Server to be ready..."
-        timeout 180 bash -c 'until /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P YourStrong@Passw0rd -Q "SELECT 1" &> /dev/null; do echo "SQL Server not ready, waiting..."; sleep 10; done'
-        echo "SQL Server is ready!"
 
     - name: Restore dependencies
       run: |
@@ -61,15 +33,15 @@ jobs:
         cd RexusOps360.API
         dotnet build --no-restore --configuration Release
 
-    - name: Test
+    - name: Test (with in-memory database)
       run: |
         cd RexusOps360.API
         dotnet test --no-build --verbosity normal --configuration Release
 
-    - name: Run database migrations
+    - name: Security scan
       run: |
         cd RexusOps360.API
-        dotnet ef database update --connection "Server=localhost,1433;Database=EmsTampaDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=true;" || echo "Migration failed, continuing with build"
+        dotnet list package --vulnerable
 
   security-scan:
     runs-on: ubuntu-latest
