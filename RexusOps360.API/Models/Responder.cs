@@ -22,7 +22,8 @@ namespace RexusOps360.API.Models
         [StringLength(200, ErrorMessage = "Current location cannot exceed 200 characters")]
         public string CurrentLocation { get; set; } = string.Empty;
         
-        public List<string> Specializations { get; set; } = new List<string>();
+        [StringLength(500)]
+        public string Specializations { get; set; } = string.Empty; // Comma-separated
         
         [Required(ErrorMessage = "Status is required")]
         [RegularExpression("^(Available|Busy|Offline)$", ErrorMessage = "Status must be Available, Busy, or Offline")]

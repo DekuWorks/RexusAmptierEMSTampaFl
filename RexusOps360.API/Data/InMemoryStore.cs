@@ -127,7 +127,7 @@ namespace RexusOps360.API.Data
                 Role = "Paramedic",
                 ContactNumber = "(813) 555-0101",
                 CurrentLocation = "Downtown Station",
-                Specializations = new List<string> { "Cardiac", "Trauma" },
+                Specializations = "Cardiac,Trauma",
                 Status = "available"
             });
 
@@ -137,7 +137,7 @@ namespace RexusOps360.API.Data
                 Role = "EMT",
                 ContactNumber = "(813) 555-0102",
                 CurrentLocation = "North Station",
-                Specializations = new List<string> { "Pediatric" },
+                Specializations = "Pediatric",
                 Status = "available"
             });
 
@@ -147,7 +147,7 @@ namespace RexusOps360.API.Data
                 Role = "Firefighter",
                 ContactNumber = "(813) 555-0103",
                 CurrentLocation = "Central Station",
-                Specializations = new List<string> { "Fire Suppression", "Rescue" },
+                Specializations = "Fire Suppression,Rescue",
                 Status = "available"
             });
 

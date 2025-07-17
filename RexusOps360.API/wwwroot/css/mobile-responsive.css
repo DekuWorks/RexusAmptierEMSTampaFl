@@ -1,0 +1,259 @@
+/* Mobile-First Responsive Design for EMS Tampa-FL Amptier */
+
+/* Base mobile styles */
+@media (max-width: 768px) {
+    /* Header adjustments */
+    .header-content {
+        flex-direction: column;
+        gap: 15px;
+        text-align: center;
+    }
+
+    .header-left h1 {
+        font-size: 1.8rem;
+    }
+
+    .header-left p {
+        font-size: 1rem;
+    }
+
+    .logo-bar {
+        justify-content: center;
+        gap: 15px;
+    }
+
+    .logo-img {
+        height: 30px;
+    }
+
+    .user-info {
+        flex-direction: column;
+        gap: 10px;
+    }
+
+    .user-details {
+        text-align: center;
+    }
+
+    /* Container adjustments */
+    .container {
+        padding: 0 15px;
+    }
+
+    /* Stats grid */
+    .stats-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .stat-card {
+        padding: 20px;
+    }
+
+    .stat-card h3 {
+        font-size: 1.5rem;
+    }
+
+    /* Content grid */
+    .content-grid {
+        grid-template-columns: 1fr;
+        gap: 20px;
+    }
+
+    .main-content,
+    .sidebar {
+        padding: 20px;
+    }
+
+    /* Quick actions */
+    .quick-actions {
+        grid-template-columns: 1fr;
+        gap: 10px;
+    }
+
+    .action-btn {
+        padding: 12px;
+        font-size: 0.9rem;
+    }
+
+    /* Form adjustments */
+    .form-grid {
+        grid-template-columns: 1fr;
+        gap: 15px;
+    }
+
+    .form-group input,
+    .form-group select {
+        padding: 10px 12px;
+        font-size: 16px; /* Prevents zoom on iOS */
+    }
+
+    /* Login/Register containers */
+    .login-container,
+    .register-container {
+        margin: 20px;
+        padding: 25px 20px;
+        max-width: 100%;
+    }
+
+    .logo {
+        width: 60px;
+        height: 60px;
+        font-size: 1.5rem;
+    }
+
+    /* Weather widget */
+    .weather-widget {
+        padding: 15px;
+        margin-bottom: 20px;
+    }
+
+    .weather-widget .temp {
+        font-size: 2rem;
+    }
+
+    /* Incident items */
+    .incident-item {
+        padding: 15px;
+        margin-bottom: 10px;
+    }
+
+    .incident-item h4 {
+        font-size: 1rem;
+    }
+
+    /* Notifications */
+    .notification-item {
+        padding: 12px;
+        margin-bottom: 8px;
+    }
+
+    /* Theme toggle position */
+    .theme-toggle {
+        top: 10px;
+        right: 10px;
+        width: 40px;
+        height: 40px;
+    }
+
+    .theme-toggle i {
+        font-size: 1rem;
+    }
+}
+
+/* Tablet styles */
+@media (min-width: 769px) and (max-width: 1024px) {
+    .header-content {
+        gap: 20px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .content-grid {
+        grid-template-columns: 1.5fr 1fr;
+    }
+
+    .quick-actions {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+/* Large screen enhancements */
+@media (min-width: 1025px) {
+    .container {
+        max-width: 1400px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(4, 1fr);
+    }
+
+    .content-grid {
+        grid-template-columns: 2fr 1fr;
+    }
+}
+
+/* Touch-friendly improvements */
+@media (hover: none) and (pointer: coarse) {
+    /* Larger touch targets */
+    .btn,
+    .action-btn {
+        min-height: 44px;
+        padding: 12px 20px;
+    }
+
+    .theme-toggle {
+        width: 50px;
+        height: 50px;
+    }
+
+    /* Better spacing for touch */
+    .stat-card,
+    .incident-item,
+    .notification-item {
+        margin-bottom: 15px;
+    }
+
+    /* Improved form inputs */
+    .form-group input,
+    .form-group select {
+        min-height: 44px;
+    }
+}
+
+/* Landscape orientation adjustments */
+@media (max-width: 768px) and (orientation: landscape) {
+    .header-content {
+        flex-direction: row;
+        gap: 20px;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .content-grid {
+        grid-template-columns: 1fr 1fr;
+    }
+}
+
+/* High DPI displays */
+@media (-webkit-min-device-pixel-ratio: 2), (min-resolution: 192dpi) {
+    .logo-img {
+        image-rendering: -webkit-optimize-contrast;
+        image-rendering: crisp-edges;
+    }
+}
+
+/* Reduced motion for accessibility */
+@media (prefers-reduced-motion: reduce) {
+    * {
+        animation-duration: 0.01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: 0.01ms !important;
+    }
+}
+
+/* Print styles */
+@media print {
+    .theme-toggle,
+    .btn,
+    .action-btn {
+        display: none !important;
+    }
+
+    .header {
+        background: white !important;
+        color: black !important;
+    }
+
+    .stat-card,
+    .main-content,
+    .sidebar {
+        background: white !important;
+        color: black !important;
+        border: 1px solid #ccc !important;
+    }
+} 

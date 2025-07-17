@@ -27,6 +27,12 @@ namespace RexusOps360.API.Models
         [StringLength(100)]
         public string? Email { get; set; }
 
+        [StringLength(20)]
+        public string? Phone { get; set; }
+
+        [StringLength(200)]
+        public string? Address { get; set; }
+
         public bool IsActive { get; set; } = true;
 
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;

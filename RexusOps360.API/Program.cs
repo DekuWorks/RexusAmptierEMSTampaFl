@@ -1,13 +1,29 @@
 using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using RexusOps360.API.Services;
+using RexusOps360.API.Hubs;
+using RexusOps360.API.Data;
 using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllers();
+
+// Add SignalR
+builder.Services.AddSignalR();
+
+// Add Database Context
+builder.Services.AddDbContext<EmsDbContext>(options =>
+    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+// Add Services
+builder.Services.AddScoped<IAuditService, AuditService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IGpsTrackingService, GpsTrackingService>();
+builder.Services.AddScoped<IShiftSchedulingService, ShiftSchedulingService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -56,6 +72,15 @@ builder.Services.AddSwaggerGen(c =>
 
 // Register JWT Service
 builder.Services.AddScoped<IJwtService, JwtService>();
+
+// Register Notification Service
+builder.Services.AddScoped<INotificationService, NotificationService>();
+
+// Register GPS Tracking Service
+builder.Services.AddScoped<IGpsTrackingService, GpsTrackingService>();
+
+// Register Shift Scheduling Service
+builder.Services.AddScoped<IShiftSchedulingService, ShiftSchedulingService>();
 
 // Add JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -110,5 +135,8 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+// Map SignalR hub
+app.MapHub<EmsHub>("/emsHub");
 
 app.Run();

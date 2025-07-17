@@ -1,4 +1,5 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 using RexusOps360.API.Data;
 using RexusOps360.API.Models;
 
@@ -8,227 +9,202 @@ namespace RexusOps360.API.Controllers
     [Route("api/[controller]")]
     public class AnalyticsController : ControllerBase
     {
-        [HttpGet("kpi")]
-        public IActionResult GetKPIs()
+        private readonly EmsDbContext _context;
+
+        public AnalyticsController(EmsDbContext context)
         {
-            var incidents = InMemoryStore.GetAllIncidents();
-            var responders = InMemoryStore.GetAllResponders();
-            var equipment = InMemoryStore.GetAllEquipment();
-
-            // Calculate KPIs
-            var totalIncidents = incidents.Count;
-            var activeIncidents = incidents.Count(i => i.Status == "active");
-            var resolvedIncidents = incidents.Count(i => i.Status == "resolved");
-            var highPriorityIncidents = incidents.Count(i => i.Priority == "high" && i.Status == "active");
-            
-            var totalResponders = responders.Count;
-            var availableResponders = responders.Count(r => r.Status == "available");
-            var responseRate = totalIncidents > 0 ? (double)resolvedIncidents / totalIncidents * 100 : 0;
-            
-            var totalEquipment = equipment.Count;
-            var availableEquipment = equipment.Count(e => e.Status == "available");
-            var equipmentUtilization = totalEquipment > 0 ? (double)(totalEquipment - availableEquipment) / totalEquipment * 100 : 0;
-
-            // Calculate average response time (mock data for now)
-            var avgResponseTime = CalculateAverageResponseTime(incidents);
-
-            return Ok(new
-            {
-                incidents = new
-                {
-                    total = totalIncidents,
-                    active = activeIncidents,
-                    resolved = resolvedIncidents,
-                    high_priority = highPriorityIncidents,
-                    response_rate = Math.Round(responseRate, 2),
-                    avg_response_time_minutes = avgResponseTime
-                },
-                responders = new
-                {
-                    total = totalResponders,
-                    available = availableResponders,
-                    utilization_rate = totalResponders > 0 ? Math.Round((double)(totalResponders - availableResponders) / totalResponders * 100, 2) : 0
-                },
-                equipment = new
-                {
-                    total = totalEquipment,
-                    available = availableEquipment,
-                    utilization_rate = Math.Round(equipmentUtilization, 2)
-                },
-                system_health = new
-                {
-                    status = "operational",
-                    uptime_percentage = 99.8,
-                    last_updated = DateTime.UtcNow
-                }
-            });
+            _context = context;
         }
 
-        [HttpGet("incidents/heatmap")]
-        public IActionResult GetIncidentHeatmap()
+        [HttpGet("dashboard")]
+        public async Task<IActionResult> GetDashboardAnalytics()
         {
-            var incidents = InMemoryStore.GetAllIncidents();
-            
-            // Group incidents by location (simplified for demo)
-            var heatmapData = incidents
-                .Where(i => i.Status == "active")
-                .GroupBy(i => GetLocationArea(i.Location))
-                .Select(g => new
-                {
-                    area = g.Key,
-                    incident_count = g.Count(),
-                    high_priority_count = g.Count(i => i.Priority == "high"),
-                    coordinates = GetCoordinatesForArea(g.Key)
-                })
-                .ToList();
-
-            return Ok(new
+            try
             {
-                heatmap_data = heatmapData,
-                total_active_incidents = incidents.Count(i => i.Status == "active"),
-                last_updated = DateTime.UtcNow
-            });
-        }
+                var activeIncidents = await _context.Incidents
+                    .Where(i => i.Status == "Active" || i.Status == "In Progress")
+                    .CountAsync();
 
-        [HttpGet("incidents/timeline")]
-        public IActionResult GetIncidentTimeline([FromQuery] int days = 7)
-        {
-            var incidents = InMemoryStore.GetAllIncidents();
-            var endDate = DateTime.UtcNow;
-            var startDate = endDate.AddDays(-days);
+                var availableResponders = await _context.Responders
+                    .Where(r => r.Status == "Available")
+                    .CountAsync();
 
-            var timelineData = new List<object>();
-            
-            for (var date = startDate.Date; date <= endDate.Date; date = date.AddDays(1))
-            {
-                var dayIncidents = incidents.Count(i => i.CreatedAt.Date == date);
-                var resolvedIncidents = incidents.Count(i => i.UpdatedAt.Date == date && i.Status == "resolved");
-                
-                timelineData.Add(new
+                var totalEquipment = await _context.Equipment.CountAsync();
+                var availableEquipment = await _context.Equipment
+                    .Where(e => e.Status == "Available")
+                    .CountAsync();
+
+                var avgResponseTime = await CalculateAverageResponseTime();
+
+                var result = new
                 {
-                    date = date.ToString("yyyy-MM-dd"),
-                    new_incidents = dayIncidents,
-                    resolved_incidents = resolvedIncidents,
-                    active_incidents = incidents.Count(i => i.Status == "active" && i.CreatedAt.Date <= date)
-                });
+                    activeIncidents,
+                    availableResponders,
+                    totalEquipment,
+                    availableEquipment,
+                    avgResponseTime,
+                    equipmentUtilization = totalEquipment > 0 ? (double)availableEquipment / totalEquipment * 100 : 0
+                };
+
+                return Ok(result);
             }
-
-            return Ok(new
+            catch (Exception ex)
             {
-                timeline_data = timelineData,
-                period_days = days,
-                last_updated = DateTime.UtcNow
-            });
+                return StatusCode(500, new { error = "Error retrieving dashboard analytics", details = ex.Message });
+            }
         }
 
-        [HttpGet("responders/performance")]
-        public IActionResult GetResponderPerformance()
+        [HttpGet("incidents/chart")]
+        public async Task<IActionResult> GetIncidentChartData()
         {
-            var responders = InMemoryStore.GetAllResponders();
-            var incidents = InMemoryStore.GetAllIncidents();
-
-            var performanceData = responders.Select(r => new
+            try
             {
-                responder_id = r.Id,
-                name = r.Name,
-                role = r.Role,
-                status = r.Status,
-                current_location = r.CurrentLocation,
-                specializations = r.Specializations,
-                assigned_incidents = incidents.Count(i => i.AssignedResponders?.Contains(r.Id) == true),
-                response_time_avg = CalculateResponderResponseTime(r.Id, incidents),
-                availability_percentage = CalculateAvailabilityPercentage(r.Status)
-            }).ToList();
+                var incidentData = await _context.Incidents
+                    .GroupBy(i => i.Status)
+                    .Select(g => new { Status = g.Key, Count = g.Count() })
+                    .ToListAsync();
 
-            return Ok(new
+                var labels = new List<string>();
+                var data = new List<int>();
+
+                foreach (var item in incidentData)
+                {
+                    labels.Add(item.Status);
+                    data.Add(item.Count);
+                }
+
+                return Ok(new { labels, data });
+            }
+            catch (Exception ex)
             {
-                responder_performance = performanceData,
-                total_responders = responders.Count,
-                available_responders = responders.Count(r => r.Status == "available"),
-                last_updated = DateTime.UtcNow
-            });
+                return StatusCode(500, new { error = "Error retrieving incident chart data", details = ex.Message });
+            }
         }
 
-        [HttpGet("equipment/analytics")]
-        public IActionResult GetEquipmentAnalytics()
+        [HttpGet("responders/chart")]
+        public async Task<IActionResult> GetResponderChartData()
         {
-            var equipment = InMemoryStore.GetAllEquipment();
-
-            var equipmentAnalytics = equipment.Select(e => new
+            try
             {
-                equipment_id = e.Id,
-                name = e.Name,
-                type = e.Type,
-                total_quantity = e.Quantity,
-                available_quantity = e.AvailableQuantity,
-                utilization_rate = e.Quantity > 0 ? Math.Round((double)(e.Quantity - e.AvailableQuantity) / e.Quantity * 100, 2) : 0,
-                location = e.Location,
-                status = e.Status,
-                last_maintenance = e.LastMaintenance,
-                maintenance_due = IsMaintenanceDue(e.LastMaintenance)
-            }).ToList();
+                var responderData = await _context.Responders
+                    .GroupBy(r => r.Status)
+                    .Select(g => new { Status = g.Key, Count = g.Count() })
+                    .ToListAsync();
 
-            return Ok(new
+                var labels = new List<string>();
+                var data = new List<int>();
+
+                foreach (var item in responderData)
+                {
+                    labels.Add(item.Status);
+                    data.Add(item.Count);
+                }
+
+                return Ok(new { labels, data });
+            }
+            catch (Exception ex)
             {
-                equipment_analytics = equipmentAnalytics,
-                total_equipment = equipment.Count,
-                available_equipment = equipment.Count(e => e.Status == "available"),
-                maintenance_alerts = equipmentAnalytics.Count(e => e.maintenance_due),
-                last_updated = DateTime.UtcNow
-            });
+                return StatusCode(500, new { error = "Error retrieving responder chart data", details = ex.Message });
+            }
         }
 
-        private double CalculateAverageResponseTime(List<Incident> incidents)
+        [HttpGet("equipment/chart")]
+        public async Task<IActionResult> GetEquipmentChartData()
         {
-            // Mock calculation - in real system, this would use actual response times
-            var activeIncidents = incidents.Where(i => i.Status == "active").ToList();
-            if (!activeIncidents.Any()) return 0;
-
-            var random = new Random();
-            return Math.Round(random.Next(5, 25) + random.NextDouble(), 1);
-        }
-
-        private double CalculateResponderResponseTime(int responderId, List<Incident> incidents)
-        {
-            // Mock calculation
-            var random = new Random(responderId);
-            return Math.Round(random.Next(3, 20) + random.NextDouble(), 1);
-        }
-
-        private double CalculateAvailabilityPercentage(string status)
-        {
-            return status == "available" ? 100.0 : 0.0;
-        }
-
-        private string GetLocationArea(string location)
-        {
-            // Simplified area extraction
-            if (location.Contains("Downtown")) return "Downtown";
-            if (location.Contains("North")) return "North Tampa";
-            if (location.Contains("South")) return "South Tampa";
-            if (location.Contains("West")) return "West Tampa";
-            if (location.Contains("East")) return "East Tampa";
-            return "Central Tampa";
-        }
-
-        private object GetCoordinatesForArea(string area)
-        {
-            // Mock coordinates for Tampa areas
-            return area switch
+            try
             {
-                "Downtown" => new { lat = 27.9506, lng = -82.4572 },
-                "North Tampa" => new { lat = 28.0587, lng = -82.4572 },
-                "South Tampa" => new { lat = 27.9425, lng = -82.4572 },
-                "West Tampa" => new { lat = 27.9506, lng = -82.5000 },
-                "East Tampa" => new { lat = 27.9506, lng = -82.4000 },
-                _ => new { lat = 27.9506, lng = -82.4572 }
-            };
+                var equipmentData = await _context.Equipment
+                    .GroupBy(e => e.Type)
+                    .Select(g => new { Type = g.Key, Available = g.Sum(e => e.AvailableQuantity), Total = g.Sum(e => e.Quantity) })
+                    .ToListAsync();
+
+                var labels = new List<string>();
+                var availableData = new List<int>();
+                var totalData = new List<int>();
+
+                foreach (var item in equipmentData)
+                {
+                    labels.Add(item.Type);
+                    availableData.Add(item.Available);
+                    totalData.Add(item.Total);
+                }
+
+                return Ok(new { labels, availableData, totalData });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Error retrieving equipment chart data", details = ex.Message });
+            }
         }
 
-        private bool IsMaintenanceDue(DateTime? lastMaintenance)
+        [HttpGet("response-times")]
+        public async Task<IActionResult> GetResponseTimeData()
         {
-            if (!lastMaintenance.HasValue) return true;
-            return DateTime.UtcNow.Subtract(lastMaintenance.Value).TotalDays > 30;
+            try
+            {
+                var responseTimeData = await _context.Incidents
+                    .Where(i => i.Status == "Resolved" && i.UpdatedAt.HasValue)
+                    .GroupBy(i => i.Type)
+                    .Select(g => new 
+                    { 
+                        Type = g.Key, 
+                        AvgResponseTime = g.Average(i => (i.UpdatedAt.Value - i.CreatedAt).TotalMinutes)
+                    })
+                    .ToListAsync();
+
+                var labels = new List<string>();
+                var data = new List<double>();
+
+                foreach (var item in responseTimeData)
+                {
+                    labels.Add(item.Type);
+                    data.Add(Math.Round(item.AvgResponseTime, 1));
+                }
+
+                return Ok(new { labels, data });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Error retrieving response time data", details = ex.Message });
+            }
+        }
+
+        [HttpGet("trends")]
+        public async Task<IActionResult> GetTrendsData([FromQuery] int days = 30)
+        {
+            try
+            {
+                var startDate = DateTime.UtcNow.AddDays(-days);
+
+                var dailyIncidents = await _context.Incidents
+                    .Where(i => i.CreatedAt >= startDate)
+                    .GroupBy(i => i.CreatedAt.Date)
+                    .Select(g => new { Date = g.Key, Count = g.Count() })
+                    .OrderBy(x => x.Date)
+                    .ToListAsync();
+
+                var labels = dailyIncidents.Select(x => x.Date.ToString("MM/dd")).ToList();
+                var data = dailyIncidents.Select(x => x.Count).ToList();
+
+                return Ok(new { labels, data });
+            }
+            catch (Exception ex)
+            {
+                return StatusCode(500, new { error = "Error retrieving trends data", details = ex.Message });
+            }
+        }
+
+        private async Task<double> CalculateAverageResponseTime()
+        {
+            var resolvedIncidents = await _context.Incidents
+                .Where(i => i.Status == "Resolved" && i.UpdatedAt.HasValue)
+                .ToListAsync();
+
+            if (!resolvedIncidents.Any())
+                return 0;
+
+            var totalResponseTime = resolvedIncidents.Sum(i => (i.UpdatedAt.Value - i.CreatedAt).TotalMinutes);
+            return Math.Round(totalResponseTime / resolvedIncidents.Count, 1);
         }
     }
 } 

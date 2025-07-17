@@ -18,6 +18,8 @@ namespace RexusOps360.API.Controllers
     <meta name=""viewport"" content=""width=device-width, initial-scale=1.0"">
     <title>EMS Tampa-FL Amptier - Dashboard</title>
     <link href=""https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"" rel=""stylesheet"">
+    <link href=""/css/dark-mode.css"" rel=""stylesheet"">
+    <link href=""/css/mobile-responsive.css"" rel=""stylesheet"">
     <style>
         * {
             margin: 0;
@@ -501,6 +503,7 @@ namespace RexusOps360.API.Controllers
             </div>
         </div>
     </div>
+    <script src=""/js/theme-manager.js""></script>
 </body>
 </html>";
 

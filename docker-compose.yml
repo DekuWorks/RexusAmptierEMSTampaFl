@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  ems-api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "5169:80"
+      - "5168:443"
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Production
+      - ConnectionStrings__DefaultConnection=Server=ems-db;Database=EmsTampaDb;User Id=sa;Password=YourStrong@Passw0rd;TrustServerCertificate=true
+    depends_on:
+      - ems-db
+    networks:
+      - ems-network
+
+  ems-db:
+    image: mcr.microsoft.com/mssql/server:2022-latest
+    environment:
+      - ACCEPT_EULA=Y
+      - SA_PASSWORD=YourStrong@Passw0rd
+    ports:
+      - "1433:1433"
+    volumes:
+      - ems-db-data:/var/opt/mssql
+    networks:
+      - ems-network
+
+volumes:
+  ems-db-data:
+
+networks:
+  ems-network:
+    driver: bridge 

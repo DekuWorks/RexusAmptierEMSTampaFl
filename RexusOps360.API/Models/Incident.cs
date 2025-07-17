@@ -26,12 +26,18 @@ namespace RexusOps360.API.Models
         [RegularExpression("^(Active|Resolved|Pending)$", ErrorMessage = "Status must be Active, Resolved, or Pending")]
         public string Status { get; set; } = "Active"; // "active", "resolved", "closed"
         
-        public List<int> AssignedResponders { get; set; } = new();
+        public string AssignedResponders { get; set; } = string.Empty; // Stored as comma-separated string
         
-        public List<string> EquipmentNeeded { get; set; } = new();
+        public string EquipmentNeeded { get; set; } = string.Empty; // Stored as comma-separated string
+        
+        [StringLength(500)]
+        public string? PhotoPath { get; set; }
+        
+        [StringLength(100)]
+        public string? ReportedBy { get; set; }
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         
-        public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+        public DateTime? UpdatedAt { get; set; }
     }
 } 
