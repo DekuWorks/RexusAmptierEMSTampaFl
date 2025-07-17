@@ -148,7 +148,7 @@ namespace RexusOps360.API.Controllers
                     .Select(g => new 
                     { 
                         Type = g.Key, 
-                        AvgResponseTime = g.Average(i => (i.UpdatedAt.Value - i.CreatedAt).TotalMinutes)
+                        AvgResponseTime = g.Average(i => i.UpdatedAt.HasValue ? (i.UpdatedAt.Value - i.CreatedAt).TotalMinutes : 0)
                     })
                     .ToListAsync();
 
@@ -203,7 +203,7 @@ namespace RexusOps360.API.Controllers
             if (!resolvedIncidents.Any())
                 return 0;
 
-            var totalResponseTime = resolvedIncidents.Sum(i => (i.UpdatedAt.Value - i.CreatedAt).TotalMinutes);
+            var totalResponseTime = resolvedIncidents.Sum(i => i.UpdatedAt.HasValue ? (i.UpdatedAt.Value - i.CreatedAt).TotalMinutes : 0);
             return Math.Round(totalResponseTime / resolvedIncidents.Count, 1);
         }
     }

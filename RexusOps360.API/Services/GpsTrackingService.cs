@@ -57,17 +57,18 @@ namespace RexusOps360.API.Services
             await _hubContext.Clients.Group("admin").SendAsync("ResponderLocationUpdated", locationData);
         }
 
-        public async Task<Dictionary<string, ResponderLocation>> GetResponderLocationsAsync()
+        public Task<Dictionary<string, ResponderLocation>> GetResponderLocationsAsync()
         {
-            return _responderLocations;
+            return Task.FromResult(_responderLocations);
         }
 
-        public async Task<ResponderLocation?> GetResponderLocationAsync(string responderId)
+        public Task<ResponderLocation?> GetResponderLocationAsync(string responderId)
         {
-            return _responderLocations.TryGetValue(responderId, out var location) ? location : null;
+            var location = _responderLocations.TryGetValue(responderId, out var result) ? result : null;
+            return Task.FromResult(location);
         }
 
-        public async Task<List<ResponderLocation>> GetNearbyRespondersAsync(double latitude, double longitude, double radiusKm)
+        public Task<List<ResponderLocation>> GetNearbyRespondersAsync(double latitude, double longitude, double radiusKm)
         {
             var nearbyResponders = new List<ResponderLocation>();
 
@@ -83,8 +84,9 @@ namespace RexusOps360.API.Services
                 }
             }
 
-            return nearbyResponders.OrderBy(r => 
+            var result = nearbyResponders.OrderBy(r => 
                 CalculateDistance(latitude, longitude, r.Latitude ?? 0, r.Longitude ?? 0)).ToList();
+            return Task.FromResult(result);
         }
 
         private double CalculateDistance(double lat1, double lon1, double lat2, double lon2)

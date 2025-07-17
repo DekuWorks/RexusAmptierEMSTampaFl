@@ -200,7 +200,7 @@ namespace RexusOps360.API.Controllers
         }
 
         [HttpGet("alerts")]
-        public async Task<IActionResult> GetHotspotAlerts([FromQuery] string? status = null)
+        public Task<IActionResult> GetHotspotAlerts([FromQuery] string? status = null)
         {
             try
             {
@@ -240,7 +240,7 @@ namespace RexusOps360.API.Controllers
         }
 
         [HttpPost("alerts/{alertId}/acknowledge")]
-        public async Task<IActionResult> AcknowledgeAlert(int alertId, [FromBody] AcknowledgeAlertRequest request)
+        public Task<IActionResult> AcknowledgeAlert(int alertId, [FromBody] AcknowledgeAlertRequest request)
         {
             try
             {

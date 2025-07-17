@@ -59,8 +59,8 @@ namespace RexusOps360.API.Controllers
             {
                 inventory_status = inventoryStatus,
                 total_equipment = equipment.Count,
-                low_stock_items = inventoryStatus.Count(s => (bool)s.GetType().GetProperty("is_low_stock").GetValue(s)),
-                maintenance_due_items = inventoryStatus.Count(s => (bool)s.GetType().GetProperty("is_maintenance_due").GetValue(s)),
+                low_stock_items = inventoryStatus.Count(s => s.GetType().GetProperty("is_low_stock")?.GetValue(s) is bool isLowStock && isLowStock),
+                maintenance_due_items = inventoryStatus.Count(s => s.GetType().GetProperty("is_maintenance_due")?.GetValue(s) is bool isMaintenanceDue && isMaintenanceDue),
                 last_updated = DateTime.UtcNow
             });
         }

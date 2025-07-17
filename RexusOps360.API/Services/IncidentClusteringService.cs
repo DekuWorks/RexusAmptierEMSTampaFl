@@ -100,7 +100,7 @@ namespace RexusOps360.API.Services
             return clusters.Cast<object>().ToList();
         }
 
-        public async Task<bool> IsSimilarIncidentAsync(Incident newIncident, Incident existingIncident)
+        public Task<bool> IsSimilarIncidentAsync(Incident newIncident, Incident existingIncident)
         {
             // Check if incidents are similar based on multiple criteria
             var timeDiff = Math.Abs((newIncident.CreatedAt - existingIncident.CreatedAt).TotalMinutes);
@@ -114,13 +114,14 @@ namespace RexusOps360.API.Services
             // 2. Within 1km distance
             // 3. Within 30 minutes time window
             // 4. Same zone (if specified)
-            return newIncident.UtilityType == existingIncident.UtilityType &&
+            var result = newIncident.UtilityType == existingIncident.UtilityType &&
                    newIncident.Category == existingIncident.Category &&
                    locationDiff <= 1.0 && // 1km radius
                    timeDiff <= 30 && // 30 minutes
                    (string.IsNullOrEmpty(newIncident.Zone) || 
                     string.IsNullOrEmpty(existingIncident.Zone) || 
                     newIncident.Zone == existingIncident.Zone);
+            return Task.FromResult(result);
         }
 
         public async Task<List<Incident>> GetSimilarIncidentsAsync(Incident incident, double radiusKm = 1.0, int timeWindowMinutes = 30)
