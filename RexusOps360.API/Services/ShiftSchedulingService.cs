@@ -61,7 +61,7 @@ namespace RexusOps360.API.Services
         private static readonly List<ShiftSchedule> _shifts = new();
         private static int _nextShiftId = 1;
 
-        public async Task<ShiftSchedule> CreateShiftAsync(CreateShiftRequest request)
+        public Task<ShiftSchedule> CreateShiftAsync(CreateShiftRequest request)
         {
             var shift = new ShiftSchedule
             {
@@ -75,37 +75,41 @@ namespace RexusOps360.API.Services
             };
 
             _shifts.Add(shift);
-            return shift;
+            return Task.FromResult(shift);
         }
 
-        public async Task<ShiftSchedule?> GetShiftAsync(int shiftId)
+        public Task<ShiftSchedule?> GetShiftAsync(int shiftId)
         {
-            return _shifts.FirstOrDefault(s => s.Id == shiftId);
+            var shift = _shifts.FirstOrDefault(s => s.Id == shiftId);
+            return Task.FromResult(shift);
         }
 
-        public async Task<List<ShiftSchedule>> GetShiftsByResponderAsync(string responderId)
+        public Task<List<ShiftSchedule>> GetShiftsByResponderAsync(string responderId)
         {
-            return _shifts.Where(s => s.ResponderId == responderId)
-                         .OrderBy(s => s.StartTime)
-                         .ToList();
+            var shifts = _shifts.Where(s => s.ResponderId == responderId)
+                               .OrderBy(s => s.StartTime)
+                               .ToList();
+            return Task.FromResult(shifts);
         }
 
-        public async Task<List<ShiftSchedule>> GetShiftsByDateAsync(DateTime date)
+        public Task<List<ShiftSchedule>> GetShiftsByDateAsync(DateTime date)
         {
-            return _shifts.Where(s => s.StartTime.Date == date.Date)
-                         .OrderBy(s => s.StartTime)
-                         .ToList();
+            var shifts = _shifts.Where(s => s.StartTime.Date == date.Date)
+                               .OrderBy(s => s.StartTime)
+                               .ToList();
+            return Task.FromResult(shifts);
         }
 
-        public async Task<List<ShiftSchedule>> GetUpcomingShiftsAsync()
+        public Task<List<ShiftSchedule>> GetUpcomingShiftsAsync()
         {
             var now = DateTime.UtcNow;
-            return _shifts.Where(s => s.StartTime > now && s.Status == "Scheduled")
-                         .OrderBy(s => s.StartTime)
-                         .ToList();
+            var shifts = _shifts.Where(s => s.StartTime > now && s.Status == "Scheduled")
+                               .OrderBy(s => s.StartTime)
+                               .ToList();
+            return Task.FromResult(shifts);
         }
 
-        public async Task<ShiftSchedule> UpdateShiftAsync(int shiftId, UpdateShiftRequest request)
+        public Task<ShiftSchedule> UpdateShiftAsync(int shiftId, UpdateShiftRequest request)
         {
             var shift = _shifts.FirstOrDefault(s => s.Id == shiftId);
             if (shift == null)
@@ -123,19 +127,20 @@ namespace RexusOps360.API.Services
                 shift.Notes = request.Notes;
 
             shift.UpdatedAt = DateTime.UtcNow;
-            return shift;
+            return Task.FromResult(shift);
         }
 
-        public async Task<bool> DeleteShiftAsync(int shiftId)
+        public Task<bool> DeleteShiftAsync(int shiftId)
         {
             var shift = _shifts.FirstOrDefault(s => s.Id == shiftId);
             if (shift == null)
-                return false;
+                return Task.FromResult(false);
 
-            return _shifts.Remove(shift);
+            var result = _shifts.Remove(shift);
+            return Task.FromResult(result);
         }
 
-        public async Task<List<ResponderAvailability>> GetAvailableRespondersAsync(DateTime startTime, DateTime endTime)
+        public Task<List<ResponderAvailability>> GetAvailableRespondersAsync(DateTime startTime, DateTime endTime)
         {
             var responders = InMemoryStore.GetAllResponders();
             var availabilities = new List<ResponderAvailability>();
@@ -162,7 +167,7 @@ namespace RexusOps360.API.Services
                 availabilities.Add(availability);
             }
 
-            return availabilities;
+            return Task.FromResult(availabilities);
         }
     }
 } 

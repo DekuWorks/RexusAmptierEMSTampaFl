@@ -43,7 +43,7 @@ namespace RexusOps360.API.Controllers
             {
                 responder_locations = latestLocations,
                 total_responders = responders.Count,
-                online_responders = latestLocations.Count(l => (bool)l.GetType().GetProperty("is_online").GetValue(l)),
+                online_responders = latestLocations.Count(l => l.GetType().GetProperty("is_online")?.GetValue(l) is bool isOnline && isOnline),
                 last_updated = DateTime.UtcNow
             });
         }
