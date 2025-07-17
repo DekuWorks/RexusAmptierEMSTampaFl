@@ -1,6 +1,5 @@
-from flask import Flask, request, jsonify, send_from_directory, session, redirect, url_for, render_template, flash
+from flask import Flask, render_template, request, jsonify, session, redirect, url_for, flash, send_from_directory
 from flask_cors import CORS
-from api.endpoints import api_bp
 import sqlite3
 import os
 from werkzeug.utils import secure_filename
@@ -14,7 +13,7 @@ from functools import wraps
 # Load environment variables
 load_dotenv()
 
-app = Flask(__name__, static_folder='static', static_url_path='/static')
+app = Flask(__name__)
 app.secret_key = os.getenv('SECRET_KEY', 'ems_tampa_secret_key_2025')
 
 CORS(app)
@@ -159,20 +158,15 @@ def get_db():
     conn.row_factory = sqlite3.Row
     return conn
 
-def allowed_file(filename):
-    """Check if file extension is allowed"""
-    return '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
-
-def get_geolocation(location):
-    """Get latitude and longitude for a location"""
-    try:
-        geolocator = Nominatim(user_agent="ems_tampa_app")
-        loc = geolocator.geocode(location, timeout=10)
-        if loc:
-            return loc.latitude, loc.longitude
-    except Exception as e:
-        print(f"Geolocation error: {e}")
-    return None, None
+def get_user_data():
+    """Get user data for dashboard"""
+    if 'user_id' not in session:
+        return None
+    
+    db = get_db()
+    user = db.execute('SELECT * FROM users WHERE id = ?', (session['user_id'],)).fetchone()
+    db.close()
+    return user
 
 def get_weather_data():
     """Get weather data for Tampa, FL"""
@@ -200,6 +194,7 @@ def login_required(f):
     @wraps(f)
     def decorated_function(*args, **kwargs):
         if 'user_id' not in session:
+            flash('Please log in to access this page.', 'error')
             return redirect(url_for('login'))
         return f(*args, **kwargs)
     return decorated_function
@@ -210,6 +205,7 @@ def role_required(allowed_roles):
         @wraps(f)
         def decorated_function(*args, **kwargs):
             if 'user_id' not in session:
+                flash('Please log in to access this page.', 'error')
                 return redirect(url_for('login'))
             
             db = get_db()
@@ -226,9 +222,6 @@ def role_required(allowed_roles):
 
 # Initialize database
 init_db()
-
-# Register API blueprint
-app.register_blueprint(api_bp, url_prefix='/api')
 
 @app.route('/')
 def home():
@@ -322,10 +315,10 @@ def logout():
 @app.route('/dashboard')
 @login_required
 def dashboard():
-    db = get_db()
+    user = get_user_data()
+    weather = get_weather_data()
     
-    # Get user info
-    user = db.execute('SELECT * FROM users WHERE id = ?', (session['user_id'],)).fetchone()
+    db = get_db()
     
     # Get dashboard stats
     total_incidents = db.execute('SELECT COUNT(*) FROM incidents').fetchone()[0]
@@ -341,17 +334,15 @@ def dashboard():
     
     db.close()
     
-    weather_data = get_weather_data()
-    
     return render_template('dashboard.html',
                          user=user,
+                         weather=weather,
                          total_incidents=total_incidents,
                          active_incidents=active_incidents,
                          total_responders=total_responders,
                          available_responders=available_responders,
                          recent_incidents=recent_incidents,
-                         notifications=notifications,
-                         weather=weather_data)
+                         notifications=notifications)
 
 @app.route('/admin')
 @login_required
@@ -377,16 +368,10 @@ def admin_panel():
                          total_responders=total_responders,
                          total_equipment=total_equipment)
 
-
-
 @app.route('/uploads/<filename>')
 def uploaded_file(filename):
     """Serve uploaded files"""
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
-
-@app.route('/<path:filename>')
-def serve_frontend(filename):
-    return send_from_directory('../frontend', filename)
 
 @app.route('/api/weather')
 def weather():
@@ -396,17 +381,5 @@ def weather():
         return jsonify(weather_data)
     return jsonify({'error': 'Weather data unavailable'}), 500
 
-@app.route('/api/geocode', methods=['POST'])
-def geocode():
-    """Geocode a location"""
-    data = request.get_json()
-    if not data or 'location' not in data:
-        return jsonify({'error': 'Location required'}), 400
-    
-    lat, lng = get_geolocation(data['location'])
-    if lat and lng:
-        return jsonify({'latitude': lat, 'longitude': lng})
-    return jsonify({'error': 'Location not found'}), 404
-
 if __name__ == '__main__':
-    app.run(debug=True) 
+    app.run(debug=True, port=3002) 

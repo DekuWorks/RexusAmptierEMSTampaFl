@@ -1,6 +1,6 @@
 # EMS Tampa-FL Amptier Emergency Management System
 
-![Rexus Logo](frontend/assets/rexus-logo.png) ![Amptier Logo](frontend/assets/amptier-logo.png)
+![Rexus Logo](RexusOps360.API/wwwroot/images/rexus.png) ![Amptier Logo](RexusOps360.API/wwwroot/images/amptier.png)
 
 A comprehensive Emergency Management System designed for Tampa, Florida, featuring real-time incident management, responder coordination, equipment tracking, interactive mapping, and robust event management capabilities. Powered by Rexus and Amptier.
 
@@ -8,18 +8,18 @@ A comprehensive Emergency Management System designed for Tampa, Florida, featuri
 
 ### 🔗 Branding & Integration
 - **Rexus & Amptier Branding**: Unified branding across all pages
-- **RexusOps360 Integration**: Ready for advanced enterprise features
+- **RexusOps360 Integration**: Advanced enterprise features with ASP.NET Core
 
 ### 🔐 Authentication & User Management
 - **Multi-role User System**: Admin, Dispatcher, Responder, and Public User roles
-- **Secure Login/Registration**: Password hashing and session management
+- **Secure Login/Registration**: JWT-based authentication with ASP.NET Core Identity
 - **Role-based Access Control**: Different permissions for different user types
 - **User Dashboard**: Personalized views based on user role
 - **Admin Panel**: Complete user management and system administration
 
 ### 🚨 Incident Management
 - **Real-time Incident Reporting**: Create and track emergency incidents
-- **Geolocation Integration**: Automatic location mapping using Geopy
+- **Geolocation Integration**: Automatic location mapping
 - **File Upload Support**: Attach photos and documents to incidents
 - **Priority Classification**: High, Medium, Low priority levels
 - **Status Tracking**: Active, In Progress, Resolved status updates
@@ -36,21 +36,22 @@ A comprehensive Emergency Management System designed for Tampa, Florida, featuri
 - **Category Classification**: Medical, Transport, Communication, Safety equipment
 - **Availability Monitoring**: Real-time availability status
 - **Location Tracking**: Equipment storage and deployment locations
+- **Barcode Scanning**: QR code and barcode support for equipment tracking
 
 ### 🗺️ Interactive Mapping
-- **Leaflet Maps Integration**: Interactive incident location mapping
+- **Interactive Maps**: Incident location mapping
 - **Real-time Updates**: Live incident location updates
 - **Priority Visualization**: Color-coded markers by incident priority
 - **Geolocation Services**: Automatic coordinate generation
 
 ### 📊 Analytics & Reporting
 - **Dashboard Statistics**: Real-time system metrics
-- **Chart.js Integration**: Visual analytics and reporting
+- **Visual Analytics**: Charts and reporting
 - **Incident Analytics**: Category breakdown and timeline analysis
 - **Performance Metrics**: Response time and efficiency tracking
 
 ### 🌤️ Weather Integration
-- **OpenWeatherMap API**: Real-time weather data for Tampa, FL
+- **Weather API Integration**: Real-time weather data for Tampa, FL
 - **Weather Widget**: Current conditions display
 - **Environmental Factors**: Weather impact on emergency response
 
@@ -60,22 +61,12 @@ A comprehensive Emergency Management System designed for Tampa, Florida, featuri
 - **Area-specific Messages**: Targeted notifications by location
 - **Auto-refresh**: Automatic notification updates
 
-### 📅 Event Management (Planned/Prototype)
-- **Multi-event Support**: Manage multiple concurrent events (in-person, virtual, hybrid)
-- **Session Scheduling**: Plan sessions, speakers, and agendas
-- **Registration & Payment**: Online attendee registration, group registration, payment processing (future)
-- **Check-in Functionality**: On-site or virtual check-in (future)
-- **Communication Tools**: Email invites, reminders, calendar integration
-- **Travel & Lodging**: Collect travel preferences, manage accommodations
-- **Analytics & Reporting**: Real-time attendee data, exportable reports
-- **Role-based Event Access**: Admin, organizer, attendee roles
-
 ## 🚀 Quick Start
 
 ### Prerequisites
-- Python 3.8+
-- SQLite3
+- .NET 9.0 SDK
 - Modern web browser
+- Visual Studio 2022 or VS Code (recommended)
 
 ### Installation
 
@@ -85,34 +76,31 @@ A comprehensive Emergency Management System designed for Tampa, Florida, featuri
    cd EMS_Tampa-FL_Amptier
    ```
 
-2. **Install dependencies**
+2. **Navigate to the API project**
    ```bash
-   pip install -r requirements.txt
+   cd RexusOps360.API
    ```
 
-3. **Set up environment variables**
+3. **Restore dependencies**
    ```bash
-   # Create .env file
-   echo "WEATHER_API_KEY=your_openweathermap_api_key" > .env
-   echo "SECRET_KEY=your_secret_key_here" >> .env
+   dotnet restore
    ```
 
-4. **Initialize the database**
+4. **Build the project**
    ```bash
-   cd backend
-   python app.py
+   dotnet build
    ```
 
-5. **Start the application**
+5. **Run the application**
    ```bash
-   python app.py
+   dotnet run
    ```
 
 6. **Access the system**
-   - Backend API: http://localhost:5000
-   - Frontend Dashboard: http://localhost:5000/frontend/index.html
-   - Login Page: http://localhost:5000/login
-   - Admin Panel: http://localhost:5000/admin
+   - Dashboard: http://localhost:5169/web/dashboard
+   - Login Page: http://localhost:5169/web/login
+   - Register Page: http://localhost:5169/web/register
+   - API Documentation: http://localhost:5169 (Swagger UI)
 
 ## 👤 User Roles & Access
 
@@ -160,24 +148,32 @@ A comprehensive Emergency Management System designed for Tampa, Florida, featuri
 ## 🔌 API Endpoints
 
 ### Authentication
-- `POST /login` - User login
-- `POST /register` - User registration
-- `GET /logout` - User logout
-- `GET /dashboard` - User dashboard
+- `POST /api/auth/login` - User login
+- `POST /api/auth/register` - User registration
+- `GET /api/auth/logout` - User logout
+
+### Web Pages
+- `GET /web/dashboard` - Main dashboard
+- `GET /web/login` - Login page
+- `GET /web/register` - Registration page
 
 ### Incidents
 - `GET /api/incidents` - Get all incidents (filtered by role)
 - `POST /api/incidents` - Create new incident
-- `PUT /api/incidents/<id>` - Update incident (admin/dispatcher/responder)
-- `DELETE /api/incidents/<id>` - Delete incident (admin only)
+- `PUT /api/incidents/{id}` - Update incident
+- `DELETE /api/incidents/{id}` - Delete incident (admin only)
 
 ### Responders
 - `GET /api/responders` - Get all responders
-- `POST /api/responders` - Add new responder (admin/dispatcher)
+- `POST /api/responders` - Add new responder
+- `PUT /api/responders/{id}` - Update responder
+- `DELETE /api/responders/{id}` - Delete responder
 
 ### Equipment
 - `GET /api/equipment` - Get all equipment
-- `POST /api/equipment` - Add new equipment (admin/dispatcher)
+- `POST /api/equipment` - Add new equipment
+- `PUT /api/equipment/{id}` - Update equipment
+- `DELETE /api/equipment/{id}` - Delete equipment
 
 ### Analytics
 - `GET /api/dashboard/stats` - Get dashboard statistics
@@ -188,87 +184,64 @@ A comprehensive Emergency Management System designed for Tampa, Florida, featuri
 
 ### Notifications
 - `GET /api/notifications` - Get notifications
-- `POST /api/notifications` - Create notification (admin/dispatcher)
+- `POST /api/notifications` - Create notification
 
-## 🗄️ Database Schema
+## 🗄️ Data Models
 
-### Users Table
-```sql
-CREATE TABLE users (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    username TEXT NOT NULL UNIQUE,
-    email TEXT NOT NULL UNIQUE,
-    password_hash TEXT NOT NULL,
-    full_name TEXT NOT NULL,
-    role TEXT NOT NULL DEFAULT 'public',
-    phone TEXT,
-    address TEXT,
-    is_active BOOLEAN DEFAULT 1,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    last_login DATETIME
-);
+### User Model
+```csharp
+public class User
+{
+    public int Id { get; set; }
+    public string Username { get; set; } = string.Empty;
+    public string Email { get; set; } = string.Empty;
+    public string FullName { get; set; } = string.Empty;
+    public string Role { get; set; } = "Public";
+    public string? Phone { get; set; }
+    public string? Address { get; set; }
+    public bool IsActive { get; set; } = true;
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime? LastLogin { get; set; }
+}
 ```
 
-### Incidents Table
-```sql
-CREATE TABLE incidents (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    type TEXT NOT NULL,
-    location TEXT NOT NULL,
-    description TEXT,
-    priority TEXT NOT NULL,
-    status TEXT DEFAULT 'active',
-    latitude REAL,
-    longitude REAL,
-    photo_path TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    updated_at DATETIME DEFAULT CURRENT_TIMESTAMP,
-    assigned_responders TEXT,
-    equipment_needed TEXT,
-    reported_by TEXT,
-    user_id INTEGER
-);
+### Incident Model
+```csharp
+public class Incident
+{
+    public int Id { get; set; }
+    public string Type { get; set; } = string.Empty;
+    public string Location { get; set; } = string.Empty;
+    public string? Description { get; set; }
+    public string Priority { get; set; } = string.Empty;
+    public string Status { get; set; } = "Active";
+    public double? Latitude { get; set; }
+    public double? Longitude { get; set; }
+    public string? PhotoPath { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+    public DateTime UpdatedAt { get; set; } = DateTime.UtcNow;
+    public string? AssignedResponders { get; set; }
+    public string? EquipmentNeeded { get; set; }
+    public string? ReportedBy { get; set; }
+    public int? UserId { get; set; }
+}
 ```
 
-### Responders Table
-```sql
-CREATE TABLE responders (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    role TEXT NOT NULL,
-    contact_number TEXT NOT NULL,
-    current_location TEXT,
-    status TEXT DEFAULT 'available',
-    specializations TEXT,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-### Equipment Table
-```sql
-CREATE TABLE equipment (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    name TEXT NOT NULL,
-    type TEXT NOT NULL,
-    quantity INTEGER NOT NULL,
-    available_quantity INTEGER NOT NULL,
-    location TEXT,
-    status TEXT DEFAULT 'available',
-    last_maintenance DATETIME,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
-```
-
-### Notifications Table
-```sql
-CREATE TABLE notifications (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    title TEXT NOT NULL,
-    message TEXT NOT NULL,
-    category TEXT NOT NULL,
-    area TEXT NOT NULL,
-    created_at DATETIME DEFAULT CURRENT_TIMESTAMP
-);
+### Equipment Model
+```csharp
+public class Equipment
+{
+    public int Id { get; set; }
+    public string Name { get; set; } = string.Empty;
+    public string Type { get; set; } = string.Empty;
+    public int Quantity { get; set; }
+    public int AvailableQuantity { get; set; }
+    public string Location { get; set; } = string.Empty;
+    public string Barcode { get; set; } = string.Empty;
+    public string Status { get; set; } = "Available";
+    public DateTime? LastMaintenance { get; set; }
+    public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+}
 ```
 
 ## 🎨 Frontend Features
@@ -276,7 +249,7 @@ CREATE TABLE notifications (
 ### Modern UI/UX
 - **Responsive Design**: Mobile-friendly interface
 - **Glass Morphism**: Modern glass-like design elements
-- **Real-time Updates**: Auto-refresh every 30 seconds
+- **Real-time Updates**: Auto-refresh functionality
 - **Interactive Elements**: Hover effects and animations
 - **Role-based UI**: Different interfaces for different user types
 
@@ -288,26 +261,33 @@ CREATE TABLE notifications (
 - **Notification System**: Toast-style notifications
 
 ### Maps & Analytics
-- **Leaflet Maps**: Interactive incident mapping
-- **Chart.js Integration**: Visual analytics and reporting
+- **Interactive Maps**: Incident mapping
+- **Visual Analytics**: Charts and reporting
 - **Real-time Data**: Live updates from backend
 - **Responsive Charts**: Mobile-optimized visualizations
 
 ## 🔧 Configuration
 
 ### Environment Variables
-```bash
-# Required
-WEATHER_API_KEY=your_openweathermap_api_key
-SECRET_KEY=your_secret_key_here
-
-# Optional
-FLASK_ENV=development
-FLASK_DEBUG=1
+```json
+{
+  "Jwt": {
+    "Key": "YourSuperSecretKeyHere12345678901234567890",
+    "Issuer": "RexusOps360",
+    "Audience": "RexusOps360Users"
+  },
+  "Logging": {
+    "LogLevel": {
+      "Default": "Information",
+      "Microsoft.AspNetCore": "Warning"
+    }
+  },
+  "AllowedHosts": "*"
+}
 ```
 
 ### API Configuration
-- **Base URL**: http://localhost:5000
+- **Base URL**: http://localhost:5169
 - **API Prefix**: /api
 - **CORS**: Enabled for development
 - **File Upload**: 16MB max file size
@@ -316,22 +296,22 @@ FLASK_DEBUG=1
 ## 🛡️ Security Features
 
 ### Authentication
-- **Password Hashing**: Secure password storage using Werkzeug
-- **Session Management**: Flask session-based authentication
+- **JWT Authentication**: Secure token-based authentication
+- **Password Hashing**: Secure password storage
 - **Role-based Access**: Decorator-based permission system
 - **Input Validation**: Server-side validation for all inputs
 
 ### Data Protection
-- **SQL Injection Prevention**: Parameterized queries
+- **SQL Injection Prevention**: Entity Framework parameterized queries
 - **XSS Protection**: Input sanitization
-- **CSRF Protection**: Form token validation
+- **CSRF Protection**: Anti-forgery token validation
 - **File Upload Security**: File type and size validation
 
 ## 📱 Usage Examples
 
 ### Reporting an Incident (Public User)
-1. Navigate to the frontend dashboard
-2. Click on "Incidents" tab
+1. Navigate to http://localhost:5169/web/dashboard
+2. Click on "Report Incident" button
 3. Fill out the incident form with details
 4. Upload any relevant photos
 5. Submit the incident
@@ -339,7 +319,7 @@ FLASK_DEBUG=1
 
 ### Managing Incidents (Admin/Dispatcher)
 1. Login with admin credentials
-2. Access the admin panel
+2. Access the dashboard
 3. View all incidents in the system
 4. Assign responders to incidents
 5. Update incident status
@@ -381,51 +361,46 @@ FLASK_DEBUG=1
 ### Current Performance
 - **Response Time**: < 2 seconds for API calls
 - **Concurrent Users**: Supports 100+ simultaneous users
-- **Database**: SQLite for development, scalable to PostgreSQL
+- **Database**: In-memory store for development, scalable to SQL Server/PostgreSQL
 - **File Storage**: Local storage, scalable to cloud storage
 
 ### Scalability Options
-- **Database**: Migrate to PostgreSQL for production
+- **Database**: Migrate to SQL Server or PostgreSQL for production
 - **Caching**: Redis integration for improved performance
 - **Load Balancing**: Multiple server instances
-- **Cloud Deployment**: AWS/Azure/GCP ready
+- **Cloud Deployment**: Azure/AWS/GCP ready
 
 ## 🐛 Troubleshooting
 
 ### Common Issues
 
-1. **Database Connection Error**
+1. **Build Errors**
    ```bash
-   # Check if database file exists
-   ls -la backend/ems_tampa.db
-   
-   # Reinitialize database
-   python backend/app.py
+   # Clean and rebuild
+   dotnet clean
+   dotnet build
    ```
 
-2. **Weather API Not Working**
+2. **Port Already in Use**
    ```bash
-   # Check API key in .env file
-   cat .env | grep WEATHER_API_KEY
+   # Check what's using the port
+   netstat -ano | findstr :5169
    
-   # Test API key
-   curl "https://api.openweathermap.org/data/2.5/weather?q=Tampa,FL&appid=YOUR_API_KEY"
+   # Kill the process or change port in launchSettings.json
    ```
 
-3. **File Upload Issues**
+3. **Static Files Not Loading**
    ```bash
-   # Check uploads directory
-   ls -la backend/uploads/
+   # Check if files exist in wwwroot
+   ls RexusOps360.API/wwwroot/images/
    
-   # Create directory if missing
-   mkdir -p backend/uploads
+   # Verify UseStaticFiles() is in Program.cs
    ```
 
 4. **Authentication Problems**
    ```bash
-   # Clear browser cache
-   # Check session cookies
-   # Verify user credentials in database
+   # Check JWT configuration in appsettings.json
+   # Verify user credentials in InMemoryStore
    ```
 
 ## 🤝 Contributing
@@ -482,9 +457,9 @@ For support and questions:
 - [ ] Add live incident heatmap using Mapbox or Leaflet
 
 # 📱 REAL-TIME FEATURES
-- [ ] Integrate WebSockets for real-time incident updates
+- [ ] Integrate SignalR for real-time incident updates
 - [ ] Add Firebase push notifications for dispatch alerts
-- [ ] Implement live chat between dispatcher and responder (optional socket-based)
+- [ ] Implement live chat between dispatcher and responder
 
 # 📍 LOCATION-BASED CAPABILITIES
 - [ ] Add GPS tracking for responders (mock location or future mobile integration)
@@ -497,16 +472,19 @@ For support and questions:
 - [ ] Display incident lifecycle timeline (status updates visualised)
 
 # 🧪 TESTING & MAINTENANCE TOOLS
-- [ ] Create 'Test Mode' toggle to simulate incidents for training
-- [ ] Build system health dashboard (API uptime, DB status, error logs)
-- [ ] Add incident replay/log viewer with timestamped activity
+- [ ] Add unit tests for all controllers and services
+- [ ] Implement integration tests for API endpoints
+- [ ] Add automated deployment pipeline
+- [ ] Create comprehensive API documentation
 
-# 🌐 DEVOPS & ARCHITECTURE
-- [ ] Refactor backend to support multi-tenant setup (Tampa, Orlando, etc.)
-- [ ] Set up GitHub Actions CI/CD pipeline (build, test, deploy)
-- [ ] Add Docker + Docker Compose for local development and portability
+# 🎨 UI/UX IMPROVEMENTS
+- [ ] Add dark mode toggle
+- [ ] Implement responsive mobile-first design
+- [ ] Add accessibility features (WCAG compliance)
+- [ ] Create custom dashboard widgets
 
-# 🧠 SMART FEATURES (FUTURE / STRETCH)
-- [ ] Build basic ML model to predict incident severity from report input
-- [ ] Auto-tag incident types from freeform text (using regex or ML)
-- [ ] Add support for audio uploads + speech-to-text transcription logs 
+# 🔄 MIGRATION & DEPLOYMENT
+- [ ] Set up production database (SQL Server/PostgreSQL)
+- [ ] Configure CI/CD pipeline
+- [ ] Set up monitoring and logging
+- [ ] Create deployment documentation 

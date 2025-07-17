@@ -33,6 +33,22 @@
             max-width: 500px;
         }
 
+        .logo-section {
+            text-align: center;
+            margin-bottom: 20px;
+        }
+
+        .logo-bar {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+        }
+
+        .logo-img {
+            width: 100px; /* Adjust as needed */
+            height: auto;
+        }
+
         .logo {
             width: 80px;
             height: 80px;
@@ -209,16 +225,28 @@
 </head>
 <body>
     <div class="register-container">
-        <div style="display: flex; justify-content: center; align-items: center; gap: 16px; margin-bottom: 16px;">
-            <img src= "/frontend/assets/rexus_logo.png" alt="Rexus Logo" style="height:48px;">
-            <img src="/frontend/assets/amptier_logo.png" alt="Amptier Logo" style="height:40px;">
+        <div class="logo-section">
+            <div class="logo-bar">
+                <img src="{{ url_for('static', filename='images/rexus.png') }}" alt="Rexus Logo" class="logo-img">
+                <img src="{{ url_for('static', filename='images/amptier.png') }}" alt="Amptier Logo" class="logo-img">
+            </div>
         </div>
         <div class="logo">
             <i class="fas fa-user-plus"></i>
         </div>
         <h1>Create Account</h1>
         <p>Join EMS Tampa-FL Amptier Emergency Management System</p>
-        <div id="flash-messages" style="margin-bottom:20px;"></div>
+
+        <div class="flash-messages">
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% for category, message in messages %}
+                    <div class="flash-message flash-{{ category }}">
+                        {{ message }}
+                    </div>
+                {% endfor %}
+            {% endwith %}
+        </div>
+
         <div class="role-info">
             <h3><i class="fas fa-info-circle"></i> Account Types</h3>
             <ul>
@@ -228,7 +256,8 @@
                 <li><strong>Admin:</strong> Full system access (admin approval required)</li>
             </ul>
         </div>
-        <form id="registerForm">
+
+        <form method="POST" action="{{ url_for('register') }}">
             <div class="form-grid">
                 <div class="form-group">
                     <label for="username">Username <span class="required">*</span></label>
@@ -239,6 +268,7 @@
                     <input type="email" id="email" name="email" required placeholder="Enter your email">
                 </div>
             </div>
+
             <div class="form-grid">
                 <div class="form-group">
                     <label for="full_name">Full Name <span class="required">*</span></label>
@@ -249,10 +279,12 @@
                     <input type="tel" id="phone" name="phone" placeholder="Enter your phone number">
                 </div>
             </div>
+
             <div class="form-group full-width">
                 <label for="address">Address</label>
                 <input type="text" id="address" name="address" placeholder="Enter your address">
             </div>
+
             <div class="form-grid">
                 <div class="form-group">
                     <label for="password">Password <span class="required">*</span></label>
@@ -263,25 +295,30 @@
                     <input type="password" id="confirm_password" name="confirm_password" required placeholder="Confirm your password">
                 </div>
             </div>
+
             <button type="submit" class="btn">
                 <i class="fas fa-user-plus"></i> Create Account
             </button>
         </form>
+
         <div class="login-link">
-            Already have an account? <a href="login.html">Sign in here</a>
+            Already have an account? <a href="{{ url_for('login') }}">Sign in here</a>
         </div>
     </div>
+
     <script>
         // Password confirmation validation
         document.getElementById('confirm_password').addEventListener('input', function() {
             const password = document.getElementById('password').value;
             const confirmPassword = this.value;
+            
             if (password !== confirmPassword) {
                 this.setCustomValidity('Passwords do not match');
             } else {
                 this.setCustomValidity('');
             }
         });
+
         document.getElementById('password').addEventListener('input', function() {
             const confirmPassword = document.getElementById('confirm_password');
             if (confirmPassword.value) {
@@ -291,11 +328,6 @@
                     confirmPassword.setCustomValidity('');
                 }
             }
-        });
-        document.getElementById('registerForm').addEventListener('submit', function(e) {
-            e.preventDefault();
-            // TODO: Implement registration logic (API call)
-            alert('Registration submitted!');
         });
     </script>
 </body>
