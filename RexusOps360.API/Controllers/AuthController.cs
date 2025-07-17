@@ -84,7 +84,8 @@ namespace RexusOps360.API.Controllers
                 PasswordHash = passwordHash,
                 Role = request.Role ?? "Dispatcher",
                 TenantId = request.TenantId,
-                FullName = request.FullName,
+                FirstName = request.FullName?.Split(' ').FirstOrDefault() ?? "",
+                LastName = request.FullName?.Split(' ').Skip(1).FirstOrDefault() ?? "",
                 Email = request.Email,
                 CreatedAt = DateTime.UtcNow
             };
@@ -157,7 +158,8 @@ namespace RexusOps360.API.Controllers
                     PasswordHash = HashPassword("admin123"),
                     Role = "Admin",
                     TenantId = "tampa-fl",
-                    FullName = "System Administrator",
+                    FirstName = "System",
+                    LastName = "Administrator",
                     Email = "admin@rexusops360.com",
                     CreatedAt = DateTime.UtcNow.AddDays(-30)
                 },
@@ -168,7 +170,8 @@ namespace RexusOps360.API.Controllers
                     PasswordHash = HashPassword("dispatch123"),
                     Role = "Dispatcher",
                     TenantId = "tampa-fl",
-                    FullName = "Emergency Dispatcher",
+                    FirstName = "Emergency",
+                    LastName = "Dispatcher",
                     Email = "dispatch@rexusops360.com",
                     CreatedAt = DateTime.UtcNow.AddDays(-15)
                 },
@@ -179,7 +182,8 @@ namespace RexusOps360.API.Controllers
                     PasswordHash = HashPassword("respond123"),
                     Role = "Responder",
                     TenantId = "tampa-fl",
-                    FullName = "Emergency Responder",
+                    FirstName = "Emergency",
+                    LastName = "Responder",
                     Email = "responder@rexusops360.com",
                     CreatedAt = DateTime.UtcNow.AddDays(-10)
                 }

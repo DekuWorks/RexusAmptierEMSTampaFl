@@ -45,6 +45,9 @@ namespace RexusOps360.API.Models
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
 
         public DateTime? LastLoginAt { get; set; }
+
+        // Computed property for full name
+        public string FullName => $"{FirstName} {LastName}".Trim();
     }
 
     public class LoginRequest

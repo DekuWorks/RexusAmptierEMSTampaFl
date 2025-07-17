@@ -17,7 +17,15 @@ builder.Services.AddSignalR();
 
 // Add Database Context
 builder.Services.AddDbContext<EmsDbContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+{
+    var connectionString = builder.Configuration.GetConnectionString("DefaultConnection");
+    if (string.IsNullOrEmpty(connectionString))
+    {
+        // Fallback for CI environment
+        connectionString = builder.Configuration.GetConnectionString("SqlServerConnection");
+    }
+    options.UseSqlServer(connectionString);
+});
 
 // Add Services
 builder.Services.AddScoped<IAuditService, AuditService>();
@@ -27,6 +35,9 @@ builder.Services.AddScoped<IShiftSchedulingService, ShiftSchedulingService>();
 builder.Services.AddScoped<IIncidentClusteringService, IncidentClusteringService>();
 builder.Services.AddScoped<IHotspotDetectionService, HotspotDetectionService>();
 builder.Services.AddScoped<ISystemIntegrationService, SystemIntegrationService>();
+
+// Register JWT Service
+builder.Services.AddScoped<IJwtService, JwtService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -72,18 +83,6 @@ builder.Services.AddSwaggerGen(c =>
         }
     });
 });
-
-// Register JWT Service
-builder.Services.AddScoped<IJwtService, JwtService>();
-
-// Register Notification Service
-builder.Services.AddScoped<INotificationService, NotificationService>();
-
-// Register GPS Tracking Service
-builder.Services.AddScoped<IGpsTrackingService, GpsTrackingService>();
-
-// Register Shift Scheduling Service
-builder.Services.AddScoped<IShiftSchedulingService, ShiftSchedulingService>();
 
 // Add JWT Authentication
 builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
@@ -148,8 +147,16 @@ app.MapGet("/health", () => new { status = "healthy", timestamp = DateTime.UtcNo
 // Ensure database is created and migrations are applied
 using (var scope = app.Services.CreateScope())
 {
-    var context = scope.ServiceProvider.GetRequiredService<EmsDbContext>();
-    context.Database.EnsureCreated();
+    try
+    {
+        var context = scope.ServiceProvider.GetRequiredService<EmsDbContext>();
+        context.Database.EnsureCreated();
+    }
+    catch (Exception ex)
+    {
+        // Log the error but don't fail the application startup
+        Console.WriteLine($"Database initialization error: {ex.Message}");
+    }
 }
 
 app.Run();

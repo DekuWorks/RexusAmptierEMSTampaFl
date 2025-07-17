@@ -35,5 +35,8 @@ namespace RexusOps360.API.Models
         public DateTime? LastMaintenance { get; set; }
         
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        
+        [StringLength(100)]
+        public string? Barcode { get; set; }
     }
 } 

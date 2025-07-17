@@ -13,17 +13,7 @@ namespace RexusOps360.API.Services
         Task<List<AuditLog>> GetSecurityEventsAsync(DateTime? startDate = null, DateTime? endDate = null);
     }
 
-    public class AuditLog
-    {
-        public int Id { get; set; }
-        public string UserId { get; set; } = string.Empty;
-        public string Action { get; set; } = string.Empty;
-        public string Details { get; set; } = string.Empty;
-        public string IpAddress { get; set; } = string.Empty;
-        public string EventType { get; set; } = string.Empty; // "UserAction", "SystemEvent", "SecurityEvent"
-        public string Severity { get; set; } = string.Empty; // "Low", "Medium", "High", "Critical"
-        public DateTime Timestamp { get; set; } = DateTime.UtcNow;
-    }
+
 
     public class AuditService : IAuditService
     {
@@ -42,9 +32,11 @@ namespace RexusOps360.API.Services
                 Action = action,
                 Details = details,
                 IpAddress = ipAddress,
-                EventType = "UserAction",
-                Severity = "Low",
-                Timestamp = DateTime.UtcNow
+                EntityType = "UserAction",
+                EntityId = userId,
+                Severity = "Info",
+                Timestamp = DateTime.UtcNow,
+                IsSuccessful = true
             };
 
             _context.AuditLogs.Add(auditLog);
@@ -59,9 +51,11 @@ namespace RexusOps360.API.Services
                 Action = eventType,
                 Details = details,
                 IpAddress = "SYSTEM",
-                EventType = "SystemEvent",
+                EntityType = "SystemEvent",
+                EntityId = "SYSTEM",
                 Severity = severity,
-                Timestamp = DateTime.UtcNow
+                Timestamp = DateTime.UtcNow,
+                IsSuccessful = true
             };
 
             _context.AuditLogs.Add(auditLog);
@@ -76,9 +70,11 @@ namespace RexusOps360.API.Services
                 Action = eventType,
                 Details = details,
                 IpAddress = ipAddress,
-                EventType = "SecurityEvent",
-                Severity = "High",
-                Timestamp = DateTime.UtcNow
+                EntityType = "SecurityEvent",
+                EntityId = userId,
+                Severity = "Error",
+                Timestamp = DateTime.UtcNow,
+                IsSuccessful = false
             };
 
             _context.AuditLogs.Add(auditLog);
@@ -103,7 +99,7 @@ namespace RexusOps360.API.Services
 
         public async Task<List<AuditLog>> GetSecurityEventsAsync(DateTime? startDate = null, DateTime? endDate = null)
         {
-            var query = _context.AuditLogs.Where(a => a.EventType == "SecurityEvent");
+            var query = _context.AuditLogs.Where(a => a.EntityType == "SecurityEvent");
 
             if (startDate.HasValue)
                 query = query.Where(a => a.Timestamp >= startDate.Value);
