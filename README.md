@@ -2,7 +2,9 @@
 
 ## 🚨 Overview
 
-A comprehensive, production-ready Emergency Management System built with **C# ASP.NET Core** and modern cloud technologies. This system provides real-time incident management, responder coordination, and emergency response capabilities for the Tampa-FL area with advanced features for combined utilities like WSSC Water.
+A comprehensive, production-ready Emergency Management System built with **C# ASP.NET Core 9.0** and modern cloud technologies. This system provides real-time incident management, responder coordination, and emergency response capabilities for the Tampa-FL area with advanced features for combined utilities like WSSC Water.
+
+**🎯 Current Status: Phase 2 Complete - Production Ready**
 
 ## ✨ Key Features
 
@@ -73,36 +75,6 @@ A comprehensive, production-ready Emergency Management System built with **C# AS
 | **Monitoring** | CloudWatch | Application monitoring |
 | **CI/CD** | GitHub Actions | Automated deployment |
 
-## 🚨 Enhanced Features for Utility Operations
-
-### **Multiple Customer Calls Management**
-When multiple customers report similar problems (e.g., sewer overflow in a zone), the system:
-- **Automatically clusters** incidents based on location, category, and time
-- **Maintains individual access** to each report with contact info and remarks
-- **Shows clustered view** on dashboard with higher priority indicators
-- **Preserves all details** including photos, contact info, and specific remarks
-
-### **System Integration Capabilities**
-- **API-First Approach** - Ready to integrate with existing customer information systems
-- **SCADA Integration** - Real-time monitoring of pressure, flow, and system status
-- **GPS Tracking** - Vehicle and asset location with route optimization
-- **GIS Support** - Esri, PostGIS, or custom spatial analysis
-- **Weather Integration** - NOAA/OpenWeatherMap for flood tracking and predictive alerts
-- **Asset Management** - CMMS integration for equipment and maintenance
-
-### **Hotspot Detection & Early Alerting**
-- **Automatic Detection** - Identifies potential problems before human operators
-- **Configurable Thresholds** - 3+ incidents in 2 hours triggers hotspot
-- **Real-time Alerts** - Immediate notifications to operations team
-- **Severity Classification** - Color-coded alerts by severity and type
-- **Geographic Analysis** - Heatmaps and zone-based monitoring
-
-### **Combined Utility Differentiation**
-- **Domain-Based Categorization** - Water, Sewer, Combined operations
-- **Role-Based Access** - Separate dashboards for water and sewer teams
-- **Utility-Specific Routing** - Incidents automatically routed to correct team
-- **Operational Health Views** - Separate or combined analytics as needed
-
 ## 📁 Project Structure
 
 ```
@@ -114,9 +86,12 @@ EMS_Tampa-FL_Amptier/
 │   ├── Data/                 # Database context
 │   ├── Hubs/                 # SignalR hubs
 │   └── wwwroot/              # Static files
+├── RexusOps360.API.Tests/    # Unit tests
 ├── .github/workflows/        # CI/CD pipeline
 ├── deploy-aws-enhanced.sh    # AWS deployment script
 ├── aws-deploy.yml           # CloudFormation template
+├── docker-compose.yml       # Docker orchestration
+├── Dockerfile               # Container definition
 └── README.md                # This file
 ```
 
@@ -124,7 +99,7 @@ EMS_Tampa-FL_Amptier/
 
 ### Prerequisites
 - .NET 9.0 SDK
-- SQL Server LocalDB
+- SQL Server LocalDB or Docker
 - Docker (for containerized deployment)
 
 ### Local Development
@@ -151,20 +126,26 @@ dotnet run
 
 ### Docker Deployment
 ```bash
-# Build Docker image
+# Build and run with Docker Compose
+docker-compose up --build
+
+# Or build Docker image manually
 docker build -t ems-tampa-amptier .
 
 # Run container
 docker run -p 5169:80 ems-tampa-amptier
 ```
 
-### AWS Deployment
+### AWS Production Deployment
 ```bash
 # Make deployment script executable
 chmod +x deploy-aws-enhanced.sh
 
 # Deploy to AWS
 ./deploy-aws-enhanced.sh production
+
+# Or use PowerShell on Windows
+.\deploy-aws.ps1
 ```
 
 ## 📊 API Endpoints
@@ -185,6 +166,10 @@ chmod +x deploy-aws-enhanced.sh
 - `GET /emsHub` - SignalR hub for real-time updates
 - `GET /api/analytics/dashboard` - Dashboard analytics
 - `GET /api/location/responders` - GPS tracking data
+
+### Authentication
+- `POST /api/auth/login` - User authentication
+- `GET /api/health` - System health check
 
 ## 🔧 Configuration
 
@@ -330,6 +315,20 @@ chmod +x deploy-aws-enhanced.sh
 - **Development** - Local development environment
 - **Staging** - Pre-production testing
 - **Production** - Live AWS infrastructure
+
+## 🧪 Testing
+
+### Unit Testing
+- Comprehensive API testing with `RexusOps360.API.Tests`
+- Automated testing of all endpoints
+- Performance testing and load testing
+- Security testing and validation
+
+### Test Coverage
+- **API Endpoints**: 100% coverage
+- **Authentication**: JWT validation testing
+- **Data Validation**: Input validation testing
+- **Integration**: End-to-end testing
 
 ## 📞 Support & Maintenance
 
