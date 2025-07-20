@@ -45,8 +45,9 @@ builder.Services.AddScoped<IIncidentClusteringService, IncidentClusteringService
 builder.Services.AddScoped<IHotspotDetectionService, HotspotDetectionService>();
 builder.Services.AddScoped<ISystemIntegrationService, SystemIntegrationService>();
 
-// Register JWT Service
+// Register Authentication Services
 builder.Services.AddScoped<IJwtService, JwtService>();
+builder.Services.AddScoped<IAuthService, AuthService>();
 
 // Configure CORS
 builder.Services.AddCors(options =>
@@ -140,6 +141,10 @@ app.UseStaticFiles();
 
 // Use CORS
 app.UseCors("AllowAll");
+
+// Add custom middleware
+app.UseRequestLogging();
+app.UseRateLimiting();
 
 // Use Authentication & Authorization
 app.UseAuthentication();

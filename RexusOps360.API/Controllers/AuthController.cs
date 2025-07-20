@@ -1,9 +1,8 @@
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.AspNetCore.Authorization;
 using RexusOps360.API.Models;
 using RexusOps360.API.Services;
 using System.Security.Claims;
-using System.Security.Cryptography;
-using System.Text;
 
 namespace RexusOps360.API.Controllers
 {
@@ -11,208 +10,394 @@ namespace RexusOps360.API.Controllers
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
     {
-        private readonly IJwtService _jwtService;
-        private readonly IConfiguration _configuration;
+        private readonly IAuthService _authService;
+        private readonly ILogger<AuthController> _logger;
 
-        public AuthController(IJwtService jwtService, IConfiguration configuration)
+        public AuthController(IAuthService authService, ILogger<AuthController> logger)
         {
-            _jwtService = jwtService;
-            _configuration = configuration;
+            _authService = authService;
+            _logger = logger;
         }
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequest request)
+        public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
-            // Validate input
-            if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
+            try
             {
-                return BadRequest(new { message = "Username and password are required" });
+                var ipAddress = GetClientIpAddress();
+                var response = await _authService.LoginAsync(request, ipAddress);
+
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
             }
-
-            // Get user from mock data (in production, this would come from database)
-            var user = GetMockUser(request.Username)!;
-            if (user == null)
+            catch (Exception ex)
             {
-                return Unauthorized(new { message = "Invalid credentials" });
+                _logger.LogError(ex, "Error in login endpoint");
+                return StatusCode(500, new ApiResponse<LoginResponse>
+                {
+                    Success = false,
+                    Message = "An internal server error occurred"
+                });
             }
-
-            // Verify password (in production, use proper password hashing)
-            if (!VerifyPassword(request.Password, user.PasswordHash))
-            {
-                return Unauthorized(new { message = "Invalid credentials" });
-            }
-
-            // Generate JWT token
-            var token = _jwtService.GenerateToken(user);
-
-            // Update last login
-            user.LastLoginAt = DateTime.UtcNow;
-
-            var response = new LoginResponse
-            {
-                Token = token,
-                Username = user.Username,
-                Role = user.Role,
-                TenantId = user.TenantId,
-                ExpiresAt = DateTime.UtcNow.AddHours(8)
-            };
-
-            return Ok(response);
         }
 
         [HttpPost("register")]
-        public IActionResult Register([FromBody] RegisterRequest request)
+        public async Task<IActionResult> Register([FromBody] RegisterRequest request)
         {
-            // Validate input
-            if (string.IsNullOrEmpty(request.Username) || string.IsNullOrEmpty(request.Password))
+            try
             {
-                return BadRequest(new { message = "Username and password are required" });
+                var ipAddress = GetClientIpAddress();
+                var response = await _authService.RegisterAsync(request, ipAddress);
+
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
             }
-
-            // Check if user already exists (in production, check database)
-            if (GetMockUser(request.Username) != null)
+            catch (Exception ex)
             {
-                return BadRequest(new { message = "Username already exists" });
+                _logger.LogError(ex, "Error in register endpoint");
+                return StatusCode(500, new ApiResponse<LoginResponse>
+                {
+                    Success = false,
+                    Message = "An internal server error occurred"
+                });
             }
+        }
 
-            // Create new user (in production, save to database)
-            var passwordHash = HashPassword(request.Password);
-            var newUser = new User
+        [HttpPost("logout")]
+        [Authorize]
+        public async Task<IActionResult> Logout()
+        {
+            try
             {
-                Id = 999, // Mock ID
-                Username = request.Username,
-                PasswordHash = passwordHash,
-                Role = request.Role ?? "Dispatcher",
-                TenantId = request.TenantId,
-                FirstName = request.FullName?.Split(' ').FirstOrDefault() ?? "",
-                LastName = request.FullName?.Split(' ').Skip(1).FirstOrDefault() ?? "",
-                Email = request.Email,
-                CreatedAt = DateTime.UtcNow
-            };
+                var token = GetTokenFromHeader();
+                var ipAddress = GetClientIpAddress();
+                var response = await _authService.LogoutAsync(token, ipAddress);
 
-            // Generate token for new user
-            var token = _jwtService.GenerateToken(newUser);
-
-            var response = new LoginResponse
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
             {
-                Token = token,
-                Username = newUser.Username,
-                Role = newUser.Role,
-                TenantId = newUser.TenantId,
-                ExpiresAt = DateTime.UtcNow.AddHours(8)
-            };
+                _logger.LogError(ex, "Error in logout endpoint");
+                return StatusCode(500, new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "An internal server error occurred"
+                });
+            }
+        }
 
-            return Ok(response);
+        [HttpPost("refresh-token")]
+        public async Task<IActionResult> RefreshToken([FromBody] RefreshTokenRequest request)
+        {
+            try
+            {
+                var ipAddress = GetClientIpAddress();
+                var response = await _authService.RefreshTokenAsync(request.RefreshToken, ipAddress);
+
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in refresh token endpoint");
+                return StatusCode(500, new ApiResponse<LoginResponse>
+                {
+                    Success = false,
+                    Message = "An internal server error occurred"
+                });
+            }
+        }
+
+        [HttpPost("change-password")]
+        [Authorize]
+        public async Task<IActionResult> ChangePassword([FromBody] ChangePasswordRequest request)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                if (userId == null)
+                {
+                    return Unauthorized(new ApiResponse<bool>
+                    {
+                        Success = false,
+                        Message = "User not authenticated"
+                    });
+                }
+
+                var response = await _authService.ChangePasswordAsync(userId.Value, request);
+
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in change password endpoint");
+                return StatusCode(500, new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "An internal server error occurred"
+                });
+            }
+        }
+
+        [HttpPost("reset-password")]
+        public async Task<IActionResult> ResetPassword([FromBody] ResetPasswordRequest request)
+        {
+            try
+            {
+                var response = await _authService.ResetPasswordAsync(request);
+
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in reset password endpoint");
+                return StatusCode(500, new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "An internal server error occurred"
+                });
+            }
+        }
+
+        [HttpPost("reset-password-confirm")]
+        public async Task<IActionResult> ResetPasswordConfirm([FromBody] ResetPasswordConfirmRequest request)
+        {
+            try
+            {
+                var response = await _authService.ResetPasswordConfirmAsync(request);
+
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in reset password confirm endpoint");
+                return StatusCode(500, new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "An internal server error occurred"
+                });
+            }
         }
 
         [HttpGet("me")]
-        public IActionResult GetCurrentUser()
+        [Authorize]
+        public async Task<IActionResult> GetCurrentUser()
         {
-            var user = GetCurrentUserFromToken();
-            if (user == null)
+            try
             {
-                return Unauthorized(new { message = "Invalid token" });
-            }
+                var userId = GetCurrentUserId();
+                if (userId == null)
+                {
+                    return Unauthorized(new ApiResponse<User>
+                    {
+                        Success = false,
+                        Message = "User not authenticated"
+                    });
+                }
 
-            return Ok(new
+                var response = await _authService.GetUserProfileAsync(userId.Value);
+
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return NotFound(response);
+                }
+            }
+            catch (Exception ex)
             {
-                user.Id,
-                user.Username,
-                user.Role,
-                user.TenantId,
-                user.FullName,
-                user.Email,
-                user.LastLoginAt
-            });
+                _logger.LogError(ex, "Error in get current user endpoint");
+                return StatusCode(500, new ApiResponse<User>
+                {
+                    Success = false,
+                    Message = "An internal server error occurred"
+                });
+            }
         }
 
-        private User? GetCurrentUserFromToken()
+        [HttpPut("profile")]
+        [Authorize]
+        public async Task<IActionResult> UpdateProfile([FromBody] UpdateProfileRequest request)
+        {
+            try
+            {
+                var userId = GetCurrentUserId();
+                if (userId == null)
+                {
+                    return Unauthorized(new ApiResponse<User>
+                    {
+                        Success = false,
+                        Message = "User not authenticated"
+                    });
+                }
+
+                var response = await _authService.UpdateUserProfileAsync(userId.Value, request);
+
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in update profile endpoint");
+                return StatusCode(500, new ApiResponse<User>
+                {
+                    Success = false,
+                    Message = "An internal server error occurred"
+                });
+            }
+        }
+
+        [HttpPost("validate-token")]
+        public async Task<IActionResult> ValidateToken([FromBody] ValidateTokenRequest request)
+        {
+            try
+            {
+                var response = await _authService.ValidateTokenAsync(request.Token);
+
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in validate token endpoint");
+                return StatusCode(500, new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "An internal server error occurred"
+                });
+            }
+        }
+
+        [HttpPost("revoke-token")]
+        [Authorize]
+        public async Task<IActionResult> RevokeToken([FromBody] RevokeTokenRequest request)
+        {
+            try
+            {
+                var ipAddress = GetClientIpAddress();
+                var response = await _authService.RevokeTokenAsync(request.Token, ipAddress);
+
+                if (response.Success)
+                {
+                    return Ok(response);
+                }
+                else
+                {
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error in revoke token endpoint");
+                return StatusCode(500, new ApiResponse<bool>
+                {
+                    Success = false,
+                    Message = "An internal server error occurred"
+                });
+            }
+        }
+
+        #region Helper Methods
+
+        private string? GetClientIpAddress()
+        {
+            return HttpContext.Connection.RemoteIpAddress?.ToString() ??
+                   HttpContext.Request.Headers["X-Forwarded-For"].FirstOrDefault() ??
+                   HttpContext.Request.Headers["X-Real-IP"].FirstOrDefault();
+        }
+
+        private string GetTokenFromHeader()
         {
             var authHeader = Request.Headers["Authorization"].FirstOrDefault();
             if (string.IsNullOrEmpty(authHeader) || !authHeader.StartsWith("Bearer "))
             {
-                return null;
+                throw new InvalidOperationException("Invalid authorization header");
             }
 
-            var token = authHeader.Substring("Bearer ".Length);
-            var principal = _jwtService.ValidateToken(token);
-            
-            if (principal == null)
+            return authHeader.Substring("Bearer ".Length);
+        }
+
+        private int? GetCurrentUserId()
+        {
+            var userIdClaim = User.FindFirst(ClaimTypes.NameIdentifier)?.Value;
+            if (int.TryParse(userIdClaim, out var userId))
             {
-                return null;
+                return userId;
             }
 
-            var username = principal.FindFirst(ClaimTypes.Name)?.Value;
-            return GetMockUser(username ?? "");
+            return null;
         }
 
-        private User? GetMockUser(string username)
-        {
-            // Mock users for demonstration
-            var users = new List<User>
-            {
-                new User
-                {
-                    Id = 1,
-                    Username = "admin",
-                    PasswordHash = HashPassword("admin123"),
-                    Role = "Admin",
-                    TenantId = "tampa-fl",
-                    FirstName = "System",
-                    LastName = "Administrator",
-                    Email = "admin@rexusops360.com",
-                    CreatedAt = DateTime.UtcNow.AddDays(-30)
-                },
-                new User
-                {
-                    Id = 2,
-                    Username = "dispatcher",
-                    PasswordHash = HashPassword("dispatch123"),
-                    Role = "Dispatcher",
-                    TenantId = "tampa-fl",
-                    FirstName = "Emergency",
-                    LastName = "Dispatcher",
-                    Email = "dispatch@rexusops360.com",
-                    CreatedAt = DateTime.UtcNow.AddDays(-15)
-                },
-                new User
-                {
-                    Id = 3,
-                    Username = "responder",
-                    PasswordHash = HashPassword("respond123"),
-                    Role = "Responder",
-                    TenantId = "tampa-fl",
-                    FirstName = "Emergency",
-                    LastName = "Responder",
-                    Email = "responder@rexusops360.com",
-                    CreatedAt = DateTime.UtcNow.AddDays(-10)
-                }
-            };
-
-            return users.FirstOrDefault(u => u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
-        }
-
-        private string HashPassword(string password)
-        {
-            using var sha256 = SHA256.Create();
-            var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
-            return Convert.ToBase64String(hashedBytes);
-        }
-
-        private bool VerifyPassword(string password, string hash)
-        {
-            var hashedPassword = HashPassword(password);
-            return hashedPassword == hash;
-        }
+        #endregion
     }
 
-    public class RegisterRequest
+    public class ValidateTokenRequest
     {
-        public string Username { get; set; } = string.Empty;
-        public string Password { get; set; } = string.Empty;
-        public string? Role { get; set; }
-        public string? TenantId { get; set; }
-        public string? FullName { get; set; }
-        public string? Email { get; set; }
+        public string Token { get; set; } = string.Empty;
+    }
+
+    public class RevokeTokenRequest
+    {
+        public string Token { get; set; } = string.Empty;
     }
 } 
