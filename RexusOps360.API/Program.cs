@@ -49,6 +49,9 @@ builder.Services.AddScoped<ISystemIntegrationService, SystemIntegrationService>(
 builder.Services.AddScoped<IJwtService, JwtService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
 
+// Register SaaS Services
+builder.Services.AddScoped<ISaasService, SaasService>();
+
 // Configure CORS
 builder.Services.AddCors(options =>
 {
