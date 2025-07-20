@@ -52,6 +52,9 @@ builder.Services.AddScoped<IAuthService, AuthService>();
 // Register SaaS Services
 builder.Services.AddScoped<ISaasService, SaasService>();
 
+// Register Event Management Services
+builder.Services.AddScoped<IEventManagementService, EventManagementService>();
+
 // Configure CORS
 builder.Services.AddCors(options =>
 {

@@ -1,0 +1,1132 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Event Management System - RexusOps360</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --success-color: #27ae60;
+            --warning-color: #f39c12;
+            --light-bg: #ecf0f1;
+            --dark-bg: #34495e;
+        }
+
+        body {
+            background-color: var(--light-bg);
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        .navbar-brand {
+            font-weight: bold;
+            color: var(--primary-color) !important;
+        }
+
+        .sidebar {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-bg));
+            min-height: 100vh;
+            color: white;
+        }
+
+        .sidebar .nav-link {
+            color: rgba(255, 255, 255, 0.8);
+            padding: 12px 20px;
+            border-radius: 8px;
+            margin: 4px 0;
+            transition: all 0.3s ease;
+        }
+
+        .sidebar .nav-link:hover,
+        .sidebar .nav-link.active {
+            background-color: rgba(255, 255, 255, 0.1);
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .main-content {
+            padding: 20px;
+        }
+
+        .card {
+            border: none;
+            border-radius: 15px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-5px);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            border-radius: 15px 15px 0 0 !important;
+            padding: 20px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, var(--success-color), #2ecc71);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, var(--warning-color), #f1c40f);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, var(--accent-color), #c0392b);
+            border: none;
+            border-radius: 25px;
+            padding: 10px 25px;
+            font-weight: 600;
+        }
+
+        .stats-card {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .event-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .status-badge {
+            padding: 5px 15px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 600;
+        }
+
+        .status-draft { background-color: #95a5a6; color: white; }
+        .status-published { background-color: var(--success-color); color: white; }
+        .status-inprogress { background-color: var(--warning-color); color: white; }
+        .status-completed { background-color: var(--primary-color); color: white; }
+
+        .modal-content {
+            border-radius: 15px;
+            border: none;
+        }
+
+        .form-control {
+            border-radius: 10px;
+            border: 2px solid #e9ecef;
+            padding: 12px 15px;
+        }
+
+        .form-control:focus {
+            border-color: var(--secondary-color);
+            box-shadow: 0 0 0 0.2rem rgba(52, 152, 219, 0.25);
+        }
+
+        .table {
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .table thead th {
+            background: linear-gradient(135deg, var(--primary-color), var(--dark-bg));
+            color: white;
+            border: none;
+            padding: 15px;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 20px;
+        }
+
+        .spinner-border {
+            color: var(--secondary-color);
+        }
+
+        .alert {
+            border-radius: 10px;
+            border: none;
+        }
+
+        .toast {
+            border-radius: 10px;
+        }
+
+        .progress {
+            border-radius: 10px;
+            height: 8px;
+        }
+
+        .badge {
+            border-radius: 20px;
+            padding: 5px 10px;
+        }
+
+        .timeline {
+            position: relative;
+            padding-left: 30px;
+        }
+
+        .timeline::before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: var(--secondary-color);
+        }
+
+        .timeline-item {
+            position: relative;
+            margin-bottom: 20px;
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            left: -22px;
+            top: 5px;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--secondary-color);
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                min-height: auto;
+            }
+            
+            .main-content {
+                padding: 10px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-light bg-white shadow-sm">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="#">
+                <i class="fas fa-calendar-alt me-2"></i>
+                Event Management System
+            </a>
+            <div class="navbar-nav ms-auto">
+                <div class="nav-item dropdown">
+                    <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown">
+                        <i class="fas fa-user-circle me-2"></i>
+                        Admin User
+                    </a>
+                    <ul class="dropdown-menu">
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-cog me-2"></i>Settings</a></li>
+                        <li><a class="dropdown-item" href="#"><i class="fas fa-sign-out-alt me-2"></i>Logout</a></li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+    <div class="container-fluid">
+        <div class="row">
+            <!-- Sidebar -->
+            <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse">
+                <div class="position-sticky pt-3">
+                    <ul class="nav flex-column">
+                        <li class="nav-item">
+                            <a class="nav-link active" href="#dashboard">
+                                <i class="fas fa-tachometer-alt me-2"></i>
+                                Dashboard
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#events">
+                                <i class="fas fa-calendar me-2"></i>
+                                Events
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#sessions">
+                                <i class="fas fa-clock me-2"></i>
+                                Sessions
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#registrations">
+                                <i class="fas fa-users me-2"></i>
+                                Registrations
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#speakers">
+                                <i class="fas fa-microphone me-2"></i>
+                                Speakers
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#analytics">
+                                <i class="fas fa-chart-bar me-2"></i>
+                                Analytics
+                            </a>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" href="#settings">
+                                <i class="fas fa-cog me-2"></i>
+                                Settings
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+            </nav>
+
+            <!-- Main Content -->
+            <main class="col-md-9 ms-sm-auto col-lg-10 px-md-4 main-content">
+                <!-- Dashboard Section -->
+                <div id="dashboard" class="content-section">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Event Management Dashboard</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createEventModal">
+                                <i class="fas fa-plus me-2"></i>Create Event
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Statistics Cards -->
+                    <div class="row mb-4">
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="stats-card">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h4 class="mb-0" id="totalEvents">0</h4>
+                                        <p class="mb-0">Total Events</p>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-calendar fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="stats-card">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h4 class="mb-0" id="totalRegistrations">0</h4>
+                                        <p class="mb-0">Total Registrations</p>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-users fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="stats-card">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h4 class="mb-0" id="activeEvents">0</h4>
+                                        <p class="mb-0">Active Events</p>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-play-circle fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="stats-card">
+                                <div class="d-flex justify-content-between">
+                                    <div>
+                                        <h4 class="mb-0" id="totalRevenue">$0</h4>
+                                        <p class="mb-0">Total Revenue</p>
+                                    </div>
+                                    <div class="align-self-center">
+                                        <i class="fas fa-dollar-sign fa-2x"></i>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Recent Events -->
+                    <div class="row">
+                        <div class="col-lg-8">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-calendar me-2"></i>Recent Events</h5>
+                                </div>
+                                <div class="card-body">
+                                    <div id="recentEventsList">
+                                        <!-- Events will be loaded here -->
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-lg-4">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-chart-pie me-2"></i>Event Status</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="eventStatusChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Registration Trends -->
+                    <div class="row mt-4">
+                        <div class="col-12">
+                            <div class="card">
+                                <div class="card-header">
+                                    <h5 class="mb-0"><i class="fas fa-chart-line me-2"></i>Registration Trends</h5>
+                                </div>
+                                <div class="card-body">
+                                    <canvas id="registrationTrendsChart" width="400" height="200"></canvas>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Events Section -->
+                <div id="events" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Event Management</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#createEventModal">
+                                <i class="fas fa-plus me-2"></i>Create Event
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Event Filters -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <select class="form-select" id="eventStatusFilter">
+                                <option value="">All Status</option>
+                                <option value="Draft">Draft</option>
+                                <option value="Published">Published</option>
+                                <option value="RegistrationOpen">Registration Open</option>
+                                <option value="InProgress">In Progress</option>
+                                <option value="Completed">Completed</option>
+                            </select>
+                        </div>
+                        <div class="col-md-3">
+                            <select class="form-select" id="eventTypeFilter">
+                                <option value="">All Types</option>
+                                <option value="InPerson">In Person</option>
+                                <option value="Virtual">Virtual</option>
+                                <option value="Hybrid">Hybrid</option>
+                            </select>
+                        </div>
+                        <div class="col-md-4">
+                            <input type="text" class="form-control" id="eventSearch" placeholder="Search events...">
+                        </div>
+                        <div class="col-md-2">
+                            <button class="btn btn-outline-secondary" onclick="filterEvents()">
+                                <i class="fas fa-search me-2"></i>Filter
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Events Table -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="eventsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Event</th>
+                                            <th>Type</th>
+                                            <th>Date</th>
+                                            <th>Status</th>
+                                            <th>Registrations</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="eventsTableBody">
+                                        <!-- Events will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Registrations Section -->
+                <div id="registrations" class="content-section" style="display: none;">
+                    <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
+                        <h1 class="h2">Registration Management</h1>
+                        <div class="btn-toolbar mb-2 mb-md-0">
+                            <button type="button" class="btn btn-success" onclick="exportRegistrations()">
+                                <i class="fas fa-download me-2"></i>Export
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- Registration Stats -->
+                    <div class="row mb-4">
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-primary" id="totalRegistrationsCount">0</h3>
+                                    <p class="text-muted">Total Registrations</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-success" id="confirmedRegistrations">0</h3>
+                                    <p class="text-muted">Confirmed</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-warning" id="pendingRegistrations">0</h3>
+                                    <p class="text-muted">Pending</p>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="col-md-3">
+                            <div class="card text-center">
+                                <div class="card-body">
+                                    <h3 class="text-info" id="checkedInRegistrations">0</h3>
+                                    <p class="text-muted">Checked In</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Registrations Table -->
+                    <div class="card">
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-hover" id="registrationsTable">
+                                    <thead>
+                                        <tr>
+                                            <th>Name</th>
+                                            <th>Email</th>
+                                            <th>Event</th>
+                                            <th>Status</th>
+                                            <th>Registration Date</th>
+                                            <th>Actions</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody id="registrationsTableBody">
+                                        <!-- Registrations will be loaded here -->
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </main>
+        </div>
+    </div>
+
+    <!-- Create Event Modal -->
+    <div class="modal fade" id="createEventModal" tabindex="-1">
+        <div class="modal-dialog modal-lg">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Create New Event</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="createEventForm">
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Event Title *</label>
+                                    <input type="text" class="form-control" id="eventTitle" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Event Type *</label>
+                                    <select class="form-select" id="eventType" required>
+                                        <option value="">Select Type</option>
+                                        <option value="InPerson">In Person</option>
+                                        <option value="Virtual">Virtual</option>
+                                        <option value="Hybrid">Hybrid</option>
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Start Date *</label>
+                                    <input type="datetime-local" class="form-control" id="eventStartDate" required>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">End Date *</label>
+                                    <input type="datetime-local" class="form-control" id="eventEndDate" required>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Description</label>
+                            <textarea class="form-control" id="eventDescription" rows="3"></textarea>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Location</label>
+                                    <input type="text" class="form-control" id="eventLocation">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Virtual Meeting URL</label>
+                                    <input type="url" class="form-control" id="eventVirtualUrl">
+                                </div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Max Attendees</label>
+                                    <input type="number" class="form-control" id="eventMaxAttendees">
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="mb-3">
+                                    <label class="form-label">Registration Fee</label>
+                                    <input type="number" class="form-control" id="eventRegistrationFee" step="0.01">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                    <button type="button" class="btn btn-primary" onclick="createEvent()">Create Event</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Notifications -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3">
+        <div id="successToast" class="toast" role="alert">
+            <div class="toast-header bg-success text-white">
+                <i class="fas fa-check-circle me-2"></i>
+                <strong class="me-auto">Success</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="successToastBody"></div>
+        </div>
+        <div id="errorToast" class="toast" role="alert">
+            <div class="toast-header bg-danger text-white">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <strong class="me-auto">Error</strong>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="toast"></button>
+            </div>
+            <div class="toast-body" id="errorToastBody"></div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <script>
+        // Global variables
+        let events = [];
+        let registrations = [];
+        let speakers = [];
+        let eventStatusChart;
+        let registrationTrendsChart;
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeNavigation();
+            loadDashboard();
+            initializeCharts();
+        });
+
+        // Navigation
+        function initializeNavigation() {
+            const navLinks = document.querySelectorAll('.sidebar .nav-link');
+            navLinks.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const target = this.getAttribute('href').substring(1);
+                    showSection(target);
+                    
+                    // Update active state
+                    navLinks.forEach(l => l.classList.remove('active'));
+                    this.classList.add('active');
+                });
+            });
+        }
+
+        function showSection(sectionId) {
+            // Hide all sections
+            document.querySelectorAll('.content-section').forEach(section => {
+                section.style.display = 'none';
+            });
+            
+            // Show target section
+            const targetSection = document.getElementById(sectionId);
+            if (targetSection) {
+                targetSection.style.display = 'block';
+                
+                // Load section-specific data
+                switch(sectionId) {
+                    case 'dashboard':
+                        loadDashboard();
+                        break;
+                    case 'events':
+                        loadEvents();
+                        break;
+                    case 'registrations':
+                        loadRegistrations();
+                        break;
+                }
+            }
+        }
+
+        // Dashboard functions
+        function loadDashboard() {
+            loadStatistics();
+            loadRecentEvents();
+            updateCharts();
+        }
+
+        function loadStatistics() {
+            // Mock data - replace with API calls
+            document.getElementById('totalEvents').textContent = '12';
+            document.getElementById('totalRegistrations').textContent = '1,247';
+            document.getElementById('activeEvents').textContent = '3';
+            document.getElementById('totalRevenue').textContent = '$15,420';
+        }
+
+        function loadRecentEvents() {
+            const recentEventsList = document.getElementById('recentEventsList');
+            recentEventsList.innerHTML = `
+                <div class="event-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">Transportation Innovation Summit 2024</h6>
+                            <p class="text-muted mb-2">March 15-17, 2024 • Hybrid Event</p>
+                            <span class="status-badge status-published">Published</span>
+                        </div>
+                        <div class="text-end">
+                            <div class="mb-2">
+                                <span class="badge bg-primary">247 Registrations</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary">View Details</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="event-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">Safety Training Workshop</h6>
+                            <p class="text-muted mb-2">March 22, 2024 • In Person</p>
+                            <span class="status-badge status-inprogress">In Progress</span>
+                        </div>
+                        <div class="text-end">
+                            <div class="mb-2">
+                                <span class="badge bg-primary">89 Registrations</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary">View Details</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="event-card">
+                    <div class="d-flex justify-content-between align-items-start">
+                        <div>
+                            <h6 class="mb-1">Virtual Team Meeting</h6>
+                            <p class="text-muted mb-2">March 25, 2024 • Virtual</p>
+                            <span class="status-badge status-draft">Draft</span>
+                        </div>
+                        <div class="text-end">
+                            <div class="mb-2">
+                                <span class="badge bg-secondary">0 Registrations</span>
+                            </div>
+                            <button class="btn btn-sm btn-outline-primary">Edit</button>
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Charts
+        function initializeCharts() {
+            // Event Status Chart
+            const eventStatusCtx = document.getElementById('eventStatusChart').getContext('2d');
+            eventStatusChart = new Chart(eventStatusCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['Draft', 'Published', 'In Progress', 'Completed'],
+                    datasets: [{
+                        data: [3, 5, 2, 2],
+                        backgroundColor: ['#95a5a6', '#27ae60', '#f39c12', '#2c3e50'],
+                        borderWidth: 0
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Registration Trends Chart
+            const registrationTrendsCtx = document.getElementById('registrationTrendsChart').getContext('2d');
+            registrationTrendsChart = new Chart(registrationTrendsCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun'],
+                    datasets: [{
+                        label: 'Registrations',
+                        data: [120, 190, 300, 250, 200, 180],
+                        borderColor: '#3498db',
+                        backgroundColor: 'rgba(52, 152, 219, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function updateCharts() {
+            // Update charts with real data
+            // This would be called when new data is loaded
+        }
+
+        // Event Management
+        function loadEvents() {
+            // Mock events data
+            events = [
+                {
+                    id: 1,
+                    title: 'Transportation Innovation Summit 2024',
+                    type: 'Hybrid',
+                    startDate: '2024-03-15',
+                    endDate: '2024-03-17',
+                    status: 'Published',
+                    registrations: 247,
+                    location: 'Tampa Convention Center'
+                },
+                {
+                    id: 2,
+                    title: 'Safety Training Workshop',
+                    type: 'InPerson',
+                    startDate: '2024-03-22',
+                    endDate: '2024-03-22',
+                    status: 'InProgress',
+                    registrations: 89,
+                    location: 'Training Center'
+                },
+                {
+                    id: 3,
+                    title: 'Virtual Team Meeting',
+                    type: 'Virtual',
+                    startDate: '2024-03-25',
+                    endDate: '2024-03-25',
+                    status: 'Draft',
+                    registrations: 0,
+                    location: 'Online'
+                }
+            ];
+
+            displayEvents(events);
+        }
+
+        function displayEvents(eventsToShow) {
+            const tbody = document.getElementById('eventsTableBody');
+            tbody.innerHTML = '';
+
+            eventsToShow.forEach(event => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>
+                        <div>
+                            <strong>${event.title}</strong>
+                            <br><small class="text-muted">${event.location}</small>
+                        </div>
+                    </td>
+                    <td><span class="badge bg-info">${event.type}</span></td>
+                    <td>${formatDate(event.startDate)} - ${formatDate(event.endDate)}</td>
+                    <td><span class="status-badge status-${event.status.toLowerCase()}">${event.status}</span></td>
+                    <td>${event.registrations}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="viewEvent(${event.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-secondary me-1" onclick="editEvent(${event.id})">
+                            <i class="fas fa-edit"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="deleteEvent(${event.id})">
+                            <i class="fas fa-trash"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function filterEvents() {
+            const statusFilter = document.getElementById('eventStatusFilter').value;
+            const typeFilter = document.getElementById('eventTypeFilter').value;
+            const searchTerm = document.getElementById('eventSearch').value.toLowerCase();
+
+            let filteredEvents = events.filter(event => {
+                const matchesStatus = !statusFilter || event.status === statusFilter;
+                const matchesType = !typeFilter || event.type === typeFilter;
+                const matchesSearch = !searchTerm || event.title.toLowerCase().includes(searchTerm);
+
+                return matchesStatus && matchesType && matchesSearch;
+            });
+
+            displayEvents(filteredEvents);
+        }
+
+        // Registration Management
+        function loadRegistrations() {
+            // Mock registrations data
+            registrations = [
+                {
+                    id: 1,
+                    name: 'John Smith',
+                    email: 'john.smith@company.com',
+                    event: 'Transportation Innovation Summit 2024',
+                    status: 'Confirmed',
+                    registrationDate: '2024-02-15'
+                },
+                {
+                    id: 2,
+                    name: 'Sarah Johnson',
+                    email: 'sarah.johnson@company.com',
+                    event: 'Safety Training Workshop',
+                    status: 'CheckedIn',
+                    registrationDate: '2024-02-20'
+                },
+                {
+                    id: 3,
+                    name: 'Mike Davis',
+                    email: 'mike.davis@company.com',
+                    event: 'Transportation Innovation Summit 2024',
+                    status: 'Pending',
+                    registrationDate: '2024-02-25'
+                }
+            ];
+
+            displayRegistrations(registrations);
+            updateRegistrationStats();
+        }
+
+        function displayRegistrations(registrationsToShow) {
+            const tbody = document.getElementById('registrationsTableBody');
+            tbody.innerHTML = '';
+
+            registrationsToShow.forEach(registration => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${registration.name}</td>
+                    <td>${registration.email}</td>
+                    <td>${registration.event}</td>
+                    <td><span class="badge bg-${getStatusColor(registration.status)}">${registration.status}</span></td>
+                    <td>${formatDate(registration.registrationDate)}</td>
+                    <td>
+                        <button class="btn btn-sm btn-outline-success me-1" onclick="checkInAttendee(${registration.id})">
+                            <i class="fas fa-check"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-primary me-1" onclick="viewRegistration(${registration.id})">
+                            <i class="fas fa-eye"></i>
+                        </button>
+                        <button class="btn btn-sm btn-outline-danger" onclick="cancelRegistration(${registration.id})">
+                            <i class="fas fa-times"></i>
+                        </button>
+                    </td>
+                `;
+                tbody.appendChild(row);
+            });
+        }
+
+        function updateRegistrationStats() {
+            const total = registrations.length;
+            const confirmed = registrations.filter(r => r.status === 'Confirmed').length;
+            const pending = registrations.filter(r => r.status === 'Pending').length;
+            const checkedIn = registrations.filter(r => r.status === 'CheckedIn').length;
+
+            document.getElementById('totalRegistrationsCount').textContent = total;
+            document.getElementById('confirmedRegistrations').textContent = confirmed;
+            document.getElementById('pendingRegistrations').textContent = pending;
+            document.getElementById('checkedInRegistrations').textContent = checkedIn;
+        }
+
+        // Event Actions
+        function createEvent() {
+            const form = document.getElementById('createEventForm');
+            const formData = new FormData(form);
+            
+            // Validate form
+            if (!form.checkValidity()) {
+                form.reportValidity();
+                return;
+            }
+
+            // Mock API call
+            const newEvent = {
+                id: events.length + 1,
+                title: document.getElementById('eventTitle').value,
+                type: document.getElementById('eventType').value,
+                startDate: document.getElementById('eventStartDate').value,
+                endDate: document.getElementById('eventEndDate').value,
+                status: 'Draft',
+                registrations: 0,
+                location: document.getElementById('eventLocation').value
+            };
+
+            events.push(newEvent);
+            
+            // Close modal and show success message
+            const modal = bootstrap.Modal.getInstance(document.getElementById('createEventModal'));
+            modal.hide();
+            
+            showToast('success', 'Event created successfully!');
+            
+            // Refresh events list if on events page
+            if (document.getElementById('events').style.display !== 'none') {
+                displayEvents(events);
+            }
+        }
+
+        function viewEvent(eventId) {
+            // Navigate to event details page
+            showToast('info', `Viewing event ${eventId}`);
+        }
+
+        function editEvent(eventId) {
+            // Open edit modal
+            showToast('info', `Editing event ${eventId}`);
+        }
+
+        function deleteEvent(eventId) {
+            if (confirm('Are you sure you want to delete this event?')) {
+                events = events.filter(e => e.id !== eventId);
+                displayEvents(events);
+                showToast('success', 'Event deleted successfully!');
+            }
+        }
+
+        // Registration Actions
+        function checkInAttendee(registrationId) {
+            // Mock check-in
+            const registration = registrations.find(r => r.id === registrationId);
+            if (registration) {
+                registration.status = 'CheckedIn';
+                displayRegistrations(registrations);
+                updateRegistrationStats();
+                showToast('success', 'Attendee checked in successfully!');
+            }
+        }
+
+        function viewRegistration(registrationId) {
+            showToast('info', `Viewing registration ${registrationId}`);
+        }
+
+        function cancelRegistration(registrationId) {
+            if (confirm('Are you sure you want to cancel this registration?')) {
+                registrations = registrations.filter(r => r.id !== registrationId);
+                displayRegistrations(registrations);
+                updateRegistrationStats();
+                showToast('success', 'Registration cancelled successfully!');
+            }
+        }
+
+        function exportRegistrations() {
+            // Mock export functionality
+            showToast('success', 'Registrations exported successfully!');
+        }
+
+        // Utility Functions
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString();
+        }
+
+        function getStatusColor(status) {
+            switch(status) {
+                case 'Confirmed': return 'success';
+                case 'Pending': return 'warning';
+                case 'CheckedIn': return 'info';
+                case 'Cancelled': return 'danger';
+                default: return 'secondary';
+            }
+        }
+
+        function showToast(type, message) {
+            const toast = document.getElementById(`${type}Toast`);
+            const toastBody = document.getElementById(`${type}ToastBody`);
+            toastBody.textContent = message;
+            
+            const bsToast = new bootstrap.Toast(toast);
+            bsToast.show();
+        }
+
+        // API Integration (mock)
+        async function callAPI(endpoint, method = 'GET', data = null) {
+            // Mock API calls - replace with actual API integration
+            return new Promise((resolve) => {
+                setTimeout(() => {
+                    resolve({ success: true, data: [] });
+                }, 500);
+            });
+        }
+    </script>
+</body>
+</html> 
