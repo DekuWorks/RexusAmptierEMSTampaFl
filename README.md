@@ -1,377 +1,526 @@
-# EMS Tampa-FL Amptier Emergency Management System
+# RexusOps360 EMS - Tampa, FL Emergency Management System
+
+[![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/DekuWorks/RexusAmptierEMSTampaFl)
+[![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+[![.NET](https://img.shields.io/badge/.NET-6.0-purple.svg)](https://dotnet.microsoft.com/)
+[![SaaS](https://img.shields.io/badge/SaaS-Ready-orange.svg)](https://en.wikipedia.org/wiki/Software_as_a_service)
 
 ## 🚨 Overview
 
-A comprehensive, production-ready Emergency Management System built with **C# ASP.NET Core 9.0** and modern cloud technologies. This system provides real-time incident management, responder coordination, and emergency response capabilities for the Tampa-FL area with advanced features for combined utilities like WSSC Water.
+RexusOps360 is a comprehensive **Emergency Management System (EMS)** designed specifically for Tampa, FL and surrounding areas. Built with modern .NET 6 architecture, it provides real-time emergency response coordination, incident management, resource tracking, and multi-tenant SaaS capabilities for emergency services organizations.
 
-**🎯 Current Status: Phase 2 Complete - Production Ready**
+### ✨ Key Features
 
-## ✨ Key Features
+- 🏥 **Real-time Emergency Response** - Live incident tracking and coordination
+- 👥 **Multi-tenant SaaS Platform** - Support for multiple emergency organizations
+- 📱 **Mobile Responder Interface** - Field operations support
+- 🗺️ **GPS Tracking & Mapping** - Real-time location services
+- 📊 **Advanced Analytics** - Performance metrics and reporting
+- 🔐 **Enterprise Security** - Role-based access control and authentication
+- 💰 **Subscription Management** - Billing and usage tracking
+- 📈 **Usage Analytics** - Comprehensive monitoring and insights
 
-### 🏥 **Core Emergency Management**
-- **Incident Reporting & Tracking** - Real-time incident creation and status updates
-- **Responder Management** - GPS tracking, availability status, and shift scheduling
-- **Equipment Management** - Inventory tracking, maintenance schedules, and barcode scanning
-- **Real-time Communication** - SignalR-powered live updates and notifications
+## 🏗️ Architecture
 
-### 🔄 **Advanced Incident Clustering & Management**
-- **Automatic Incident Clustering** - Groups similar incidents based on location, category, and time window
-- **Multiple Customer Calls Handling** - Manages multiple reports for similar problems with individual access
-- **Contact Information Tracking** - Stores customer contact details and remarks for each report
-- **Geographic Clustering** - 1km radius clustering with 30-minute time windows
-- **Severity Assessment** - Automatic severity level calculation based on priority and category
+### Technology Stack
 
-### 🔗 **System Integration Framework**
-- **SCADA Integration** - Real-time monitoring of water and sewer systems
-- **GPS Tracking** - Vehicle and asset location tracking with route optimization
-- **GIS Integration** - Geographic Information Systems for spatial analysis
-- **Weather Services** - NOAA and OpenWeatherMap integration for predictive alerts
-- **Asset Management** - CMMS integration for equipment and maintenance tracking
-- **Multi-Protocol Support** - REST, MQTT, SOAP, and other communication protocols
+| Component | Technology | Version |
+|-----------|------------|---------|
+| **Backend API** | ASP.NET Core 6 | 6.0+ |
+| **Database** | Entity Framework Core | 6.0+ |
+| **Authentication** | JWT Tokens | - |
+| **Real-time** | SignalR | 6.0+ |
+| **Frontend** | HTML5, CSS3, JavaScript | - |
+| **Charts** | Chart.js | 3.7+ |
+| **UI Framework** | Bootstrap 5 | 5.1+ |
 
-### 🔥 **Hotspot Detection & Early Alerting**
-- **Automatic Hotspot Detection** - Identifies potential problems before they escalate
-- **Configurable Thresholds** - Customizable incident count and time window settings
-- **Real-time Alerts** - Immediate notifications when thresholds are exceeded
-- **Severity Classification** - Low, Medium, High, and Critical priority levels
-- **Geographic Analysis** - Heatmaps and zone-based alerting
-
-### 🏭 **Combined Utility Support**
-- **Water & Sewer Operations** - Separate management for water distribution and wastewater
-- **Role-Based Access** - Different dashboards for water and sewer teams
-- **Domain-Based Routing** - Incidents automatically routed to correct utility type
-- **Utility-Specific Analytics** - Operational health viewed separately or combined
-- **WSSC Water Optimization** - Specialized workflows for combined utilities
-
-### 📊 **Advanced Analytics & Dashboard**
-- **Real-time Dashboard** - Live incident maps, responder locations, and system status
-- **Analytics Engine** - Response time analysis, incident trends, and performance metrics
-- **Interactive Charts** - Incident distribution, responder status, and equipment utilization
-- **Mobile-First Design** - Responsive UI with dark mode support
-- **Cluster Analytics** - Detailed analysis of incident clusters and patterns
-
-### 🔒 **Security & Compliance**
-- **JWT Authentication** - Secure API endpoints with role-based access
-- **Audit Logging** - Comprehensive security event tracking and compliance reporting
-- **Data Encryption** - SQL Server encryption at rest and in transit
-- **Input Validation** - Server-side validation and sanitization
-
-### 🚀 **Production Infrastructure**
-- **SQL Server Database** - Production-ready data persistence with migrations
-- **Docker Containerization** - Consistent deployment across environments
-- **AWS Cloud Deployment** - Auto-scaling, load balancing, and monitoring
-- **CI/CD Pipeline** - Automated testing and deployment workflows
-
-## 🏗️ Technology Stack
-
-| Category | Technology | Purpose |
-|----------|------------|---------|
-| **Backend** | C# ASP.NET Core 9.0 | High-performance API framework |
-| **Database** | SQL Server 2019 | Production data persistence |
-| **Real-time** | SignalR | WebSocket connections for live updates |
-| **Authentication** | JWT Bearer Tokens | Secure API access |
-| **Containerization** | Docker | Consistent deployment |
-| **Cloud Platform** | AWS (ECS, RDS, ALB) | Scalable infrastructure |
-| **Monitoring** | CloudWatch | Application monitoring |
-| **CI/CD** | GitHub Actions | Automated deployment |
-
-## 📁 Project Structure
+### System Components
 
 ```
-EMS_Tampa-FL_Amptier/
-├── RexusOps360.API/           # Main ASP.NET Core application
+RexusOps360 EMS/
+├── RexusOps360.API/           # Main API backend
 │   ├── Controllers/           # API endpoints
 │   ├── Models/               # Data models
-│   ├── Services/             # Business logic services
-│   ├── Data/                 # Database context
-│   ├── Hubs/                 # SignalR hubs
-│   └── wwwroot/              # Static files
-├── RexusOps360.API.Tests/    # Unit tests
-├── .github/workflows/        # CI/CD pipeline
-├── deploy-aws-enhanced.sh    # AWS deployment script
-├── aws-deploy.yml           # CloudFormation template
-├── docker-compose.yml       # Docker orchestration
-├── Dockerfile               # Container definition
-└── README.md                # This file
+│   ├── Services/             # Business logic
+│   ├── Middleware/           # Custom middleware
+│   └── Configuration/        # App configuration
+├── frontend/                 # Web interface
+│   ├── index.html           # Main dashboard
+│   ├── login.html           # Authentication
+│   ├── saas-dashboard.html  # SaaS management
+│   └── mobile-responder.html # Mobile interface
+└── RexusOps360.API.Tests/   # Unit tests
 ```
 
 ## 🚀 Quick Start
 
 ### Prerequisites
-- .NET 9.0 SDK
-- SQL Server LocalDB or Docker
-- Docker (for containerized deployment)
 
-### Local Development
-```bash
-# Clone the repository
-git clone https://github.com/DekuWorks/RexusAmptierEMSTampaFl.git
-cd EMS_Tampa-FL_Amptier
+- [.NET 6.0 SDK](https://dotnet.microsoft.com/download)
+- [Visual Studio 2022](https://visualstudio.microsoft.com/) or [VS Code](https://code.visualstudio.com/)
+- [SQL Server](https://www.microsoft.com/sql-server) or [SQLite](https://sqlite.org/)
 
-# Navigate to API project
-cd RexusOps360.API
+### Installation
 
-# Restore dependencies
-dotnet restore
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/DekuWorks/RexusAmptierEMSTampaFl.git
+   cd EMS_Tampa-FL_Amptier
+   ```
 
-# Build the application
-dotnet build
+2. **Navigate to API directory**
+   ```bash
+   cd RexusOps360.API
+   ```
 
-# Run database migrations
-dotnet ef database update
+3. **Restore dependencies**
+   ```bash
+   dotnet restore
+   ```
 
-# Start the application
-dotnet run
+4. **Run the application**
+   ```bash
+   dotnet run
+   ```
+
+5. **Access the application**
+   - API: `http://localhost:5000`
+   - Swagger UI: `http://localhost:5000`
+   - Frontend: `http://localhost:5000/frontend/`
+
+### Demo Credentials
+
+| Role | Username | Password | Access Level |
+|------|----------|----------|--------------|
+| **Admin** | `admin` | `admin123` | Full system access |
+| **Dispatcher** | `dispatcher1` | `pass123` | Incident management |
+| **Responder** | `responder1` | `pass123` | Field operations |
+
+## 🔐 Authentication & Security
+
+### Comprehensive Security Features
+
+- **JWT Token Authentication** - Secure API access
+- **Role-Based Access Control (RBAC)** - Admin, Dispatcher, Responder roles
+- **Password Security** - SHA256 hashing with salt
+- **Rate Limiting** - 5 failed attempts = 15-minute lockout
+- **Input Validation** - Comprehensive data validation
+- **CORS Configuration** - Cross-origin request handling
+- **Security Headers** - XSS protection and security policies
+
+### Authentication Flow
+
+```mermaid
+graph TD
+    A[User Login] --> B[Validate Credentials]
+    B --> C[Generate JWT Token]
+    C --> D[Return Token + User Info]
+    D --> E[Access Protected Resources]
+    E --> F[Token Validation]
+    F --> G[Role-Based Authorization]
 ```
 
-### Docker Deployment
-```bash
-# Build and run with Docker Compose
-docker-compose up --build
+### API Security Endpoints
 
-# Or build Docker image manually
-docker build -t ems-tampa-amptier .
-
-# Run container
-docker run -p 5169:80 ems-tampa-amptier
+```http
+POST /api/auth/login              # User authentication
+POST /api/auth/register           # User registration
+POST /api/auth/logout             # Session termination
+POST /api/auth/refresh-token      # Token refresh
+POST /api/auth/change-password    # Password change
+POST /api/auth/reset-password     # Password reset
+GET  /api/auth/me                 # Current user info
+PUT  /api/auth/profile            # Profile update
 ```
 
-### AWS Production Deployment
-```bash
-# Make deployment script executable
-chmod +x deploy-aws-enhanced.sh
+## 🏢 SaaS Multi-Tenancy
 
-# Deploy to AWS
-./deploy-aws-enhanced.sh production
+### Tenant Management
 
-# Or use PowerShell on Windows
-.\deploy-aws.ps1
+The system supports multiple emergency organizations as tenants:
+
+- **Tampa Fire Department** (Professional Plan)
+- **Hillsborough County EMS** (Enterprise Plan)
+- **Custom emergency organizations**
+
+### Subscription Plans
+
+| Plan | Price | Users | Incidents | Storage | Features |
+|------|-------|-------|-----------|---------|----------|
+| **Starter** | $99/month | 5 | 500 | 5 GB | Basic features |
+| **Professional** | $299/month | 25 | 2,000 | 20 GB | + Custom branding, Analytics, API |
+| **Enterprise** | $799/month | 100 | 10,000 | 100 GB | + Priority support |
+
+### SaaS Features
+
+- ✅ **Multi-tenant isolation**
+- ✅ **Subscription management**
+- ✅ **Usage tracking and limits**
+- ✅ **Billing and invoicing**
+- ✅ **Analytics and reporting**
+- ✅ **Custom branding**
+- ✅ **API access**
+- ✅ **Priority support**
+
+### SaaS API Endpoints
+
+```http
+# Tenant Management
+POST   /api/saas/tenants                    # Create tenant
+GET    /api/saas/tenants/{id}               # Get tenant
+PUT    /api/saas/tenants/{id}               # Update tenant
+DELETE /api/saas/tenants/{id}               # Delete tenant
+
+# Subscription Management
+POST   /api/saas/tenants/{id}/subscriptions # Create subscription
+GET    /api/saas/subscriptions/{id}         # Get subscription
+POST   /api/saas/subscriptions/{id}/cancel  # Cancel subscription
+
+# Billing & Usage
+PUT    /api/saas/tenants/{id}/billing       # Update billing info
+POST   /api/saas/tenants/{id}/invoices      # Generate invoice
+GET    /api/saas/tenants/{id}/usage         # Usage report
+GET    /api/saas/plans                      # Available plans
 ```
 
-## 📊 API Endpoints
+## 🚨 Emergency Management Features
 
-### Core Endpoints
-- `GET /api/incidents` - Get all incidents
-- `POST /api/incidents` - Create new incident
-- `GET /api/incidents/clusters` - Get incident clusters
-- `GET /api/incidents/utility/{utilityType}` - Get incidents by utility type
+### Core Functionality
 
-### Advanced Features
-- `GET /api/hotspot` - Get active hotspots
-- `POST /api/hotspot/detect` - Detect new hotspots
-- `GET /api/systemintegration` - Get system integrations
-- `POST /api/systemintegration/sync/scada` - Sync SCADA data
+#### Incident Management
+- **Real-time incident tracking**
+- **Priority-based response coordination**
+- **Resource allocation and dispatch**
+- **Incident status updates**
+- **Historical incident analysis**
+
+#### Responder Management
+- **GPS location tracking**
+- **Mobile responder interface**
+- **Shift scheduling**
+- **Performance monitoring**
+- **Equipment tracking**
+
+#### Resource Management
+- **Equipment inventory**
+- **Vehicle tracking**
+- **Personnel management**
+- **Resource allocation**
+- **Maintenance scheduling**
 
 ### Real-time Features
-- `GET /emsHub` - SignalR hub for real-time updates
-- `GET /api/analytics/dashboard` - Dashboard analytics
-- `GET /api/location/responders` - GPS tracking data
 
-### Authentication
-- `POST /api/auth/login` - User authentication
-- `GET /api/health` - System health check
+- **Live incident updates** via SignalR
+- **GPS tracking** for responders
+- **Emergency alerts** and notifications
+- **Real-time analytics** dashboard
+- **Live chat** for coordination
 
-## 🔧 Configuration
+## 📱 User Interfaces
 
-### Environment Variables
+### Main Dashboard (`index.html`)
+- **Incident overview** with real-time updates
+- **Resource status** monitoring
+- **Analytics and reporting**
+- **Quick action buttons**
+- **Emergency alerts**
+
+### Mobile Responder Interface (`mobile-responder.html`)
+- **GPS location sharing**
+- **Incident status updates**
+- **Photo capture** for documentation
+- **Emergency contact** integration
+- **Offline capability**
+
+### SaaS Dashboard (`saas-dashboard.html`)
+- **Tenant management**
+- **Subscription tracking**
+- **Billing and invoicing**
+- **Usage analytics**
+- **Plan management**
+
+### Authentication Pages
+- **Login** (`login.html`) - Secure authentication
+- **Registration** (`register.html`) - User onboarding
+- **Admin Panel** (`admin.html`) - System administration
+
+## 🔧 API Reference
+
+### Core Endpoints
+
+#### Authentication
+```http
+POST /api/auth/login
+{
+  "username": "admin",
+  "password": "admin123"
+}
+```
+
+#### Incidents
+```http
+GET    /api/incidents              # List incidents
+POST   /api/incidents              # Create incident
+GET    /api/incidents/{id}         # Get incident
+PUT    /api/incidents/{id}         # Update incident
+DELETE /api/incidents/{id}         # Delete incident
+```
+
+#### Responders
+```http
+GET    /api/responders             # List responders
+POST   /api/responders             # Create responder
+GET    /api/responders/{id}        # Get responder
+PUT    /api/responders/{id}        # Update responder
+```
+
+#### Equipment
+```http
+GET    /api/equipment              # List equipment
+POST   /api/equipment              # Create equipment
+GET    /api/equipment/{id}         # Get equipment
+PUT    /api/equipment/{id}         # Update equipment
+```
+
+### Real-time Hub
+
+```javascript
+// Connect to SignalR hub
+const connection = new signalR.HubConnectionBuilder()
+    .withUrl("/emsHub")
+    .build();
+
+// Listen for incident updates
+connection.on("IncidentUpdated", (incident) => {
+    console.log("New incident:", incident);
+});
+
+// Send location update
+connection.invoke("UpdateLocation", {
+    responderId: 1,
+    latitude: 27.9506,
+    longitude: -82.4572
+});
+```
+
+## 🧪 Testing
+
+### Run Tests
+```bash
+cd RexusOps360.API.Tests
+dotnet test
+```
+
+### Test Coverage
+- ✅ **Authentication tests** - Login, registration, validation
+- ✅ **SaaS tests** - Tenant management, subscriptions
+- ✅ **API tests** - Endpoint functionality
+- ✅ **Integration tests** - End-to-end workflows
+
+### Test Credentials
 ```json
 {
-  "ConnectionStrings": {
-    "DefaultConnection": "Server=localhost;Database=EmsTampaDb;Trusted_Connection=true;"
+  "admin": {
+    "username": "admin",
+    "password": "admin123",
+    "role": "Admin"
   },
-  "Jwt": {
-    "Key": "YourSuperSecretKeyHere",
-    "Issuer": "RexusOps360",
-    "Audience": "RexusOps360Users",
-    "ExpiryHours": 8
+  "dispatcher": {
+    "username": "dispatcher1",
+    "password": "pass123",
+    "role": "Dispatcher"
   },
-  "SystemIntegrations": {
-    "ScadaEndpoint": "https://scada.rexusops360.com/api",
-    "WeatherApiKey": "your_weather_api_key"
-  },
-  "HotspotDetection": {
-    "Threshold": 3,
-    "TimeWindowMinutes": 120
+  "responder": {
+    "username": "responder1",
+    "password": "pass123",
+    "role": "Responder"
   }
 }
 ```
 
-## 📈 Performance & Scalability
-
-### Current Capabilities
-- **Concurrent Users**: 1000+ simultaneous connections
-- **Response Time**: < 200ms average API response
-- **Database**: SQL Server with optimized indexes
-- **Real-time**: SignalR WebSocket connections
-
-### Scaling Strategy
-- **Horizontal Scaling**: Auto Scaling Group (1-3 instances)
-- **Database Scaling**: RDS with read replicas
-- **Load Balancing**: Application Load Balancer
-- **Caching**: Redis for session management (planned)
-
-## 🔒 Security Features
-
-### Authentication & Authorization
-- JWT token-based authentication
-- Role-based access control (Admin, Dispatcher, Responder)
-- Secure password hashing
-- Session management
-
-### Data Protection
-- SQL Server encryption at rest
-- HTTPS/TLS for all communications
-- Input validation and sanitization
-- SQL injection prevention
-
-### Audit & Compliance
-- Comprehensive audit logging
-- Security event tracking
-- GDPR-compliant data handling
-- Regular security assessments
-
-## 🚨 Emergency Response Features
-
-### Incident Management
-- **Real-time Reporting** - Instant incident creation with clustering
-- **Priority Classification** - High, Medium, Low priority levels
-- **Status Tracking** - Active, Resolved, Pending states
-- **Photo Attachments** - Visual documentation support
-- **Contact Information** - Customer contact details and remarks
-
-### Responder Coordination
-- **GPS Tracking** - Real-time location monitoring
-- **Availability Status** - Available, On Call, Off Duty
-- **Shift Scheduling** - Automated shift management
-- **Specialization Matching** - Skill-based incident assignment
-
-### Equipment Management
-- **Inventory Tracking** - Real-time equipment status
-- **Maintenance Scheduling** - Automated maintenance alerts
-- **Barcode Scanning** - Quick equipment identification
-- **Utilization Analytics** - Equipment usage optimization
-
-## 📱 User Interface
-
-### Dashboard Features
-- **Real-time Maps** - Incident and responder locations
-- **Interactive Charts** - Incident trends and analytics
-- **Dark Mode** - User preference support
-- **Mobile Responsive** - Cross-device compatibility
-- **Cluster Visualization** - Geographic clustering display
-
-### Admin Interface
-- **Incident Management** - Full CRUD operations with clustering
-- **Responder Management** - Personnel administration
-- **Equipment Control** - Asset management
-- **Analytics Dashboard** - Performance metrics and hotspots
-- **System Integration** - External system management
-
-## 🚀 Deployment Options
+## 🚀 Deployment
 
 ### Local Development
-- SQL Server LocalDB
-- .NET 9.0 runtime
-- Hot reload for development
+```bash
+# Start the API
+cd RexusOps360.API
+dotnet run
+
+# Access the application
+open http://localhost:5000
+```
 
 ### Docker Deployment
-- Containerized application
-- SQL Server container
-- Easy environment setup
+```bash
+# Build the image
+docker build -t rexusops360-ems .
 
-### AWS Production
-- **EC2 Instances** - Auto-scaling application servers
-- **RDS Database** - Managed SQL Server
-- **Load Balancer** - High availability
-- **CloudWatch** - Monitoring and alerts
-- **S3 Storage** - File and backup storage
+# Run the container
+docker run -p 5000:5000 rexusops360-ems
+```
 
-## 💰 Cost Analysis
+### Azure Deployment
+```bash
+# Deploy to Azure App Service
+az webapp up --name rexusops360-ems --resource-group EMS-Tampa
+```
 
-### AWS Production Costs (Monthly)
-- **EC2 t3.medium**: ~$30
-- **RDS db.t3.micro**: ~$15
-- **Application Load Balancer**: ~$20
-- **Data Transfer**: ~$5
-- **CloudWatch**: ~$5
-- **Total**: ~$75/month
+## 📊 Monitoring & Analytics
 
-### Cost Optimization
-- Free tier eligible components
-- Reserved instances for predictable usage
-- Spot instances for non-critical workloads
-- S3 lifecycle policies for cost control
+### System Metrics
+- **Response times** - API performance monitoring
+- **User activity** - Usage analytics
+- **Incident statistics** - Emergency response metrics
+- **Resource utilization** - System performance
+- **SaaS metrics** - Revenue and growth tracking
 
-## 🔄 CI/CD Pipeline
+### Health Checks
+```http
+GET /health                    # System health status
+GET /api/health               # API health check
+GET /api/analytics/overview   # Analytics overview
+```
 
-### GitHub Actions Workflow
-1. **Build** - Compile and test application
-2. **Security Scan** - Vulnerability assessment
-3. **Deploy Staging** - Automated staging deployment
-4. **Deploy Production** - Manual production deployment
-5. **Notify** - Deployment status notifications
+## 🔧 Configuration
 
-### Deployment Stages
-- **Development** - Local development environment
-- **Staging** - Pre-production testing
-- **Production** - Live AWS infrastructure
+### Environment Variables
+```bash
+# Database
+ConnectionStrings__DefaultConnection="Server=localhost;Database=EmsTampaDb;..."
 
-## 🧪 Testing
+# JWT Authentication
+Jwt__Key="YourSuperSecretKeyHere12345678901234567890"
+Jwt__Issuer="RexusOps360"
+Jwt__Audience="RexusOps360Users"
 
-### Unit Testing
-- Comprehensive API testing with `RexusOps360.API.Tests`
-- Automated testing of all endpoints
-- Performance testing and load testing
-- Security testing and validation
+# SaaS Configuration
+Security__Jwt__ExpirationHours=8
+Security__Password__MinLength=8
+Security__RateLimit__RequestsPerMinute=100
+```
 
-### Test Coverage
-- **API Endpoints**: 100% coverage
-- **Authentication**: JWT validation testing
-- **Data Validation**: Input validation testing
-- **Integration**: End-to-end testing
-
-## 📞 Support & Maintenance
-
-### Regular Maintenance
-- **Security Updates** - Monthly patches
-- **Database Maintenance** - Weekly backups
-- **Performance Monitoring** - Real-time metrics
-- **System Integration** - External system health checks
-
-### Support Channels
-- **Documentation** - Comprehensive guides and API docs
-- **Issue Tracking** - GitHub Issues for bug reports
-- **Feature Requests** - GitHub Discussions for enhancements
-- **Emergency Support** - 24/7 critical issue response
+### App Settings
+```json
+{
+  "Security": {
+    "Jwt": {
+      "Key": "YourSuperSecretKeyHere12345678901234567890",
+      "Issuer": "RexusOps360",
+      "Audience": "RexusOps360Users",
+      "ExpirationHours": 8
+    },
+    "Password": {
+      "MinLength": 8,
+      "RequireUppercase": true,
+      "RequireLowercase": true,
+      "RequireDigit": true,
+      "RequireSpecialCharacter": true
+    },
+    "RateLimit": {
+      "RequestsPerMinute": 100,
+      "MaxFailedAttempts": 5,
+      "LockoutDurationMinutes": 15
+    }
+  }
+}
+```
 
 ## 🤝 Contributing
 
-### Development Guidelines
+### Development Setup
 1. Fork the repository
-2. Create a feature branch
+2. Create a feature branch: `git checkout -b feature/new-feature`
 3. Make your changes
-4. Add tests for new features
-5. Submit a pull request
+4. Add tests for new functionality
+5. Commit your changes: `git commit -am 'Add new feature'`
+6. Push to the branch: `git push origin feature/new-feature`
+7. Submit a pull request
 
 ### Code Standards
 - Follow C# coding conventions
-- Include XML documentation
-- Write unit tests for new features
-- Update documentation as needed
+- Add XML documentation for public APIs
+- Include unit tests for new features
+- Update documentation for API changes
 
-## 📄 License
+## 📝 License
 
 This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
-## 🙏 Acknowledgments
+## 🆘 Support
 
-- **Tampa Emergency Services** - For domain expertise and requirements
-- **WSSC Water** - For combined utility operation insights
-- **ASP.NET Core Team** - For the excellent framework
-- **AWS** - For cloud infrastructure and services
+### Documentation
+- [API Documentation](http://localhost:5000) - Swagger UI
+- [Frontend Guide](frontend/) - User interface documentation
+- [SaaS Guide](saas-dashboard.html) - SaaS management
+
+### Contact
+- **Email**: support@rexusops360.com
+- **Phone**: (813) 555-0123
+- **Emergency**: 911
+
+### Emergency Contacts
+- **Tampa Fire Department**: (813) 274-7000
+- **Hillsborough County EMS**: (813) 272-5900
+- **Emergency**: 911
+
+## 🏆 Features Summary
+
+### ✅ Implemented Features
+
+#### Authentication & Security
+- [x] JWT token authentication
+- [x] Role-based access control
+- [x] Password security with hashing
+- [x] Rate limiting and lockout
+- [x] Input validation
+- [x] CORS configuration
+- [x] Security headers
+
+#### SaaS Multi-Tenancy
+- [x] Multi-tenant architecture
+- [x] Subscription management
+- [x] Billing and invoicing
+- [x] Usage tracking
+- [x] Plan enforcement
+- [x] Analytics dashboard
+
+#### Emergency Management
+- [x] Incident management
+- [x] Responder tracking
+- [x] Resource management
+- [x] Real-time updates
+- [x] GPS tracking
+- [x] Mobile interface
+
+#### User Interfaces
+- [x] Main dashboard
+- [x] Mobile responder interface
+- [x] SaaS management dashboard
+- [x] Authentication pages
+- [x] Admin panel
+
+#### API & Backend
+- [x] RESTful API endpoints
+- [x] SignalR real-time communication
+- [x] Entity Framework Core
+- [x] Comprehensive testing
+- [x] Error handling
+- [x] Logging
+
+### 🚀 Ready for Production
+
+The RexusOps360 EMS system is **production-ready** with:
+
+- ✅ **Enterprise-grade security**
+- ✅ **Multi-tenant SaaS capabilities**
+- ✅ **Real-time emergency response**
+- ✅ **Comprehensive testing**
+- ✅ **Scalable architecture**
+- ✅ **Modern UI/UX**
+- ✅ **Complete documentation**
 
 ---
 
-**Built with ❤️ for the Tampa-FL community**
+**Built with ❤️ for Tampa, FL Emergency Services**
 
-*For emergency support, contact: support@rexusops360.com* 
+*RexusOps360 - Empowering Emergency Response* 
