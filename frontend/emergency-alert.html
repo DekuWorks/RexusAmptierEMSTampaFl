@@ -539,6 +539,13 @@
 
         // Initialize on page load
         document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
             loadEmergencyAlerts();
         });
     </script>

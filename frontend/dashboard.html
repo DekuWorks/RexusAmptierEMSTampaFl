@@ -466,9 +466,9 @@
                         <i class="fas fa-exclamation-triangle"></i>
                         Report Incident
                     </a>
-                    <a href="index.html" class="action-btn secondary">
-                        <i class="fas fa-search"></i>
-                        View Incidents
+                    <a href="emergency-alert.html" class="action-btn secondary">
+                        <i class="fas fa-exclamation-triangle"></i>
+                        Emergency Alerts
                     </a>
                 </div>
 
@@ -477,9 +477,9 @@
                         <i class="fas fa-cog"></i>
                         Admin Panel
                     </a>
-                    <a href="index.html" class="action-btn secondary">
-                        <i class="fas fa-user-md"></i>
-                        Manage Responders
+                    <a href="mobile-responder.html" class="action-btn secondary">
+                        <i class="fas fa-mobile-alt"></i>
+                        Mobile Responder
                     </a>
                 </div>
 
@@ -600,12 +600,20 @@
         function logout() {
             if (confirm('Are you sure you want to logout?')) {
                 localStorage.removeItem('userData');
-                window.location.href = 'index.html';
+                localStorage.removeItem('authToken');
+                window.location.href = 'login.html';
             }
         }
 
         // Initialize dashboard on page load
         document.addEventListener('DOMContentLoaded', function() {
+            // Check if user is logged in
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                window.location.href = 'login.html';
+                return;
+            }
+            
             loadUserData();
             loadWeather();
             loadDashboardStats();
