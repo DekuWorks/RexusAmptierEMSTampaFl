@@ -15,6 +15,9 @@ builder.Services.AddControllers();
 // Add SignalR
 builder.Services.AddSignalR();
 
+// Add HttpClient for SystemIntegrationService
+builder.Services.AddHttpClient();
+
 // Add Database Context
 builder.Services.AddDbContext<EmsDbContext>(options =>
 {

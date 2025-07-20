@@ -137,11 +137,11 @@ namespace RexusOps360.API.Controllers
         }
 
         [HttpGet("utility/{utilityType}")]
-        public async Task<IActionResult> GetHotspotsByUtility(string utilityType)
+        public Task<IActionResult> GetHotspotsByUtility(string utilityType)
         {
             try
             {
-                var hotspots = await _hotspotService.GetActiveHotspotsAsync(utilityType);
+                var hotspots = _hotspotService.GetActiveHotspotsAsync(utilityType).Result;
                 
                 var analytics = new
                 {
@@ -155,25 +155,25 @@ namespace RexusOps360.API.Controllers
                     average_duration_minutes = hotspots.Any() ? hotspots.Average(h => h.Duration.TotalMinutes) : 0
                 };
 
-                return Ok(new
+                return Task.FromResult<IActionResult>(Ok(new
                 {
                     analytics = analytics,
                     hotspots = hotspots
-                });
+                }));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving hotspots for utility type {UtilityType}", utilityType);
-                return StatusCode(500, new { error = "Error retrieving hotspots" });
+                return Task.FromResult<IActionResult>(StatusCode(500, new { error = "Error retrieving hotspots" }));
             }
         }
 
         [HttpGet("severity/{severity}")]
-        public async Task<IActionResult> GetHotspotsBySeverity(string severity)
+        public Task<IActionResult> GetHotspotsBySeverity(string severity)
         {
             try
             {
-                var allHotspots = await _hotspotService.GetActiveHotspotsAsync();
+                var allHotspots = _hotspotService.GetActiveHotspotsAsync().Result;
                 var hotspots = allHotspots.Where(h => h.Severity.Equals(severity, StringComparison.OrdinalIgnoreCase)).ToList();
 
                 var analytics = new
@@ -186,16 +186,16 @@ namespace RexusOps360.API.Controllers
                         .Select(g => new { utility_type = g.Key, count = g.Count() })
                 };
 
-                return Ok(new
+                return Task.FromResult<IActionResult>(Ok(new
                 {
                     analytics = analytics,
                     hotspots = hotspots
-                });
+                }));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving hotspots by severity {Severity}", severity);
-                return StatusCode(500, new { error = "Error retrieving hotspots" });
+                return Task.FromResult<IActionResult>(StatusCode(500, new { error = "Error retrieving hotspots" }));
             }
         }
 
@@ -225,17 +225,17 @@ namespace RexusOps360.API.Controllers
                     alerts = alerts.Where(a => ((dynamic)a).status == status).ToList();
                 }
 
-                return Ok(new
+                return Task.FromResult<IActionResult>(Ok(new
                 {
                     alerts = alerts,
                     count = alerts.Count,
                     active_count = alerts.Count(a => ((dynamic)a).status == "Active")
-                });
+                }));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error retrieving hotspot alerts");
-                return StatusCode(500, new { error = "Error retrieving hotspot alerts" });
+                return Task.FromResult<IActionResult>(StatusCode(500, new { error = "Error retrieving hotspot alerts" }));
             }
         }
 
@@ -246,18 +246,18 @@ namespace RexusOps360.API.Controllers
             {
                 // This would typically update the alert status in the database
                 // For now, we'll return a mock response
-                return Ok(new
+                return Task.FromResult<IActionResult>(Ok(new
                 {
                     message = "Alert acknowledged successfully",
                     alert_id = alertId,
                     acknowledged_by = request.AcknowledgedBy,
                     acknowledged_at = DateTime.UtcNow
-                });
+                }));
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error acknowledging alert {AlertId}", alertId);
-                return StatusCode(500, new { error = "Error acknowledging alert" });
+                return Task.FromResult<IActionResult>(StatusCode(500, new { error = "Error acknowledging alert" }));
             }
         }
 

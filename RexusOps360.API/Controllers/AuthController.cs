@@ -30,7 +30,7 @@ namespace RexusOps360.API.Controllers
             }
 
             // Get user from mock data (in production, this would come from database)
-            var user = GetMockUser(request.Username);
+            var user = GetMockUser(request.Username)!;
             if (user == null)
             {
                 return Unauthorized(new { message = "Invalid credentials" });
