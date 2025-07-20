@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Responder - EMS Tampa-FL</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+            color: #333;
+            overflow-x: hidden;
+        }
+
+        .mobile-header {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            padding: 15px;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .responder-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .responder-avatar {
+            width: 40px;
+            height: 40px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+        }
+
+        .responder-details h3 {
+            font-size: 1rem;
+            margin-bottom: 2px;
+        }
+
+        .responder-details p {
+            font-size: 0.8rem;
+            opacity: 0.9;
+        }
+
+        .status-indicator {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 0.8rem;
+        }
+
+        .status-dot {
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background: #27ae60;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        .main-content {
+            margin-top: 80px;
+            padding: 15px;
+            padding-bottom: 100px;
+        }
+
+        .quick-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .action-card {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .action-card:active {
+            transform: scale(0.95);
+        }
+
+        .action-card i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+
+        .action-card h3 {
+            font-size: 1rem;
+            color: #2c3e50;
+            margin-bottom: 5px;
+        }
+
+        .action-card p {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+
+        .current-incident {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .incident-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .incident-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .incident-priority {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-high {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .incident-details {
+            margin-bottom: 15px;
+        }
+
+        .detail-row {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 8px;
+            font-size: 0.9rem;
+        }
+
+        .detail-label {
+            color: #7f8c8d;
+        }
+
+        .detail-value {
+            color: #2c3e50;
+            font-weight: 500;
+        }
+
+        .incident-actions {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+
+        .incident-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .incident-btn:hover {
+            background: #2980b9;
+        }
+
+        .incident-btn.success {
+            background: #27ae60;
+        }
+
+        .incident-btn.success:hover {
+            background: #229954;
+        }
+
+        .incident-btn.danger {
+            background: #e74c3c;
+        }
+
+        .incident-btn.danger:hover {
+            background: #c0392b;
+        }
+
+        .photo-capture {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .photo-preview {
+            width: 100%;
+            height: 200px;
+            background: #f8f9fa;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 15px;
+            border: 2px dashed #dee2e6;
+        }
+
+        .photo-preview.has-image {
+            background-size: cover;
+            background-position: center;
+            border: none;
+        }
+
+        .photo-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .photo-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 12px;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .photo-btn:hover {
+            background: #2980b9;
+        }
+
+        .photo-btn.success {
+            background: #27ae60;
+        }
+
+        .photo-btn.success:hover {
+            background: #229954;
+        }
+
+        .location-tracker {
+            background: white;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .location-info {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+
+        .location-icon {
+            width: 40px;
+            height: 40px;
+            background: #3498db;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+        }
+
+        .location-details h4 {
+            font-size: 1rem;
+            color: #2c3e50;
+            margin-bottom: 2px;
+        }
+
+        .location-details p {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+        }
+
+        .location-actions {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 10px;
+        }
+
+        .location-btn {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px;
+            border-radius: 8px;
+            font-size: 0.8rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: background 0.3s ease;
+        }
+
+        .location-btn:hover {
+            background: #2980b9;
+        }
+
+        .mobile-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: white;
+            border-top: 1px solid #e0e0e0;
+            padding: 10px;
+            display: flex;
+            justify-content: space-around;
+            z-index: 1000;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 5px;
+            cursor: pointer;
+            padding: 8px;
+            border-radius: 8px;
+            transition: background 0.3s ease;
+        }
+
+        .nav-item:hover {
+            background: #f8f9fa;
+        }
+
+        .nav-item.active {
+            background: #e3f2fd;
+            color: #3498db;
+        }
+
+        .nav-item i {
+            font-size: 1.2rem;
+        }
+
+        .nav-item span {
+            font-size: 0.7rem;
+        }
+
+        .hidden {
+            display: none;
+        }
+
+        @media (max-width: 480px) {
+            .quick-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .incident-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .photo-actions {
+                grid-template-columns: 1fr;
+            }
+            
+            .location-actions {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="mobile-header">
+        <div class="header-content">
+            <div class="responder-info">
+                <div class="responder-avatar">
+                    <i class="fas fa-user-md"></i>
+                </div>
+                <div class="responder-details">
+                    <h3>Sarah Johnson</h3>
+                    <p>Paramedic</p>
+                </div>
+            </div>
+            <div class="status-indicator">
+                <div class="status-dot"></div>
+                <span>Online</span>
+            </div>
+        </div>
+    </div>
+
+    <div class="main-content">
+        <div class="quick-actions">
+            <div class="action-card" onclick="capturePhoto()">
+                <i class="fas fa-camera"></i>
+                <h3>Photo</h3>
+                <p>Capture scene</p>
+            </div>
+            <div class="action-card" onclick="updateLocation()">
+                <i class="fas fa-map-marker-alt"></i>
+                <h3>Location</h3>
+                <p>Update GPS</p>
+            </div>
+            <div class="action-card" onclick="sendReport()">
+                <i class="fas fa-file-medical"></i>
+                <h3>Report</h3>
+                <p>Submit report</p>
+            </div>
+            <div class="action-card" onclick="requestBackup()">
+                <i class="fas fa-users"></i>
+                <h3>Backup</h3>
+                <p>Request help</p>
+            </div>
+        </div>
+
+        <div class="current-incident">
+            <div class="incident-header">
+                <div class="incident-title">Medical Emergency</div>
+                <span class="incident-priority priority-high">High</span>
+            </div>
+            <div class="incident-details">
+                <div class="detail-row">
+                    <span class="detail-label">Location:</span>
+                    <span class="detail-value">123 Main St, Tampa</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Type:</span>
+                    <span class="detail-value">Cardiac Arrest</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">ETA:</span>
+                    <span class="detail-value">2 minutes</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Status:</span>
+                    <span class="detail-value">En Route</span>
+                </div>
+            </div>
+            <div class="incident-actions">
+                <button class="incident-btn" onclick="updateStatus('On Scene')">
+                    <i class="fas fa-map-marker-alt"></i> On Scene
+                </button>
+                <button class="incident-btn success" onclick="updateStatus('Transporting')">
+                    <i class="fas fa-ambulance"></i> Transport
+                </button>
+                <button class="incident-btn danger" onclick="updateStatus('Complete')">
+                    <i class="fas fa-check"></i> Complete
+                </button>
+            </div>
+        </div>
+
+        <div class="photo-capture">
+            <h3><i class="fas fa-camera"></i> Scene Photos</h3>
+            <div class="photo-preview" id="photoPreview">
+                <i class="fas fa-camera" style="font-size: 3rem; color: #dee2e6;"></i>
+            </div>
+            <div class="photo-actions">
+                <button class="photo-btn" onclick="capturePhoto()">
+                    <i class="fas fa-camera"></i> Take Photo
+                </button>
+                <button class="photo-btn success" onclick="uploadPhoto()">
+                    <i class="fas fa-upload"></i> Upload
+                </button>
+            </div>
+        </div>
+
+        <div class="location-tracker">
+            <h3><i class="fas fa-map-marker-alt"></i> Location Tracking</h3>
+            <div class="location-info">
+                <div class="location-icon">
+                    <i class="fas fa-crosshairs"></i>
+                </div>
+                <div class="location-details">
+                    <h4>Current Location</h4>
+                    <p id="currentLocation">Getting location...</p>
+                </div>
+            </div>
+            <div class="location-actions">
+                <button class="location-btn" onclick="updateLocation()">
+                    <i class="fas fa-refresh"></i> Update Location
+                </button>
+                <button class="location-btn" onclick="shareLocation()">
+                    <i class="fas fa-share"></i> Share Location
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div class="mobile-nav">
+        <div class="nav-item active" onclick="showTab('dashboard')">
+            <i class="fas fa-home"></i>
+            <span>Home</span>
+        </div>
+        <div class="nav-item" onclick="showTab('incidents')">
+            <i class="fas fa-exclamation-triangle"></i>
+            <span>Incidents</span>
+        </div>
+        <div class="nav-item" onclick="showTab('reports')">
+            <i class="fas fa-file-medical"></i>
+            <span>Reports</span>
+        </div>
+        <div class="nav-item" onclick="showTab('profile')">
+            <i class="fas fa-user"></i>
+            <span>Profile</span>
+        </div>
+    </div>
+
+    <script>
+        const API_BASE = 'http://localhost:5000/api';
+
+        // GPS Location tracking
+        function getCurrentLocation() {
+            if (navigator.geolocation) {
+                navigator.geolocation.getCurrentPosition(
+                    function(position) {
+                        const lat = position.coords.latitude;
+                        const lng = position.coords.longitude;
+                        document.getElementById('currentLocation').textContent = 
+                            `${lat.toFixed(4)}, ${lng.toFixed(4)}`;
+                        
+                        // Send location to server
+                        updateLocationOnServer(lat, lng);
+                    },
+                    function(error) {
+                        document.getElementById('currentLocation').textContent = 
+                            'Location unavailable';
+                        console.error('Location error:', error);
+                    }
+                );
+            } else {
+                document.getElementById('currentLocation').textContent = 
+                    'GPS not supported';
+            }
+        }
+
+        function updateLocationOnServer(lat, lng) {
+            // Send location update to server
+            console.log('Updating location:', lat, lng);
+        }
+
+        function updateLocation() {
+            getCurrentLocation();
+            showNotification('Location updated!', 'success');
+        }
+
+        function shareLocation() {
+            if (navigator.share) {
+                navigator.share({
+                    title: 'Responder Location',
+                    text: 'Current location update',
+                    url: window.location.href
+                });
+            } else {
+                showNotification('Location shared with dispatch!', 'success');
+            }
+        }
+
+        // Photo capture functionality
+        function capturePhoto() {
+            // Simulate photo capture
+            const photoPreview = document.getElementById('photoPreview');
+            photoPreview.style.backgroundImage = 'url("data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjAwIiBoZWlnaHQ9IjIwMCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48cmVjdCB3aWR0aD0iMTAwJSIgaGVpZ2h0PSIxMDAlIiBmaWxsPSIjZGVlMmU2Ii8+PHRleHQgeD0iNTAlIiB5PSI1MCUiIGZvbnQtZmFtaWx5PSJBcmlhbCIgZm9udC1zaXplPSIxNCIgZmlsbD0iIzk5OTk5OSIgdGV4dC1hbmNob3I9Im1pZGRsZSIgZHk9Ii4zZW0iPlBob3RvIENhcHR1cmVkPC90ZXh0Pjwvc3ZnPg==")';
+            photoPreview.classList.add('has-image');
+            showNotification('Photo captured!', 'success');
+        }
+
+        function uploadPhoto() {
+            showNotification('Photo uploaded to server!', 'success');
+        }
+
+        // Incident management
+        function updateStatus(status) {
+            showNotification(`Status updated to: ${status}`, 'success');
+        }
+
+        function sendReport() {
+            showNotification('Report submitted successfully!', 'success');
+        }
+
+        function requestBackup() {
+            if (confirm('Request backup assistance?')) {
+                showNotification('Backup requested! Help is on the way.', 'success');
+            }
+        }
+
+        // Navigation
+        function showTab(tabName) {
+            // Remove active class from all nav items
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            
+            // Add active class to clicked item
+            event.target.closest('.nav-item').classList.add('active');
+            
+            // Handle tab switching
+            console.log('Switching to tab:', tabName);
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 100px;
+                left: 50%;
+                transform: translateX(-50%);
+                background: ${type === 'success' ? '#27ae60' : '#e74c3c'};
+                color: white;
+                padding: 12px 20px;
+                border-radius: 8px;
+                z-index: 1001;
+                font-size: 0.9rem;
+                font-weight: 600;
+                box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            `;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.remove();
+            }, 3000);
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            getCurrentLocation();
+            
+            // Update location every 30 seconds
+            setInterval(getCurrentLocation, 30000);
+        });
+    </script>
+</body>
+</html> 
