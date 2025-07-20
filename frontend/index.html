@@ -601,6 +601,9 @@
             <div class="tab" onclick="showTab('analytics')">
                 <i class="fas fa-chart-bar"></i> Analytics
             </div>
+            <div class="tab" onclick="showTab('admin')">
+                <i class="fas fa-cog"></i> Admin
+            </div>
         </div>
 
         <div class="content">
@@ -1348,6 +1351,49 @@
             setTimeout(() => {
                 notification.remove();
             }, 5000);
+        }
+
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.content > div').forEach(tab => {
+                tab.classList.add('hidden');
+            });
+            
+            // Remove active class from all tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Show selected tab
+            const selectedTab = document.getElementById(tabName + 'Tab');
+            if (selectedTab) {
+                selectedTab.classList.remove('hidden');
+            }
+            
+            // Add active class to selected tab
+            event.target.classList.add('active');
+            
+            // Load specific data for each tab
+            switch(tabName) {
+                case 'incidents':
+                    loadIncidents();
+                    break;
+                case 'responders':
+                    loadResponders();
+                    break;
+                case 'equipment':
+                    loadEquipment();
+                    break;
+                case 'maps':
+                    initMap();
+                    break;
+                case 'analytics':
+                    loadAnalytics();
+                    break;
+                case 'admin':
+                    window.location.href = 'admin.html';
+                    break;
+            }
         }
     </script>
 </body>
