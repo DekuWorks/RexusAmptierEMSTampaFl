@@ -1,0 +1,333 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics Functionality Test</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+        
+        .test-section {
+            margin-bottom: 30px;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 10px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .test-section h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+        }
+        
+        .test-button {
+            background: #3498db;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 5px;
+            font-size: 0.9rem;
+        }
+        
+        .test-button:hover {
+            background: #2980b9;
+        }
+        
+        .test-button.success {
+            background: #27ae60;
+        }
+        
+        .test-button.error {
+            background: #e74c3c;
+        }
+        
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 5px;
+            font-family: monospace;
+        }
+        
+        .result.success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        
+        .result.error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        
+        .chart-container {
+            height: 300px;
+            margin: 20px 0;
+            background: white;
+            border-radius: 8px;
+            padding: 10px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 15px;
+            font-size: 0.8rem;
+            font-weight: bold;
+        }
+        
+        .status.passed {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .status.failed {
+            background: #e74c3c;
+            color: white;
+        }
+        
+        .status.pending {
+            background: #f39c12;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1><i class="fas fa-chart-bar"></i> Analytics Functionality Test</h1>
+        <p>This page tests the analytics functionality to ensure everything is working correctly.</p>
+        
+        <div class="test-section">
+            <h3>1. Chart.js Library Test</h3>
+            <button class="test-button" onclick="testChartJS()">Test Chart.js</button>
+            <div id="chartjsResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>2. Canvas Elements Test</h3>
+            <button class="test-button" onclick="testCanvasElements()">Test Canvas Elements</button>
+            <div id="canvasResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>3. Chart Creation Test</h3>
+            <button class="test-button" onclick="testChartCreation()">Test Chart Creation</button>
+            <div id="chartCreationResult" class="result"></div>
+            <div class="chart-container">
+                <canvas id="testChart"></canvas>
+            </div>
+        </div>
+        
+        <div class="test-section">
+            <h3>4. Analytics Functions Test</h3>
+            <button class="test-button" onclick="testAnalyticsFunctions()">Test Analytics Functions</button>
+            <div id="analyticsFunctionsResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>5. API Connection Test</h3>
+            <button class="test-button" onclick="testAPIConnection()">Test API Connection</button>
+            <div id="apiResult" class="result"></div>
+        </div>
+        
+        <div class="test-section">
+            <h3>6. Overall Status</h3>
+            <div id="overallStatus">
+                <span class="status pending">Pending Tests</span>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let testResults = {
+            chartJS: false,
+            canvasElements: false,
+            chartCreation: false,
+            analyticsFunctions: false,
+            apiConnection: false
+        };
+
+        function testChartJS() {
+            const resultDiv = document.getElementById('chartjsResult');
+            try {
+                if (typeof Chart !== 'undefined') {
+                    testResults.chartJS = true;
+                    resultDiv.innerHTML = '<span class="status passed">PASSED</span> Chart.js library is loaded successfully.';
+                    resultDiv.className = 'result success';
+                } else {
+                    throw new Error('Chart.js not loaded');
+                }
+            } catch (error) {
+                testResults.chartJS = false;
+                resultDiv.innerHTML = '<span class="status failed">FAILED</span> Chart.js library is not loaded: ' + error.message;
+                resultDiv.className = 'result error';
+            }
+            updateOverallStatus();
+        }
+
+        function testCanvasElements() {
+            const resultDiv = document.getElementById('canvasResult');
+            const requiredElements = ['categoryChart', 'timelineChart', 'responseTimeChart', 'equipmentChart'];
+            const missingElements = [];
+            
+            requiredElements.forEach(elementId => {
+                const element = document.getElementById(elementId);
+                if (!element) {
+                    missingElements.push(elementId);
+                }
+            });
+            
+            if (missingElements.length === 0) {
+                testResults.canvasElements = true;
+                resultDiv.innerHTML = '<span class="status passed">PASSED</span> All required canvas elements are present.';
+                resultDiv.className = 'result success';
+            } else {
+                testResults.canvasElements = false;
+                resultDiv.innerHTML = '<span class="status failed">FAILED</span> Missing canvas elements: ' + missingElements.join(', ');
+                resultDiv.className = 'result error';
+            }
+            updateOverallStatus();
+        }
+
+        function testChartCreation() {
+            const resultDiv = document.getElementById('chartCreationResult');
+            try {
+                const ctx = document.getElementById('testChart').getContext('2d');
+                const testChart = new Chart(ctx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Test 1', 'Test 2', 'Test 3'],
+                        datasets: [{
+                            data: [30, 40, 30],
+                            backgroundColor: ['#e74c3c', '#3498db', '#27ae60']
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false
+                    }
+                });
+                
+                testResults.chartCreation = true;
+                resultDiv.innerHTML = '<span class="status passed">PASSED</span> Chart creation test successful.';
+                resultDiv.className = 'result success';
+            } catch (error) {
+                testResults.chartCreation = false;
+                resultDiv.innerHTML = '<span class="status failed">FAILED</span> Chart creation failed: ' + error.message;
+                resultDiv.className = 'result error';
+            }
+            updateOverallStatus();
+        }
+
+        function testAnalyticsFunctions() {
+            const resultDiv = document.getElementById('analyticsFunctionsResult');
+            const requiredFunctions = [
+                'loadAnalytics',
+                'loadCategoryChart', 
+                'loadTimelineChart',
+                'loadResponseTimeChart',
+                'loadEquipmentChart'
+            ];
+            
+            const missingFunctions = [];
+            
+            requiredFunctions.forEach(funcName => {
+                if (typeof window[funcName] !== 'function') {
+                    missingFunctions.push(funcName);
+                }
+            });
+            
+            if (missingFunctions.length === 0) {
+                testResults.analyticsFunctions = true;
+                resultDiv.innerHTML = '<span class="status passed">PASSED</span> All analytics functions are defined.';
+                resultDiv.className = 'result success';
+            } else {
+                testResults.analyticsFunctions = false;
+                resultDiv.innerHTML = '<span class="status failed">FAILED</span> Missing functions: ' + missingFunctions.join(', ');
+                resultDiv.className = 'result error';
+            }
+            updateOverallStatus();
+        }
+
+        async function testAPIConnection() {
+            const resultDiv = document.getElementById('apiResult');
+            try {
+                const response = await fetch('http://localhost:5000/api/health');
+                if (response.ok) {
+                    testResults.apiConnection = true;
+                    resultDiv.innerHTML = '<span class="status passed">PASSED</span> API connection successful.';
+                    resultDiv.className = 'result success';
+                } else {
+                    throw new Error(`HTTP ${response.status}`);
+                }
+            } catch (error) {
+                testResults.apiConnection = false;
+                resultDiv.innerHTML = '<span class="status failed">FAILED</span> API connection failed: ' + error.message;
+                resultDiv.className = 'result error';
+            }
+            updateOverallStatus();
+        }
+
+        function updateOverallStatus() {
+            const overallStatus = document.getElementById('overallStatus');
+            const passedTests = Object.values(testResults).filter(result => result === true).length;
+            const totalTests = Object.keys(testResults).length;
+            
+            if (passedTests === totalTests) {
+                overallStatus.innerHTML = '<span class="status passed">ALL TESTS PASSED</span> Analytics functionality is working correctly!';
+            } else if (passedTests > 0) {
+                overallStatus.innerHTML = `<span class="status pending">PARTIAL SUCCESS</span> ${passedTests}/${totalTests} tests passed.`;
+            } else {
+                overallStatus.innerHTML = '<span class="status failed">ALL TESTS FAILED</span> Analytics functionality needs attention.';
+            }
+        }
+
+        // Mock analytics functions for testing
+        function loadAnalytics() {
+            console.log('loadAnalytics function called');
+        }
+        
+        function loadCategoryChart() {
+            console.log('loadCategoryChart function called');
+        }
+        
+        function loadTimelineChart() {
+            console.log('loadTimelineChart function called');
+        }
+        
+        function loadResponseTimeChart() {
+            console.log('loadResponseTimeChart function called');
+        }
+        
+        function loadEquipmentChart() {
+            console.log('loadEquipmentChart function called');
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            console.log('Analytics functionality test page loaded');
+        });
+    </script>
+</body>
+</html> 

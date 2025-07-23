@@ -3,20 +3,7 @@ using System.Text.RegularExpressions;
 
 namespace RexusOps360.API.Models
 {
-    public class LoginRequest
-    {
-        [Required(ErrorMessage = "Username is required")]
-        [StringLength(50, MinimumLength = 3, ErrorMessage = "Username must be between 3 and 50 characters")]
-        [RegularExpression(@"^[a-zA-Z0-9_-]+$", ErrorMessage = "Username can only contain letters, numbers, underscores, and hyphens")]
-        public string Username { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Password is required")]
-        [StringLength(100, MinimumLength = 8, ErrorMessage = "Password must be between 8 and 100 characters")]
-        public string Password { get; set; } = string.Empty;
-
-        [Display(Name = "Remember Me")]
-        public bool RememberMe { get; set; } = false;
-    }
 
     public class RegisterRequest
     {
@@ -130,18 +117,7 @@ namespace RexusOps360.API.Models
         public string? Address { get; set; }
     }
 
-    public class LoginResponse
-    {
-        public string Token { get; set; } = string.Empty;
-        public string RefreshToken { get; set; } = string.Empty;
-        public string Username { get; set; } = string.Empty;
-        public string FullName { get; set; } = string.Empty;
-        public string Role { get; set; } = string.Empty;
-        public string? TenantId { get; set; }
-        public DateTime ExpiresAt { get; set; }
-        public DateTime RefreshTokenExpiresAt { get; set; }
-        public bool IsFirstLogin { get; set; } = false;
-    }
+
 
     public class RefreshTokenRequest
     {

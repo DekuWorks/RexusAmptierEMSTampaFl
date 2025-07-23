@@ -104,6 +104,16 @@ RexusOps360 System/
    ```
 
 5. **Access the application**
+   - **Main App**: http://localhost:5169
+   - **API Documentation**: http://localhost:5169/swagger
+   - **Login**: http://localhost:5169/web/login
+
+4. **Run the application**
+   ```bash
+   dotnet run
+   ```
+
+5. **Access the application**
    - API: `http://localhost:5000`
    - Swagger UI: `http://localhost:5000`
    - EMS Dashboard: `http://localhost:5000/frontend/`

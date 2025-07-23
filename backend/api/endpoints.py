@@ -524,6 +524,25 @@ def api_login():
     db.close()
 
     if user and check_password_hash(user['password_hash'], password):
-        return jsonify({'message': 'Login successful', 'role': user['role'], 'full_name': user['full_name']}), 200
+        # Return the expected data structure
+        user_data = {
+            'id': user['id'],
+            'username': user['username'],
+            'full_name': user['full_name'],
+            'role': user['role'],
+            'email': user['email']
+        }
+        
+        # Generate a simple token (in production, use JWT)
+        import hashlib
+        import time
+        token_data = f"{user['username']}:{time.time()}"
+        token = hashlib.sha256(token_data.encode()).hexdigest()
+        
+        return jsonify({
+            'token': token,
+            'user': user_data,
+            'message': 'Login successful'
+        }), 200
     else:
         return jsonify({'error': 'Invalid username or password.'}), 401 

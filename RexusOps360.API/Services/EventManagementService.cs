@@ -408,6 +408,60 @@ namespace RexusOps360.API.Services
             }
         }
 
+        public async Task<SessionResponse> UpdateSessionAsync(int sessionId, CreateSessionRequest request, string userId)
+        {
+            try
+            {
+                var existingSession = await _context.Sessions
+                    .FirstOrDefaultAsync(s => s.Id == sessionId);
+
+                if (existingSession == null)
+                    throw new ArgumentException("Session not found");
+
+                existingSession.Title = request.Title;
+                existingSession.Description = request.Description;
+                existingSession.StartTime = request.StartTime;
+                existingSession.EndTime = request.EndTime;
+                existingSession.Location = request.Location;
+                existingSession.VirtualMeetingUrl = request.VirtualMeetingUrl;
+                existingSession.MaxCapacity = request.MaxCapacity;
+                existingSession.Track = request.Track;
+                existingSession.Type = request.Type;
+                existingSession.Materials = request.Materials;
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Session updated: {SessionId} by user {UserId}", sessionId, userId);
+                return await GetSessionAsync(sessionId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating session {SessionId}", sessionId);
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteSessionAsync(int sessionId, string userId)
+        {
+            try
+            {
+                var session = await _context.Sessions.FindAsync(sessionId);
+                if (session == null)
+                    return false;
+
+                _context.Sessions.Remove(session);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Session deleted: {SessionId} by user {UserId}", sessionId, userId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting session {SessionId}", sessionId);
+                throw;
+            }
+        }
+
         public async Task<List<SessionResponse>> GetEventSessionsAsync(int eventId)
         {
             try
@@ -667,6 +721,60 @@ namespace RexusOps360.API.Services
             }
         }
 
+        public async Task<RegistrationResponse> UpdateRegistrationAsync(int registrationId, CreateRegistrationRequest request)
+        {
+            try
+            {
+                var registration = await _context.Registrations.FindAsync(registrationId);
+                if (registration == null)
+                    throw new ArgumentException("Registration not found");
+
+                registration.FirstName = request.FirstName;
+                registration.LastName = request.LastName;
+                registration.Email = request.Email;
+                registration.Phone = request.Phone;
+                registration.Organization = request.Organization;
+                registration.JobTitle = request.JobTitle;
+                registration.Type = request.Type;
+                registration.SpecialRequirements = request.SpecialRequirements;
+                registration.DietaryRestrictions = request.DietaryRestrictions;
+                registration.EmailNotifications = request.EmailNotifications;
+                registration.SmsNotifications = request.SmsNotifications;
+                registration.SmsPhone = request.SmsPhone;
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Registration updated: {RegistrationId}", registrationId);
+                return await GetRegistrationAsync(registrationId);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating registration {RegistrationId}", registrationId);
+                throw;
+            }
+        }
+
+        public async Task<bool> CancelRegistrationAsync(int registrationId)
+        {
+            try
+            {
+                var registration = await _context.Registrations.FindAsync(registrationId);
+                if (registration == null)
+                    return false;
+
+                registration.Status = RegistrationStatus.Cancelled;
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Registration cancelled: {RegistrationId}", registrationId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error cancelling registration {RegistrationId}", registrationId);
+                throw;
+            }
+        }
+
         #endregion
 
         #region Speaker Management
@@ -730,6 +838,99 @@ namespace RexusOps360.API.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting speakers for tenant {TenantId}", tenantId);
+                throw;
+            }
+        }
+
+        public async Task<SpeakerResponse> GetSpeakerAsync(int speakerId)
+        {
+            try
+            {
+                var speaker = await _context.Speakers.FindAsync(speakerId);
+                if (speaker == null)
+                    throw new ArgumentException("Speaker not found");
+
+                return new SpeakerResponse
+                {
+                    Id = speaker.Id,
+                    FirstName = speaker.FirstName,
+                    LastName = speaker.LastName,
+                    Title = speaker.Title,
+                    Organization = speaker.Organization,
+                    Bio = speaker.Bio,
+                    Email = speaker.Email,
+                    PhotoUrl = speaker.PhotoUrl,
+                    LinkedInUrl = speaker.LinkedInUrl,
+                    TwitterUrl = speaker.TwitterUrl
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting speaker {SpeakerId}", speakerId);
+                throw;
+            }
+        }
+
+        public async Task<SpeakerResponse> UpdateSpeakerAsync(int speakerId, Speaker speaker, string userId)
+        {
+            try
+            {
+                var existingSpeaker = await _context.Speakers.FindAsync(speakerId);
+                if (existingSpeaker == null)
+                    throw new ArgumentException("Speaker not found");
+
+                existingSpeaker.FirstName = speaker.FirstName;
+                existingSpeaker.LastName = speaker.LastName;
+                existingSpeaker.Title = speaker.Title;
+                existingSpeaker.Organization = speaker.Organization;
+                existingSpeaker.Bio = speaker.Bio;
+                existingSpeaker.Email = speaker.Email;
+                existingSpeaker.Phone = speaker.Phone;
+                existingSpeaker.PhotoUrl = speaker.PhotoUrl;
+                existingSpeaker.LinkedInUrl = speaker.LinkedInUrl;
+                existingSpeaker.TwitterUrl = speaker.TwitterUrl;
+
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Speaker updated: {SpeakerId} by user {UserId}", speakerId, userId);
+                return new SpeakerResponse
+                {
+                    Id = existingSpeaker.Id,
+                    FirstName = existingSpeaker.FirstName,
+                    LastName = existingSpeaker.LastName,
+                    Title = existingSpeaker.Title,
+                    Organization = existingSpeaker.Organization,
+                    Bio = existingSpeaker.Bio,
+                    Email = existingSpeaker.Email,
+                    PhotoUrl = existingSpeaker.PhotoUrl,
+                    LinkedInUrl = existingSpeaker.LinkedInUrl,
+                    TwitterUrl = existingSpeaker.TwitterUrl
+                };
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error updating speaker {SpeakerId}", speakerId);
+                throw;
+            }
+        }
+
+        public async Task<bool> DeleteSpeakerAsync(int speakerId, string userId)
+        {
+            try
+            {
+                var speaker = await _context.Speakers.FindAsync(speakerId);
+                if (speaker == null)
+                    return false;
+
+                _context.Speakers.Remove(speaker);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Speaker deleted: {SpeakerId} by user {UserId}", speakerId, userId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error deleting speaker {SpeakerId}", speakerId);
                 throw;
             }
         }
@@ -825,6 +1026,84 @@ namespace RexusOps360.API.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error getting event analytics for event {EventId}", eventId);
+                throw;
+            }
+        }
+
+        public async Task<RegistrationAnalytics> GetRegistrationAnalyticsAsync(int eventId)
+        {
+            try
+            {
+                var registrations = await _context.Registrations
+                    .Where(r => r.EventId == eventId)
+                    .ToListAsync();
+
+                var analytics = new RegistrationAnalytics
+                {
+                    EventId = eventId,
+                    StatusBreakdown = registrations.GroupBy(r => r.Status)
+                        .ToDictionary(g => g.Key, g => g.Count()),
+                    TypeBreakdown = registrations.GroupBy(r => r.Type)
+                        .ToDictionary(g => g.Key, g => g.Count()),
+                    DailyRegistrations = registrations.GroupBy(r => r.RegistrationDate.Date)
+                        .Select(g => new DailyRegistration
+                        {
+                            Date = g.Key,
+                            Count = g.Count()
+                        }).OrderBy(d => d.Date).ToList()
+                };
+
+                return analytics;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error getting registration analytics for event {EventId}", eventId);
+                throw;
+            }
+        }
+
+        public async Task<bool> RemoveSpeakerFromEventAsync(int eventId, int speakerId)
+        {
+            try
+            {
+                var eventSpeaker = await _context.EventSpeakers
+                    .FirstOrDefaultAsync(es => es.EventId == eventId && es.SpeakerId == speakerId);
+
+                if (eventSpeaker == null)
+                    return false;
+
+                _context.EventSpeakers.Remove(eventSpeaker);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Speaker {SpeakerId} removed from event {EventId}", speakerId, eventId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error removing speaker from event");
+                throw;
+            }
+        }
+
+        public async Task<bool> RemoveSpeakerFromSessionAsync(int sessionId, int speakerId)
+        {
+            try
+            {
+                var sessionSpeaker = await _context.SessionSpeakers
+                    .FirstOrDefaultAsync(ss => ss.SessionId == sessionId && ss.SpeakerId == speakerId);
+
+                if (sessionSpeaker == null)
+                    return false;
+
+                _context.SessionSpeakers.Remove(sessionSpeaker);
+                await _context.SaveChangesAsync();
+
+                _logger.LogInformation("Speaker {SpeakerId} removed from session {SessionId}", speakerId, sessionId);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error removing speaker from session");
                 throw;
             }
         }

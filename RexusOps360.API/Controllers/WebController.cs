@@ -7,6 +7,13 @@ namespace RexusOps360.API.Controllers
     [Route("[controller]")]
     public class WebController : ControllerBase
     {
+        [HttpGet("/")]
+        [HttpGet("")]
+        public IActionResult Index()
+        {
+            return Redirect("/web/login");
+        }
+
         [HttpGet("dashboard")]
         public IActionResult Dashboard()
         {

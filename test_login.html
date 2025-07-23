@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #f5f5f5;
+        }
+        .test-section {
+            background: white;
+            padding: 20px;
+            margin: 20px 0;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .test-button {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+        .test-button:hover {
+            background: #0056b3;
+        }
+        .result {
+            margin-top: 10px;
+            padding: 10px;
+            border-radius: 4px;
+        }
+        .success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+        .error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+        .info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+    </style>
+</head>
+<body>
+    <h1>🔧 Login Troubleshooting Test</h1>
+    
+    <div class="test-section">
+        <h3>1. Server Connection Test</h3>
+        <button class="test-button" onclick="testServerConnection()">Test Server Connection</button>
+        <div id="serverResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>2. Login API Test</h3>
+        <button class="test-button" onclick="testLoginAPI()">Test Login API</button>
+        <div id="loginResult" class="result"></div>
+    </div>
+
+    <div class="test-section">
+        <h3>3. Browser Navigation Test</h3>
+        <button class="test-button" onclick="window.open('http://127.0.0.1:3002', '_blank')">Open Main App</button>
+        <button class="test-button" onclick="window.open('http://127.0.0.1:3002/login', '_blank')">Open Login Page</button>
+        <div class="result info">
+            <strong>Instructions:</strong><br>
+            1. Click "Open Main App" to go to the main application<br>
+            2. Try logging in with: <strong>admin / admin123</strong><br>
+            3. If you get a network error, try clearing your browser cache<br>
+            4. Try a different browser (Chrome, Firefox, Edge)
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>4. Demo Credentials</h3>
+        <div class="result info">
+            <strong>Try these credentials:</strong><br>
+            • <strong>Admin:</strong> admin / admin123<br>
+            • <strong>Dispatcher:</strong> dispatcher1 / pass123<br>
+            • <strong>Responder:</strong> responder1 / pass123
+        </div>
+    </div>
+
+    <div class="test-section">
+        <h3>5. Troubleshooting Steps</h3>
+        <div class="result info">
+            <strong>If you still get network errors:</strong><br>
+            1. <strong>Clear browser cache</strong> (Ctrl+Shift+Delete)<br>
+            2. <strong>Try incognito/private mode</strong><br>
+            3. <strong>Try a different browser</strong><br>
+            4. <strong>Check if antivirus is blocking</strong><br>
+            5. <strong>Try accessing via IP:</strong> http://localhost:3002
+        </div>
+    </div>
+
+    <script>
+        async function testServerConnection() {
+            const resultDiv = document.getElementById('serverResult');
+            resultDiv.innerHTML = 'Testing...';
+            resultDiv.className = 'result info';
+            
+            try {
+                const response = await fetch('http://127.0.0.1:3002/');
+                if (response.ok) {
+                    resultDiv.innerHTML = '✅ Server is responding correctly!';
+                    resultDiv.className = 'result success';
+                } else {
+                    resultDiv.innerHTML = `❌ Server error: ${response.status}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Connection failed: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        async function testLoginAPI() {
+            const resultDiv = document.getElementById('loginResult');
+            resultDiv.innerHTML = 'Testing login...';
+            resultDiv.className = 'result info';
+            
+            try {
+                const formData = new FormData();
+                formData.append('username', 'admin');
+                formData.append('password', 'admin123');
+                
+                const response = await fetch('http://127.0.0.1:3002/login', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                if (response.ok) {
+                    const text = await response.text();
+                    if (text.includes('Dashboard')) {
+                        resultDiv.innerHTML = '✅ Login API working! Dashboard loaded successfully.';
+                        resultDiv.className = 'result success';
+                    } else {
+                        resultDiv.innerHTML = '⚠️ Login API responded but may have issues.';
+                        resultDiv.className = 'result info';
+                    }
+                } else {
+                    resultDiv.innerHTML = `❌ Login API error: ${response.status}`;
+                    resultDiv.className = 'result error';
+                }
+            } catch (error) {
+                resultDiv.innerHTML = `❌ Login API failed: ${error.message}`;
+                resultDiv.className = 'result error';
+            }
+        }
+
+        // Auto-run tests when page loads
+        window.onload = function() {
+            setTimeout(testServerConnection, 1000);
+            setTimeout(testLoginAPI, 2000);
+        };
+    </script>
+</body>
+</html> 

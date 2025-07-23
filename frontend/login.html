@@ -215,12 +215,12 @@
         <form id="loginForm">
             <div class="form-group">
                 <label for="username">Username</label>
-                <input type="text" id="username" name="username" required placeholder="Enter your username">
+                <input type="text" id="username" name="username" required placeholder="Enter your username" value="admin">
             </div>
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required placeholder="Enter your password">
+                <input type="password" id="password" name="password" required placeholder="Enter your password" value="admin123">
             </div>
 
             <button type="submit" class="login-btn" id="loginBtn">
@@ -243,54 +243,121 @@
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:5000/api';
-
+        const API_BASE = 'http://localhost:5170/api';
+        const DEMO_MODE = true; // Enable demo mode for testing
+        
+        // Handle form submission with fetch
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             
-            const username = document.getElementById('username').value;
-            const password = document.getElementById('password').value;
             const loginBtn = document.getElementById('loginBtn');
             const loading = document.getElementById('loading');
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
             
             // Show loading state
             loginBtn.style.display = 'none';
             loading.style.display = 'block';
             
             try {
-                const response = await fetch(`${API_BASE}/auth/login`, {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ username, password })
-                });
-
-                const data = await response.json();
-
-                if (response.ok) {
-                    // Store user data and token
-                    localStorage.setItem('userData', JSON.stringify(data.user));
-                    localStorage.setItem('authToken', data.token);
-                    
-                    showFlashMessage('Login successful! Redirecting...', 'success');
-                    
-                    // Redirect to dashboard after a short delay
-                    setTimeout(() => {
-                        window.location.href = 'index.html';
-                    }, 1500);
+                if (DEMO_MODE) {
+                    // Demo mode - simulate successful login
+                    await simulateDemoLogin(username, password);
                 } else {
-                    showFlashMessage(data.error || 'Login failed. Please check your credentials.', 'error');
+                    // Real API call
+                    const response = await fetch(`${API_BASE}/auth/login`, {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            username: username,
+                            password: password
+                        })
+                    });
+                    
+                    const data = await response.json();
+                    
+                    if (response.ok && data.success) {
+                        // Store user data and token
+                        localStorage.setItem('userData', JSON.stringify(data.data.user));
+                        localStorage.setItem('authToken', data.data.token);
+                        
+                        showFlashMessage('Login successful! Redirecting...', 'success');
+                        
+                        setTimeout(() => {
+                            window.location.href = 'index.html';
+                        }, 1500);
+                    } else {
+                        // Handle login failure
+                        const errorMessage = data.message || 'Login failed. Please check your credentials.';
+                        showFlashMessage(errorMessage, 'error');
+                        
+                        // Reset form
+                        loginBtn.style.display = 'block';
+                        loading.style.display = 'none';
+                    }
                 }
             } catch (error) {
                 console.error('Login error:', error);
-                showFlashMessage('Network error. Please try again.', 'error');
-            } finally {
-                // Hide loading state
+                if (DEMO_MODE) {
+                    showFlashMessage('Demo login failed. Please try again.', 'error');
+                } else {
+                    showFlashMessage('Network error. Please check if the backend is running.', 'error');
+                }
+                
+                // Reset form
                 loginBtn.style.display = 'block';
                 loading.style.display = 'none';
             }
         });
+
+        async function simulateDemoLogin(username, password) {
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 1000));
+            
+            const demoUsers = {
+                'admin': { 
+                    full_name: 'System Administrator', 
+                    role: 'admin',
+                    username: 'admin'
+                },
+                'dispatcher1': { 
+                    full_name: 'John Smith', 
+                    role: 'dispatcher',
+                    username: 'dispatcher1'
+                },
+                'responder1': { 
+                    full_name: 'Sarah Johnson', 
+                    role: 'responder',
+                    username: 'responder1'
+                }
+            };
+
+            const demoPasswords = {
+                'admin': 'admin123',
+                'dispatcher1': 'pass123',
+                'responder1': 'pass123'
+            };
+
+            if (demoUsers[username] && demoPasswords[username] === password) {
+                const userData = demoUsers[username];
+                localStorage.setItem('userData', JSON.stringify(userData));
+                localStorage.setItem('authToken', 'demo-token-' + Date.now());
+                
+                showFlashMessage('Demo login successful! Redirecting...', 'success');
+                
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            } else {
+                showFlashMessage('Invalid credentials. Please try again.', 'error');
+                
+                // Reset form
+                document.getElementById('loginBtn').style.display = 'block';
+                document.getElementById('loading').style.display = 'none';
+            }
+        }
 
         function showFlashMessage(message, type) {
             const flashContainer = document.getElementById('flashMessages');
@@ -304,29 +371,6 @@
             setTimeout(() => {
                 flashMessage.remove();
             }, 5000);
-        }
-
-        // Demo login functionality for testing without backend
-        function demoLogin(username, password) {
-            const demoUsers = {
-                'admin': { full_name: 'System Administrator', role: 'admin' },
-                'dispatcher1': { full_name: 'John Smith', role: 'dispatcher' },
-                'responder1': { full_name: 'Sarah Johnson', role: 'responder' }
-            };
-
-            if (demoUsers[username]) {
-                const userData = demoUsers[username];
-                localStorage.setItem('userData', JSON.stringify(userData));
-                localStorage.setItem('authToken', 'demo-token-' + Date.now());
-                
-                showFlashMessage('Demo login successful! Redirecting...', 'success');
-                
-                setTimeout(() => {
-                    window.location.href = 'index.html';
-                }, 1500);
-            } else {
-                showFlashMessage('Invalid credentials. Please try again.', 'error');
-            }
         }
 
         // Add demo login shortcuts

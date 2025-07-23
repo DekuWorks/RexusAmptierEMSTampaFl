@@ -140,7 +140,8 @@ if (app.Environment.IsDevelopment())
     });
 }
 
-app.UseHttpsRedirection();
+// Disable HTTPS redirection for development
+// app.UseHttpsRedirection();
 
 // Serve static files
 app.UseStaticFiles();
@@ -149,8 +150,8 @@ app.UseStaticFiles();
 app.UseCors("AllowAll");
 
 // Add custom middleware
-app.UseRequestLogging();
-app.UseRateLimiting();
+// app.UseRequestLogging(); // Not implemented yet
+// app.UseRateLimiting(); // Not implemented yet
 
 // Use Authentication & Authorization
 app.UseAuthentication();

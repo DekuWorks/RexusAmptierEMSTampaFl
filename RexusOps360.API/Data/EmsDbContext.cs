@@ -19,6 +19,15 @@ namespace RexusOps360.API.Data
         public DbSet<Hotspot> Hotspots { get; set; }
         public DbSet<HotspotAlert> HotspotAlerts { get; set; }
 
+        // Event Management Entities
+        public DbSet<Event> Events { get; set; }
+        public DbSet<Session> Sessions { get; set; }
+        public DbSet<Registration> Registrations { get; set; }
+        public DbSet<Speaker> Speakers { get; set; }
+        public DbSet<EventSpeaker> EventSpeakers { get; set; }
+        public DbSet<SessionSpeaker> SessionSpeakers { get; set; }
+        public DbSet<SessionAttendee> SessionAttendees { get; set; }
+
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -401,6 +410,133 @@ namespace RexusOps360.API.Data
                     CreatedAt = new DateTime(2024, 6, 1, 8, 0, 0, DateTimeKind.Utc)
                 }
             );
+
+            // Event Management Entity Configurations
+            modelBuilder.Entity<Event>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Description).HasMaxLength(1000);
+                entity.Property(e => e.Location).HasMaxLength(200);
+                entity.Property(e => e.VirtualMeetingUrl).HasMaxLength(500);
+                entity.Property(e => e.TimeZone).HasMaxLength(50);
+                entity.Property(e => e.Currency).HasMaxLength(10);
+                entity.Property(e => e.BrandingLogoUrl).HasMaxLength(500);
+                entity.Property(e => e.BrandingColor).HasMaxLength(20);
+                entity.Property(e => e.CustomCss).HasMaxLength(2000);
+                entity.Property(e => e.CreatedBy).HasMaxLength(100);
+                entity.Property(e => e.UpdatedBy).HasMaxLength(100);
+                
+                entity.HasIndex(e => e.TenantId);
+                entity.HasIndex(e => e.Status);
+                entity.HasIndex(e => e.Type);
+                entity.HasIndex(e => e.StartDate);
+            });
+
+            modelBuilder.Entity<Session>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Title).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Description).HasMaxLength(1000);
+                entity.Property(e => e.Location).HasMaxLength(200);
+                entity.Property(e => e.VirtualMeetingUrl).HasMaxLength(500);
+                entity.Property(e => e.Track).HasMaxLength(100);
+                entity.Property(e => e.Materials).HasMaxLength(500);
+                
+                entity.HasIndex(e => e.EventId);
+                entity.HasIndex(e => e.Status);
+                entity.HasIndex(e => e.Type);
+                entity.HasIndex(e => e.StartTime);
+            });
+
+            modelBuilder.Entity<Registration>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.FirstName).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.LastName).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Email).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Phone).HasMaxLength(20);
+                entity.Property(e => e.Organization).HasMaxLength(200);
+                entity.Property(e => e.JobTitle).HasMaxLength(100);
+                entity.Property(e => e.Address).HasMaxLength(500);
+                entity.Property(e => e.City).HasMaxLength(100);
+                entity.Property(e => e.State).HasMaxLength(50);
+                entity.Property(e => e.ZipCode).HasMaxLength(20);
+                entity.Property(e => e.Country).HasMaxLength(100);
+                entity.Property(e => e.SpecialRequirements).HasMaxLength(500);
+                entity.Property(e => e.DietaryRestrictions).HasMaxLength(200);
+                entity.Property(e => e.PaymentMethod).HasMaxLength(50);
+                entity.Property(e => e.SmsPhone).HasMaxLength(20);
+                
+                entity.HasIndex(e => e.EventId);
+                entity.HasIndex(e => e.Status);
+                entity.HasIndex(e => e.Type);
+                entity.HasIndex(e => e.RegistrationDate);
+            });
+
+            modelBuilder.Entity<Speaker>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.FirstName).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.LastName).IsRequired().HasMaxLength(100);
+                entity.Property(e => e.Title).HasMaxLength(200);
+                entity.Property(e => e.Organization).HasMaxLength(200);
+                entity.Property(e => e.Bio).HasMaxLength(1000);
+                entity.Property(e => e.Email).HasMaxLength(200);
+                entity.Property(e => e.Phone).HasMaxLength(20);
+                entity.Property(e => e.PhotoUrl).HasMaxLength(500);
+                entity.Property(e => e.LinkedInUrl).HasMaxLength(500);
+                entity.Property(e => e.TwitterUrl).HasMaxLength(500);
+                
+                entity.HasIndex(e => e.TenantId);
+            });
+
+            modelBuilder.Entity<EventSpeaker>(entity =>
+            {
+                entity.HasKey(e => new { e.EventId, e.SpeakerId });
+                entity.Property(e => e.Role).HasMaxLength(100);
+                
+                entity.HasOne<Event>()
+                    .WithMany(e => e.Speakers)
+                    .HasForeignKey(es => es.EventId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasOne<Speaker>()
+                    .WithMany()
+                    .HasForeignKey(es => es.SpeakerId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<SessionSpeaker>(entity =>
+            {
+                entity.HasKey(e => new { e.SessionId, e.SpeakerId });
+                entity.Property(e => e.Role).HasMaxLength(100);
+                
+                entity.HasOne<Session>()
+                    .WithMany(s => s.Speakers)
+                    .HasForeignKey(ss => ss.SessionId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasOne<Speaker>()
+                    .WithMany()
+                    .HasForeignKey(ss => ss.SpeakerId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<SessionAttendee>(entity =>
+            {
+                entity.HasKey(e => new { e.SessionId, e.RegistrationId });
+                
+                entity.HasOne<Session>()
+                    .WithMany(s => s.Attendees)
+                    .HasForeignKey(sa => sa.SessionId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasOne<Registration>()
+                    .WithMany()
+                    .HasForeignKey(sa => sa.RegistrationId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
         }
     }
 } 
