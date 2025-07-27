@@ -303,14 +303,8 @@ namespace RexusOps360.API.Models
 
     public class EventSponsor
     {
-        [Key]
-        [Column(Order = 0)]
         public int EventId { get; set; }
-        
-        [Key]
-        [Column(Order = 1)]
         public int SponsorId { get; set; }
-        
         public string SponsorshipLevel { get; set; } = string.Empty;
         public decimal Amount { get; set; }
         public DateTime SponsorshipDate { get; set; } = DateTime.UtcNow;

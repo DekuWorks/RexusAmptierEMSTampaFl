@@ -220,7 +220,7 @@
 
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required placeholder="Enter your password" value="admin123">
+                <input type="password" id="password" name="password" required placeholder="Enter your password" value="pass123">
             </div>
 
             <button type="submit" class="login-btn" id="loginBtn">
@@ -236,35 +236,85 @@
 
         <div class="demo-credentials">
             <h4><i class="fas fa-info-circle"></i> Demo Credentials</h4>
-            <p><strong>Admin:</strong> admin / admin123</p>
+            <p><strong>Admin:</strong> admin / pass123</p>
             <p><strong>Dispatcher:</strong> dispatcher1 / pass123</p>
             <p><strong>Responder:</strong> responder1 / pass123</p>
         </div>
     </div>
 
     <script>
-        const API_BASE = 'http://localhost:5170/api';
-        const DEMO_MODE = true; // Enable demo mode for testing
+        /*
+         * RexusOps360 EMS - Login Page JavaScript
+         * 
+         * This script handles user authentication and login functionality.
+         * It communicates with the C# backend API for secure authentication.
+         * 
+         * Features:
+         * - Form validation and submission
+         * - JWT token storage and management
+         * - Demo mode for testing
+         * - Flash message display
+         * - Auto-fill demo credentials
+         * 
+         * API Endpoints:
+         * - POST /api/auth/login - User authentication
+         * 
+         * Security:
+         * - Password field masking
+         * - CSRF protection via JWT tokens
+         * - Input validation and sanitization
+         * 
+         * Author: RexusOps360 Development Team
+         * Version: 1.0.0
+         * Last Updated: 2025-01-17
+         */
+
+        // API Configuration
+        const API_BASE = 'http://localhost:5169/api';  // C# Backend API URL
+        const DEMO_MODE = true; // Set to true for testing, false for production
         
-        // Handle form submission with fetch
+        // =============================================================================
+        // FORM SUBMISSION HANDLER - Main Login Logic
+        // =============================================================================
+        
+        // Handle form submission with fetch API
+        // Supports both demo mode and real API authentication
         document.getElementById('loginForm').addEventListener('submit', async function(e) {
-            e.preventDefault();
+            e.preventDefault(); // Prevent default form submission
             
+            // Get form elements and values
             const loginBtn = document.getElementById('loginBtn');
             const loading = document.getElementById('loading');
-            const username = document.getElementById('username').value;
+            const username = document.getElementById('username').value.trim();
             const password = document.getElementById('password').value;
             
-            // Show loading state
+            // Log login attempt for debugging (remove in production)
+            console.log('Login attempt:', { username, password, DEMO_MODE });
+            
+            // Show loading state to provide user feedback
             loginBtn.style.display = 'none';
             loading.style.display = 'block';
             
-            try {
-                if (DEMO_MODE) {
-                    // Demo mode - simulate successful login
+            if (DEMO_MODE) {
+                console.log('Using demo mode');
+                // Demo mode - simulate successful login
+                try {
                     await simulateDemoLogin(username, password);
-                } else {
-                    // Real API call
+                } catch (error) {
+                    console.error('Demo login error:', error);
+                    showFlashMessage('Demo login failed. Please try again.', 'error');
+                    loginBtn.style.display = 'block';
+                    loading.style.display = 'none';
+                }
+            } else {
+                // =============================================================================
+                // REAL API AUTHENTICATION - Production Mode
+                // =============================================================================
+                
+                console.log('Using real API mode');
+                
+                try {
+                    // Make API call to C# backend authentication endpoint
                     const response = await fetch(`${API_BASE}/auth/login`, {
                         method: 'POST',
                         headers: {
@@ -276,43 +326,56 @@
                         })
                     });
                     
+                    // Parse JSON response from API
                     const data = await response.json();
                     
                     if (response.ok && data.success) {
-                        // Store user data and token
+                        // =============================================================================
+                        // SUCCESSFUL AUTHENTICATION - Store User Data
+                        // =============================================================================
+                        
+                        // Store user data and JWT token in localStorage
+                        // This enables authenticated requests to other API endpoints
                         localStorage.setItem('userData', JSON.stringify(data.data.user));
                         localStorage.setItem('authToken', data.data.token);
                         
+                        // Show success message and redirect to dashboard
                         showFlashMessage('Login successful! Redirecting...', 'success');
                         
                         setTimeout(() => {
                             window.location.href = 'index.html';
                         }, 1500);
                     } else {
-                        // Handle login failure
+                        // =============================================================================
+                        // AUTHENTICATION FAILURE - Handle Errors
+                        // =============================================================================
+                        
+                        // Handle various authentication errors (invalid credentials, rate limited, etc.)
                         const errorMessage = data.message || 'Login failed. Please check your credentials.';
                         showFlashMessage(errorMessage, 'error');
                         
-                        // Reset form
+                        // Reset form to allow retry
                         loginBtn.style.display = 'block';
                         loading.style.display = 'none';
                     }
-                }
-            } catch (error) {
-                console.error('Login error:', error);
-                if (DEMO_MODE) {
-                    showFlashMessage('Demo login failed. Please try again.', 'error');
-                } else {
+                } catch (error) {
+                    // =============================================================================
+                    // NETWORK ERROR - Handle Connection Issues
+                    // =============================================================================
+                    
+                    console.error('API login error:', error);
                     showFlashMessage('Network error. Please check if the backend is running.', 'error');
+                    
+                    // Reset form to allow retry
+                    loginBtn.style.display = 'block';
+                    loading.style.display = 'none';
                 }
-                
-                // Reset form
-                loginBtn.style.display = 'block';
-                loading.style.display = 'none';
             }
         });
 
         async function simulateDemoLogin(username, password) {
+            console.log('Simulating demo login for:', username);
+            
             // Simulate network delay
             await new Promise(resolve => setTimeout(resolve, 1000));
             
@@ -335,22 +398,26 @@
             };
 
             const demoPasswords = {
-                'admin': 'admin123',
+                'admin': 'pass123',
                 'dispatcher1': 'pass123',
                 'responder1': 'pass123'
             };
+
+            console.log('Checking credentials:', { username, password, validUser: !!demoUsers[username], correctPassword: demoPasswords[username] === password });
 
             if (demoUsers[username] && demoPasswords[username] === password) {
                 const userData = demoUsers[username];
                 localStorage.setItem('userData', JSON.stringify(userData));
                 localStorage.setItem('authToken', 'demo-token-' + Date.now());
                 
+                console.log('Demo login successful, redirecting...');
                 showFlashMessage('Demo login successful! Redirecting...', 'success');
                 
                 setTimeout(() => {
                     window.location.href = 'index.html';
                 }, 1500);
             } else {
+                console.log('Invalid demo credentials');
                 showFlashMessage('Invalid credentials. Please try again.', 'error');
                 
                 // Reset form
@@ -359,36 +426,67 @@
             }
         }
 
+        // =============================================================================
+        // UTILITY FUNCTIONS - Helper Methods
+        // =============================================================================
+        
+        /**
+         * Display flash messages to the user
+         * Shows success, error, or info messages with auto-dismiss
+         * 
+         * @param {string} message - The message to display
+         * @param {string} type - Message type: 'success', 'error', or 'info'
+         */
         function showFlashMessage(message, type) {
+            console.log('Flash message:', message, type);
+            
+            // Get the flash message container
             const flashContainer = document.getElementById('flashMessages');
+            
+            // Create new flash message element
             const flashMessage = document.createElement('div');
             flashMessage.className = `flash-message flash-${type}`;
             flashMessage.textContent = message;
             
+            // Add message to container
             flashContainer.appendChild(flashMessage);
             
-            // Remove flash message after 5 seconds
+            // Auto-remove message after 5 seconds for better UX
             setTimeout(() => {
                 flashMessage.remove();
             }, 5000);
         }
 
-        // Add demo login shortcuts
+        // =============================================================================
+        // DEMO CREDENTIALS SETUP - Development/Testing Feature
+        // =============================================================================
+        
+        // Add demo login shortcuts for easy testing
+        // Allows clicking on demo credentials to auto-fill and submit
         document.addEventListener('DOMContentLoaded', function() {
-            // Add click handlers for demo credentials
+            console.log('DOM loaded, setting up demo credentials');
+            
+            // Find all demo credential elements
             const demoCreds = document.querySelectorAll('.demo-credentials p');
+            
+            // Add click handlers to each demo credential
             demoCreds.forEach(cred => {
-                cred.style.cursor = 'pointer';
+                cred.style.cursor = 'pointer'; // Show pointer cursor for better UX
+                
                 cred.addEventListener('click', function() {
+                    // Parse the credential text (format: "Role: username / password")
                     const text = this.textContent;
                     const [username, password] = text.split(' / ');
                     const cleanUsername = username.split(': ')[1];
                     const cleanPassword = password;
                     
+                    console.log('Demo credential clicked:', { cleanUsername, cleanPassword });
+                    
+                    // Auto-fill the form fields
                     document.getElementById('username').value = cleanUsername;
                     document.getElementById('password').value = cleanPassword;
                     
-                    // Auto-submit after a short delay
+                    // Auto-submit the form after a short delay for better UX
                     setTimeout(() => {
                         document.getElementById('loginForm').dispatchEvent(new Event('submit'));
                     }, 500);

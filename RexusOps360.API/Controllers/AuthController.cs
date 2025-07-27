@@ -1,3 +1,27 @@
+/*
+ * RexusOps360 EMS API - Authentication Controller
+ * 
+ * This controller handles all authentication and authorization operations
+ * including user login, registration, token management, and profile operations.
+ * 
+ * Features:
+ * - JWT-based authentication
+ * - User registration and profile management
+ * - Password reset functionality
+ * - Token refresh and validation
+ * - Role-based access control
+ * 
+ * Security:
+ * - Rate limiting on login attempts
+ * - Password hashing with SHA256
+ * - JWT token expiration
+ * - IP address tracking for security
+ * 
+ * Author: RexusOps360 Development Team
+ * Version: 1.0.0
+ * Last Updated: 2025-01-17
+ */
+
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authorization;
 using RexusOps360.API.Models;
@@ -6,6 +30,10 @@ using System.Security.Claims;
 
 namespace RexusOps360.API.Controllers
 {
+    /// <summary>
+    /// Authentication and Authorization Controller
+    /// Handles user authentication, registration, and profile management
+    /// </summary>
     [ApiController]
     [Route("api/[controller]")]
     public class AuthController : ControllerBase
@@ -19,26 +47,43 @@ namespace RexusOps360.API.Controllers
             _logger = logger;
         }
 
+        /// <summary>
+        /// Authenticate user and generate JWT token
+        /// </summary>
+        /// <param name="request">Login credentials (username/password)</param>
+        /// <returns>JWT token and user information on successful authentication</returns>
+        /// <response code="200">Login successful - returns token and user data</response>
+        /// <response code="400">Invalid credentials or validation error</response>
+        /// <response code="429">Too many login attempts - rate limited</response>
+        /// <response code="500">Internal server error</response>
         [HttpPost("login")]
         public async Task<IActionResult> Login([FromBody] LoginRequest request)
         {
             try
             {
+                // Get client IP address for rate limiting and security tracking
                 var ipAddress = GetClientIpAddress();
+                
+                // Attempt user authentication with rate limiting
                 var response = await _authService.LoginAsync(request, ipAddress);
 
                 if (response.Success)
                 {
+                    // Return JWT token and user information
                     return Ok(response);
                 }
                 else
                 {
+                    // Return authentication error (invalid credentials, rate limited, etc.)
                     return BadRequest(response);
                 }
             }
             catch (Exception ex)
             {
+                // Log the error for debugging and monitoring
                 _logger.LogError(ex, "Error in login endpoint");
+                
+                // Return generic error to avoid information leakage
                 return StatusCode(500, new ApiResponse<LoginResponse>
                 {
                     Success = false,

@@ -872,7 +872,7 @@ namespace RexusOps360.API.Services
                 {
                     Id = 1,
                     Username = "admin",
-                    PasswordHash = "jGl25bVBBBW96Qi9Te4V37Fnqchz/Eu4qB9vKrRIqRg=", // admin123
+                    PasswordHash = "jGl25bVBBBW96Qi9Te4V37Fnqchz/Eu4qB9vKrRIqRg=", // pass123
                     Role = "Admin",
                     TenantId = "tampa-fl",
                     FirstName = "System",

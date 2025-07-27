@@ -708,6 +708,25 @@ namespace RexusOps360.API.Controllers
             return Content(html, "text/html");
         }
 
+        [HttpGet("weather")]
+        public IActionResult GetWeather()
+        {
+            // Mock weather data for Tampa, FL
+            var weatherData = new
+            {
+                temperature = 24,
+                description = "Partly Cloudy",
+                humidity = 65,
+                wind_speed = 12,
+                pressure = 1013,
+                visibility = 10,
+                location = "Tampa, FL",
+                timestamp = DateTime.UtcNow
+            };
+            
+            return Ok(weatherData);
+        }
+
         [HttpGet("register")]
         public IActionResult Register()
         {

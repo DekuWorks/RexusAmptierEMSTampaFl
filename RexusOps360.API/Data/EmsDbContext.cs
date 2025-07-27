@@ -27,6 +27,8 @@ namespace RexusOps360.API.Data
         public DbSet<EventSpeaker> EventSpeakers { get; set; }
         public DbSet<SessionSpeaker> SessionSpeakers { get; set; }
         public DbSet<SessionAttendee> SessionAttendees { get; set; }
+        public DbSet<EventSponsor> EventSponsors { get; set; }
+        public DbSet<Sponsor> Sponsors { get; set; }
 
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
@@ -535,6 +537,35 @@ namespace RexusOps360.API.Data
                 entity.HasOne<Registration>()
                     .WithMany()
                     .HasForeignKey(sa => sa.RegistrationId)
+                    .OnDelete(DeleteBehavior.Cascade);
+            });
+
+            modelBuilder.Entity<Sponsor>(entity =>
+            {
+                entity.HasKey(e => e.Id);
+                entity.Property(e => e.Name).IsRequired().HasMaxLength(200);
+                entity.Property(e => e.Description).HasMaxLength(1000);
+                entity.Property(e => e.LogoUrl).HasMaxLength(500);
+                entity.Property(e => e.Website).HasMaxLength(200);
+                entity.Property(e => e.ContactEmail).HasMaxLength(200);
+                entity.Property(e => e.ContactPhone).HasMaxLength(20);
+                
+                entity.HasIndex(e => e.TenantId);
+            });
+
+            modelBuilder.Entity<EventSponsor>(entity =>
+            {
+                entity.HasKey(e => new { e.EventId, e.SponsorId });
+                entity.Property(e => e.SponsorshipLevel).HasMaxLength(100);
+                
+                entity.HasOne<Event>()
+                    .WithMany(e => e.Sponsors)
+                    .HasForeignKey(es => es.EventId)
+                    .OnDelete(DeleteBehavior.Cascade);
+                
+                entity.HasOne<Sponsor>()
+                    .WithMany(s => s.Events)
+                    .HasForeignKey(es => es.SponsorId)
                     .OnDelete(DeleteBehavior.Cascade);
             });
         }
