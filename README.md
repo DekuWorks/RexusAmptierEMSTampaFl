@@ -123,7 +123,7 @@ RexusOps360 System/
 
 | Role | Username | Password | Access Level |
 |------|----------|----------|--------------|
-| **Admin** | `admin` | `admin123` | Full system access |
+| **Admin** | `abc` | `abc123` | Full system access |
 | **Dispatcher** | `dispatcher1` | `pass123` | Incident management |
 | **EventManager** | `eventmanager1` | `pass123` | Event management |
 | **Responder** | `responder1` | `pass123` | Field operations |

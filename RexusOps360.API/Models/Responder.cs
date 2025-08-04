@@ -22,6 +22,11 @@ namespace RexusOps360.API.Models
         [StringLength(200, ErrorMessage = "Current location cannot exceed 200 characters")]
         public string CurrentLocation { get; set; } = string.Empty;
         
+        // GPS coordinates for real-time tracking
+        public double? Latitude { get; set; }
+        public double? Longitude { get; set; }
+        public DateTime? LastLocationUpdate { get; set; }
+        
         [StringLength(500)]
         public string Specializations { get; set; } = string.Empty; // Comma-separated
         

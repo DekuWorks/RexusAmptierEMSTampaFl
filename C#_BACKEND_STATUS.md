@@ -69,7 +69,7 @@
 
 | Username | Password | Role | Full Name |
 |----------|----------|------|-----------|
-| admin | pass123 | Admin | System Administrator |
+| abc | abc123 | Admin | System Administrator |
 | dispatcher1 | pass123 | Dispatcher | John Smith |
 | responder1 | pass123 | Responder | Sarah Johnson |
 

@@ -72,7 +72,7 @@
 
         <div class="test-section">
             <h3>2. Test Login API</h3>
-            <button onclick="testLogin()">Test Login (admin/admin123)</button>
+            <button onclick="testLogin()">Test Login (abc/abc123)</button>
             <div id="loginResult" class="result"></div>
         </div>
 
@@ -130,8 +130,8 @@
                         'Content-Type': 'application/json',
                     },
                     body: JSON.stringify({
-                        username: 'admin',
-                        password: 'admin123'
+                        username: 'abc',
+                        password: 'abc123'
                     })
                 });
 

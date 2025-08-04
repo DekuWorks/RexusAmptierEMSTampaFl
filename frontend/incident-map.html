@@ -1,0 +1,937 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Incident Map - EMS Tampa-FL</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: #f5f6fa;
+            color: #333;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            font-size: 2rem;
+            margin-bottom: 5px;
+        }
+
+        .header-left p {
+            opacity: 0.9;
+            font-size: 1rem;
+        }
+
+        .nav-back {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .nav-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+        }
+
+        .main-container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 20px;
+            display: grid;
+            grid-template-columns: 300px 1fr;
+            gap: 20px;
+            height: calc(100vh - 120px);
+        }
+
+        .filters-panel {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            height: fit-content;
+            max-height: calc(100vh - 160px);
+            overflow-y: auto;
+        }
+
+        .filters-panel h3 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 1.3rem;
+        }
+
+        .filter-group {
+            margin-bottom: 20px;
+        }
+
+        .filter-group label {
+            display: block;
+            font-weight: 600;
+            color: #2c3e50;
+            margin-bottom: 8px;
+        }
+
+        .filter-group select,
+        .filter-group input {
+            width: 100%;
+            padding: 10px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 0.9rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .filter-group select:focus,
+        .filter-group input:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .status-filters {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .status-btn {
+            padding: 8px 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            text-align: center;
+        }
+
+        .status-btn.active {
+            border-color: #3498db;
+            background: #3498db;
+            color: white;
+        }
+
+        .status-btn.ongoing {
+            border-color: #e74c3c;
+            background: #e74c3c;
+            color: white;
+        }
+
+        .status-btn.escalated {
+            border-color: #f39c12;
+            background: #f39c12;
+            color: white;
+        }
+
+        .status-btn.safe {
+            border-color: #27ae60;
+            background: #27ae60;
+            color: white;
+        }
+
+        .map-container {
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+            position: relative;
+        }
+
+        #incidentMap {
+            width: 100%;
+            height: 100%;
+            min-height: 600px;
+        }
+
+        .map-controls {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            z-index: 1000;
+            display: flex;
+            gap: 10px;
+        }
+
+        .map-btn {
+            background: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.8rem;
+            font-weight: 600;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+            transition: all 0.3s ease;
+        }
+
+        .map-btn:hover {
+            background: #f8f9fa;
+            transform: translateY(-1px);
+        }
+
+        .incident-list {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            margin-top: 20px;
+            max-height: 300px;
+            overflow-y: auto;
+        }
+
+        .incident-item {
+            border: 1px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .incident-item:hover {
+            border-color: #3498db;
+            box-shadow: 0 2px 8px rgba(52, 152, 219, 0.2);
+        }
+
+        .incident-item.selected {
+            border-color: #3498db;
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .incident-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 8px;
+        }
+
+        .incident-title {
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .incident-priority {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .priority-emergency {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .priority-high {
+            background: #f39c12;
+            color: white;
+        }
+
+        .priority-medium {
+            background: #3498db;
+            color: white;
+        }
+
+        .priority-low {
+            background: #27ae60;
+            color: white;
+        }
+
+        .incident-details {
+            font-size: 0.9rem;
+            color: #7f8c8d;
+        }
+
+        .incident-location {
+            margin-bottom: 5px;
+        }
+
+        .incident-time {
+            font-size: 0.8rem;
+            opacity: 0.8;
+        }
+
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            border-radius: 10px;
+            padding: 15px;
+            text-align: center;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        }
+
+        .stat-card i {
+            font-size: 1.5rem;
+            margin-bottom: 8px;
+        }
+
+        .stat-card.emergency i {
+            color: #e74c3c;
+        }
+
+        .stat-card.ongoing i {
+            color: #f39c12;
+        }
+
+        .stat-card.safe i {
+            color: #27ae60;
+        }
+
+        .stat-card.total i {
+            color: #3498db;
+        }
+
+        .stat-number {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+
+        .stat-label {
+            font-size: 0.8rem;
+            color: #7f8c8d;
+            margin-top: 5px;
+        }
+
+        .real-time-indicator {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            color: #27ae60;
+            font-size: 0.9rem;
+            font-weight: 600;
+            margin-bottom: 15px;
+        }
+
+        .pulse-dot {
+            width: 8px;
+            height: 8px;
+            background: #27ae60;
+            border-radius: 50%;
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0% { opacity: 1; }
+            50% { opacity: 0.5; }
+            100% { opacity: 1; }
+        }
+
+        @media (max-width: 768px) {
+            .main-container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .filters-panel {
+                max-height: none;
+            }
+
+            #incidentMap {
+                min-height: 400px;
+            }
+
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <h1><i class="fas fa-map-marked-alt"></i> Real-Time Incident Map</h1>
+                <p>Live tracking of all emergency incidents in Tampa-FL</p>
+            </div>
+            <a href="index.html" class="nav-back">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
+        </div>
+    </div>
+
+    <div class="main-container">
+        <div class="filters-panel">
+            <div class="real-time-indicator">
+                <div class="pulse-dot"></div>
+                <span>Live Updates</span>
+            </div>
+
+            <h3><i class="fas fa-filter"></i> Filters</h3>
+
+            <div class="filter-group">
+                <label for="disasterType">Disaster Type</label>
+                <select id="disasterType">
+                    <option value="">All Types</option>
+                    <option value="medical">Medical Emergency</option>
+                    <option value="fire">Fire</option>
+                    <option value="traffic">Traffic Accident</option>
+                    <option value="crime">Crime</option>
+                    <option value="weather">Weather Related</option>
+                    <option value="hazardous">Hazardous Material</option>
+                    <option value="utility">Utility Emergency</option>
+                    <option value="other">Other</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label for="priorityLevel">Priority Level</label>
+                <select id="priorityLevel">
+                    <option value="">All Priorities</option>
+                    <option value="emergency">Emergency</option>
+                    <option value="high">High</option>
+                    <option value="medium">Medium</option>
+                    <option value="low">Low</option>
+                </select>
+            </div>
+
+            <div class="filter-group">
+                <label>Status</label>
+                <div class="status-filters">
+                    <button class="status-btn active" data-status="all">All</button>
+                    <button class="status-btn ongoing" data-status="ongoing">Ongoing</button>
+                    <button class="status-btn escalated" data-status="escalated">Escalated</button>
+                    <button class="status-btn safe" data-status="safe">Safe</button>
+                </div>
+            </div>
+
+            <div class="filter-group">
+                <label for="locationSearch">Search Location</label>
+                <input type="text" id="locationSearch" placeholder="Enter address or landmark">
+            </div>
+
+            <div class="stats-overview">
+                <div class="stat-card emergency">
+                    <i class="fas fa-exclamation-triangle"></i>
+                    <div class="stat-number" id="emergencyCount">0</div>
+                    <div class="stat-label">Emergency</div>
+                </div>
+                <div class="stat-card ongoing">
+                    <i class="fas fa-clock"></i>
+                    <div class="stat-number" id="ongoingCount">0</div>
+                    <div class="stat-label">Ongoing</div>
+                </div>
+                <div class="stat-card safe">
+                    <i class="fas fa-check-circle"></i>
+                    <div class="stat-number" id="safeCount">0</div>
+                    <div class="stat-label">Safe</div>
+                </div>
+                <div class="stat-card total">
+                    <i class="fas fa-list"></i>
+                    <div class="stat-number" id="totalCount">0</div>
+                    <div class="stat-label">Total</div>
+                </div>
+            </div>
+
+            <div class="incident-list">
+                <h4><i class="fas fa-list"></i> Recent Incidents</h4>
+                <div id="incidentList">
+                    <!-- Incident items will be populated here -->
+                </div>
+            </div>
+        </div>
+
+        <div class="map-container">
+            <div class="map-controls">
+                <button class="map-btn" onclick="centerOnTampa()">
+                    <i class="fas fa-crosshairs"></i> Center
+                </button>
+                <button class="map-btn" onclick="toggleHeatmap()">
+                    <i class="fas fa-fire"></i> Heatmap
+                </button>
+                <button class="map-btn" onclick="refreshIncidents()">
+                    <i class="fas fa-sync"></i> Refresh
+                </button>
+            </div>
+            <div id="incidentMap"></div>
+        </div>
+    </div>
+
+    <script>
+        /*
+         * RexusOps360 EMS - Real-Time Incident Map
+         * 
+         * This script handles real-time incident tracking with interactive maps.
+         * It displays live incident locations with filtering and status updates.
+         * 
+         * Features:
+         * - Real-time incident mapping
+         * - Location-based filtering
+         * - Priority and status filtering
+         * - Live statistics updates
+         * - Interactive incident selection
+         * 
+         * Author: RexusOps360 Development Team
+         * Version: 1.0.0
+         * Last Updated: 2025-01-17
+         */
+
+        // Global variables
+        let map;
+        let incidentMarkers = [];
+        let currentIncidents = [];
+        let selectedIncident = null;
+        let heatmapLayer = null;
+        let isHeatmapActive = false;
+
+        // Demo incident data
+        const demoIncidents = [
+            {
+                id: 1,
+                type: 'medical',
+                priority: 'high',
+                status: 'ongoing',
+                title: 'Cardiac Emergency',
+                location: '123 Main St, Tampa, FL',
+                coordinates: [27.9506, -82.4572],
+                description: 'Patient experiencing chest pain',
+                reportedBy: 'John Doe',
+                reportedAt: '2025-01-17T10:30:00',
+                responders: 2,
+                eta: '5 minutes'
+            },
+            {
+                id: 2,
+                type: 'fire',
+                priority: 'emergency',
+                status: 'escalated',
+                title: 'Building Fire',
+                location: '456 Oak Ave, Tampa, FL',
+                coordinates: [27.9489, -82.4594],
+                description: 'Multi-story building fire',
+                reportedBy: 'Sarah Johnson',
+                reportedAt: '2025-01-17T10:15:00',
+                responders: 5,
+                eta: '2 minutes'
+            },
+            {
+                id: 3,
+                type: 'traffic',
+                priority: 'medium',
+                status: 'ongoing',
+                title: 'Multi-Vehicle Accident',
+                location: 'I-275 & Fowler Ave, Tampa, FL',
+                coordinates: [27.9525, -82.4550],
+                description: 'Three vehicle collision',
+                reportedBy: 'Mike Wilson',
+                reportedAt: '2025-01-17T10:00:00',
+                responders: 3,
+                eta: '8 minutes'
+            },
+            {
+                id: 4,
+                type: 'weather',
+                priority: 'low',
+                status: 'safe',
+                title: 'Flooding Report',
+                location: '789 River Rd, Tampa, FL',
+                coordinates: [27.9467, -82.4611],
+                description: 'Minor street flooding',
+                reportedBy: 'Lisa Brown',
+                reportedAt: '2025-01-17T09:45:00',
+                responders: 1,
+                eta: '15 minutes'
+            },
+            {
+                id: 5,
+                type: 'crime',
+                priority: 'high',
+                status: 'ongoing',
+                title: 'Suspicious Activity',
+                location: '321 Park Blvd, Tampa, FL',
+                coordinates: [27.9542, -82.4533],
+                description: 'Suspicious person reported',
+                reportedBy: 'David Miller',
+                reportedAt: '2025-01-17T09:30:00',
+                responders: 2,
+                eta: '3 minutes'
+            }
+        ];
+
+        // Initialize the map
+        function initMap() {
+            // Create map centered on Tampa
+            map = L.map('incidentMap').setView([27.9506, -82.4572], 13);
+            
+            // Add OpenStreetMap tiles
+            L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
+                attribution: '© OpenStreetMap contributors'
+            }).addTo(map);
+
+            // Add incident markers
+            updateIncidentMarkers();
+            
+            // Set up real-time updates
+            setInterval(updateIncidents, 30000); // Update every 30 seconds
+        }
+
+        // Update incident markers on the map
+        function updateIncidentMarkers() {
+            // Clear existing markers
+            incidentMarkers.forEach(marker => map.removeLayer(marker));
+            incidentMarkers = [];
+
+            // Get filtered incidents
+            const filteredIncidents = getFilteredIncidents();
+
+            // Add markers for each incident
+            filteredIncidents.forEach(incident => {
+                const marker = createIncidentMarker(incident);
+                incidentMarkers.push(marker);
+                marker.addTo(map);
+            });
+
+            // Update statistics
+            updateStatistics();
+        }
+
+        // Create a marker for an incident
+        function createIncidentMarker(incident) {
+            const priorityColors = {
+                'emergency': '#e74c3c',
+                'high': '#f39c12',
+                'medium': '#3498db',
+                'low': '#27ae60'
+            };
+
+            const statusIcons = {
+                'ongoing': 'fa-clock',
+                'escalated': 'fa-exclamation-triangle',
+                'safe': 'fa-check-circle'
+            };
+
+            const icon = L.divIcon({
+                className: 'incident-marker',
+                html: `
+                    <div style="
+                        background: ${priorityColors[incident.priority]};
+                        color: white;
+                        border-radius: 50%;
+                        width: 30px;
+                        height: 30px;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        font-size: 12px;
+                        border: 2px solid white;
+                        box-shadow: 0 2px 8px rgba(0,0,0,0.3);
+                    ">
+                        <i class="fas ${statusIcons[incident.status]}"></i>
+                    </div>
+                `,
+                iconSize: [30, 30],
+                iconAnchor: [15, 15]
+            });
+
+            const marker = L.marker(incident.coordinates, { icon: icon })
+                .bindPopup(createIncidentPopup(incident))
+                .on('click', () => selectIncident(incident));
+
+            return marker;
+        }
+
+        // Create popup content for incident marker
+        function createIncidentPopup(incident) {
+            const priorityColors = {
+                'emergency': '#e74c3c',
+                'high': '#f39c12',
+                'medium': '#3498db',
+                'low': '#27ae60'
+            };
+
+            return `
+                <div style="min-width: 200px;">
+                    <h4 style="margin-bottom: 8px; color: #2c3e50;">${incident.title}</h4>
+                    <p style="margin-bottom: 5px; font-size: 0.9rem;">
+                        <strong>Type:</strong> ${incident.type.charAt(0).toUpperCase() + incident.type.slice(1)}
+                    </p>
+                    <p style="margin-bottom: 5px; font-size: 0.9rem;">
+                        <strong>Priority:</strong> 
+                        <span style="color: ${priorityColors[incident.priority]}; font-weight: bold;">
+                            ${incident.priority.toUpperCase()}
+                        </span>
+                    </p>
+                    <p style="margin-bottom: 5px; font-size: 0.9rem;">
+                        <strong>Status:</strong> 
+                        <span style="color: ${incident.status === 'ongoing' ? '#f39c12' : incident.status === 'escalated' ? '#e74c3c' : '#27ae60'}; font-weight: bold;">
+                            ${incident.status.toUpperCase()}
+                        </span>
+                    </p>
+                    <p style="margin-bottom: 5px; font-size: 0.9rem;">
+                        <strong>Location:</strong> ${incident.location}
+                    </p>
+                    <p style="margin-bottom: 5px; font-size: 0.9rem;">
+                        <strong>Responders:</strong> ${incident.responders}
+                    </p>
+                    <p style="margin-bottom: 0; font-size: 0.8rem; color: #7f8c8d;">
+                        <strong>ETA:</strong> ${incident.eta}
+                    </p>
+                </div>
+            `;
+        }
+
+        // Get filtered incidents based on current filters
+        function getFilteredIncidents() {
+            const disasterType = document.getElementById('disasterType').value;
+            const priorityLevel = document.getElementById('priorityLevel').value;
+            const statusFilter = document.querySelector('.status-btn.active').dataset.status;
+
+            return demoIncidents.filter(incident => {
+                const typeMatch = !disasterType || incident.type === disasterType;
+                const priorityMatch = !priorityLevel || incident.priority === priorityLevel;
+                const statusMatch = statusFilter === 'all' || incident.status === statusFilter;
+
+                return typeMatch && priorityMatch && statusMatch;
+            });
+        }
+
+        // Update statistics
+        function updateStatistics() {
+            const incidents = getFilteredIncidents();
+            
+            const emergencyCount = incidents.filter(i => i.priority === 'emergency').length;
+            const ongoingCount = incidents.filter(i => i.status === 'ongoing').length;
+            const safeCount = incidents.filter(i => i.status === 'safe').length;
+            const totalCount = incidents.length;
+
+            document.getElementById('emergencyCount').textContent = emergencyCount;
+            document.getElementById('ongoingCount').textContent = ongoingCount;
+            document.getElementById('safeCount').textContent = safeCount;
+            document.getElementById('totalCount').textContent = totalCount;
+        }
+
+        // Update incident list
+        function updateIncidentList() {
+            const incidentList = document.getElementById('incidentList');
+            const incidents = getFilteredIncidents();
+
+            incidentList.innerHTML = incidents.map(incident => `
+                <div class="incident-item ${selectedIncident?.id === incident.id ? 'selected' : ''}" 
+                     onclick="selectIncident(${JSON.stringify(incident).replace(/"/g, '&quot;')})">
+                    <div class="incident-header">
+                        <div class="incident-title">${incident.title}</div>
+                        <div class="incident-priority priority-${incident.priority}">${incident.priority}</div>
+                    </div>
+                    <div class="incident-details">
+                        <div class="incident-location">
+                            <i class="fas fa-map-marker-alt"></i> ${incident.location}
+                        </div>
+                        <div class="incident-time">
+                            <i class="fas fa-clock"></i> ${formatTime(incident.reportedAt)}
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        // Select an incident
+        function selectIncident(incident) {
+            selectedIncident = incident;
+            
+            // Update incident list selection
+            document.querySelectorAll('.incident-item').forEach(item => {
+                item.classList.remove('selected');
+            });
+            
+            // Find and select the clicked item
+            const incidentItems = document.querySelectorAll('.incident-item');
+            incidentItems.forEach((item, index) => {
+                const incidents = getFilteredIncidents();
+                if (incidents[index] && incidents[index].id === incident.id) {
+                    item.classList.add('selected');
+                }
+            });
+
+            // Center map on selected incident
+            map.setView(incident.coordinates, 15);
+            
+            // Open popup for selected incident
+            incidentMarkers.forEach(marker => {
+                if (marker.getLatLng().lat === incident.coordinates[0] && 
+                    marker.getLatLng().lng === incident.coordinates[1]) {
+                    marker.openPopup();
+                }
+            });
+        }
+
+        // Format time for display
+        function formatTime(timeString) {
+            const date = new Date(timeString);
+            return date.toLocaleTimeString('en-US', { 
+                hour: '2-digit', 
+                minute: '2-digit',
+                hour12: true 
+            });
+        }
+
+        // Center map on Tampa
+        function centerOnTampa() {
+            map.setView([27.9506, -82.4572], 13);
+        }
+
+        // Toggle heatmap
+        function toggleHeatmap() {
+            if (isHeatmapActive) {
+                if (heatmapLayer) {
+                    map.removeLayer(heatmapLayer);
+                }
+                isHeatmapActive = false;
+            } else {
+                const incidents = getFilteredIncidents();
+                const heatmapData = incidents.map(incident => ({
+                    lat: incident.coordinates[0],
+                    lng: incident.coordinates[1],
+                    value: incident.priority === 'emergency' ? 10 : 
+                           incident.priority === 'high' ? 7 : 
+                           incident.priority === 'medium' ? 4 : 1
+                }));
+                
+                // Simple heatmap effect using circles
+                heatmapLayer = L.layerGroup();
+                heatmapData.forEach(point => {
+                    const radius = point.value * 2;
+                    const opacity = point.value / 10;
+                    L.circle([point.lat, point.lng], {
+                        radius: radius * 100,
+                        fillColor: '#e74c3c',
+                        color: '#e74c3c',
+                        weight: 1,
+                        opacity: opacity,
+                        fillOpacity: opacity * 0.3
+                    }).addTo(heatmapLayer);
+                });
+                
+                heatmapLayer.addTo(map);
+                isHeatmapActive = true;
+            }
+        }
+
+        // Refresh incidents (simulate real-time updates)
+        function refreshIncidents() {
+            // Simulate new incident
+            const newIncident = {
+                id: Date.now(),
+                type: ['medical', 'traffic', 'fire', 'crime'][Math.floor(Math.random() * 4)],
+                priority: ['emergency', 'high', 'medium', 'low'][Math.floor(Math.random() * 4)],
+                status: 'ongoing',
+                title: 'New Incident',
+                location: 'Random Location, Tampa, FL',
+                coordinates: [
+                    27.9506 + (Math.random() - 0.5) * 0.01,
+                    -82.4572 + (Math.random() - 0.5) * 0.01
+                ],
+                description: 'New incident reported',
+                reportedBy: 'System',
+                reportedAt: new Date().toISOString(),
+                responders: Math.floor(Math.random() * 5) + 1,
+                eta: `${Math.floor(Math.random() * 10) + 1} minutes`
+            };
+            
+            demoIncidents.unshift(newIncident);
+            updateIncidentMarkers();
+            updateIncidentList();
+        }
+
+        // Update incidents (called periodically)
+        function updateIncidents() {
+            // Simulate status changes
+            demoIncidents.forEach(incident => {
+                if (incident.status === 'ongoing' && Math.random() < 0.1) {
+                    incident.status = Math.random() < 0.5 ? 'escalated' : 'safe';
+                }
+            });
+            
+            updateIncidentMarkers();
+            updateIncidentList();
+        }
+
+        // Set up event listeners
+        function setupEventListeners() {
+            // Filter change events
+            document.getElementById('disasterType').addEventListener('change', () => {
+                updateIncidentMarkers();
+                updateIncidentList();
+            });
+
+            document.getElementById('priorityLevel').addEventListener('change', () => {
+                updateIncidentMarkers();
+                updateIncidentList();
+            });
+
+            // Status filter buttons
+            document.querySelectorAll('.status-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    document.querySelectorAll('.status-btn').forEach(b => b.classList.remove('active'));
+                    btn.classList.add('active');
+                    updateIncidentMarkers();
+                    updateIncidentList();
+                });
+            });
+
+            // Location search
+            document.getElementById('locationSearch').addEventListener('input', (e) => {
+                const searchTerm = e.target.value.toLowerCase();
+                const incidents = demoIncidents.filter(incident => 
+                    incident.location.toLowerCase().includes(searchTerm) ||
+                    incident.title.toLowerCase().includes(searchTerm)
+                );
+                
+                // Update markers for filtered results
+                incidentMarkers.forEach(marker => map.removeLayer(marker));
+                incidentMarkers = [];
+                
+                incidents.forEach(incident => {
+                    const marker = createIncidentMarker(incident);
+                    incidentMarkers.push(marker);
+                    marker.addTo(map);
+                });
+            });
+        }
+
+        // Initialize when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            initMap();
+            updateIncidentList();
+            setupEventListeners();
+        });
+    </script>
+</body>
+</html> 

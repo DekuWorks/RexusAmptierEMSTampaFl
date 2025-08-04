@@ -54,6 +54,15 @@
             box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
         }
 
+        .logo-link {
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-link:hover {
+            transform: scale(1.05);
+        }
+
         .welcome-title {
             color: #2c3e50;
             font-size: 3rem;
@@ -108,6 +117,52 @@
 
         .action-btn.danger:hover {
             box-shadow: 0 8px 25px rgba(231, 76, 60, 0.3);
+        }
+
+        .quick-action-banner {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            border-radius: 15px;
+            padding: 20px;
+            margin: 20px 0;
+            box-shadow: 0 8px 32px rgba(231, 76, 60, 0.3);
+        }
+
+        .quick-action-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: white;
+        }
+
+        .quick-action-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+            color: white;
+        }
+
+        .quick-action-info p {
+            color: rgba(255, 255, 255, 0.9);
+            font-size: 0.9rem;
+        }
+
+        .quick-action-btn {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+            text-decoration: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+        }
+
+        .quick-action-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
         }
 
         .features-grid {
@@ -183,23 +238,52 @@
                 max-width: 300px;
                 justify-content: center;
             }
+            
+            .quick-action-content {
+                flex-direction: column;
+                gap: 15px;
+                text-align: center;
+            }
+            
+            .quick-action-btn {
+                width: 100%;
+                justify-content: center;
+            }
         }
     </style>
 </head>
 <body>
     <div class="landing-container">
         <div class="header">
-            <div class="logo-section">
-                <div class="logo-bar">
-                    <img src="../static/images/rexus.png" alt="Rexus Logo" class="logo-img">
-                    <img src="../static/images/amptier.png" alt="Amptier Logo" class="logo-img">
-                </div>
+                    <div class="logo-section">
+            <div class="logo-bar">
+                <a href="index.html" class="logo-link">
+                    <img src="assets/images/rexus.png" alt="Rexus Logo" class="logo-img">
+                </a>
+                <a href="index.html" class="logo-link">
+                    <img src="assets/images/amptier.png" alt="Amptier Logo" class="logo-img">
+                </a>
             </div>
+        </div>
             
             <h1 class="welcome-title">
                 <i class="fas fa-ambulance"></i> EMS Tampa-FL Amptier
             </h1>
             <p class="welcome-subtitle">Emergency Management System</p>
+            
+            <!-- Quick Action Banner -->
+            <div class="quick-action-banner">
+                <div class="quick-action-content">
+                    <div class="quick-action-info">
+                        <h3><i class="fas fa-exclamation-triangle"></i> Emergency?</h3>
+                        <p>Report incidents immediately - no login required</p>
+                    </div>
+                    <a href="create-incident.html" class="quick-action-btn">
+                        <i class="fas fa-phone"></i>
+                        Report Incident Now
+                    </a>
+                </div>
+            </div>
             
             <div class="loading" id="loading">
                 <i class="fas fa-spinner"></i> Checking authentication...
@@ -221,6 +305,20 @@
                 <a href="admin.html" class="action-btn danger">
                     <i class="fas fa-cog"></i>
                     Admin Panel
+                </a>
+            </div>
+            
+            <!-- Public Incident Reporting Section -->
+            <div class="public-reporting" id="publicReporting" style="display: none;">
+                <h3 style="color: #e74c3c; margin-bottom: 20px; font-size: 1.5rem;">
+                    <i class="fas fa-exclamation-triangle"></i> Report an Emergency
+                </h3>
+                <p style="color: #7f8c8d; margin-bottom: 20px;">
+                    Need to report an incident? You don't need to log in to report an emergency.
+                </p>
+                <a href="create-incident.html" class="action-btn danger" style="margin: 0;">
+                    <i class="fas fa-phone"></i>
+                    Report Incident Now
                 </a>
             </div>
         </div>
@@ -273,11 +371,13 @@
             setTimeout(() => {
                 const loading = document.getElementById('loading');
                 const actionButtons = document.getElementById('actionButtons');
+                const publicReporting = document.getElementById('publicReporting');
                 
                 if (userData && authToken) {
                     // User is logged in, show dashboard options
                     loading.style.display = 'none';
                     actionButtons.style.display = 'flex';
+                    publicReporting.style.display = 'block'; // Show public reporting for all users
                     
                     // Check user role for admin access
                     try {
@@ -290,11 +390,22 @@
                         console.error('Error parsing user data:', error);
                     }
                 } else {
-                    // User is not logged in, redirect to login
-                    loading.innerHTML = '<i class="fas fa-sign-in-alt"></i> Redirecting to login...';
-                    setTimeout(() => {
-                        window.location.href = 'login.html';
-                    }, 1500);
+                    // User is not logged in, show public reporting option
+                    loading.style.display = 'none';
+                    publicReporting.style.display = 'block';
+                    
+                    // Add login option for non-authenticated users
+                    const loginSection = document.createElement('div');
+                    loginSection.innerHTML = `
+                        <div style="margin-top: 20px; padding-top: 20px; border-top: 1px solid #e0e0e0;">
+                            <p style="color: #7f8c8d; margin-bottom: 15px;">Are you an EMS staff member?</p>
+                            <a href="login.html" class="action-btn">
+                                <i class="fas fa-sign-in-alt"></i>
+                                Login to Dashboard
+                            </a>
+                        </div>
+                    `;
+                    publicReporting.appendChild(loginSection);
                 }
             }, 1000);
         });

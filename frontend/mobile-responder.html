@@ -31,6 +31,25 @@
             box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
         }
 
+        .nav-back {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 8px 12px;
+            border-radius: 6px;
+            font-size: 0.9rem;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .nav-back:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
         .header-content {
             display: flex;
             justify-content: space-between;
@@ -403,6 +422,9 @@
 <body>
     <div class="mobile-header">
         <div class="header-content">
+            <a href="index.html" class="nav-back">
+                <i class="fas fa-arrow-left"></i> Back to Dashboard
+            </a>
             <div class="responder-info">
                 <div class="responder-avatar">
                     <i class="fas fa-user-md"></i>
@@ -537,6 +559,35 @@
 
     <script>
         const API_BASE = 'http://localhost:5169/api';
+
+        // Check authentication and role
+        function checkAuthentication() {
+            const userData = localStorage.getItem('userData');
+            if (!userData) {
+                window.location.href = 'login.html';
+                return false;
+            }
+            
+            const user = JSON.parse(userData);
+            if (user.role !== 'responder' && user.role !== 'admin') {
+                alert('Access denied. Mobile responder is only available for responders.');
+                window.location.href = 'dashboard.html';
+                return false;
+            }
+            
+            // Update responder info
+            document.getElementById('responderName').textContent = user.full_name || 'Responder';
+            document.getElementById('responderRole').textContent = user.role || 'responder';
+            
+            return true;
+        }
+
+        // Initialize on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            if (!checkAuthentication()) {
+                return;
+            }
+        });
 
         // GPS Location tracking
         function getCurrentLocation() {

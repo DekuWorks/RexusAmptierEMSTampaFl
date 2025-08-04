@@ -182,10 +182,111 @@ namespace RexusOps360.API.Hubs
             await Clients.All.SendAsync("IncidentStatusUpdated", statusData);
         }
 
-        // Send system health update
+        // Send system health update to admin users
         public async Task SendSystemHealthUpdate(object healthData)
         {
             await Clients.Group("admin").SendAsync("SystemHealthUpdated", healthData);
+        }
+
+        // Send real-time incident report from guest/public users
+        public async Task SendGuestIncidentReport(object incidentData)
+        {
+            // Send to all dispatchers and admin
+            await Clients.Group("dispatchers").SendAsync("GuestIncidentReported", incidentData);
+            await Clients.Group("admin").SendAsync("GuestIncidentReported", incidentData);
+            
+            // Also send to all connected users for awareness
+            await Clients.All.SendAsync("NewIncidentReported", incidentData);
+        }
+
+        // Send real-time analytics update to admin
+        public async Task SendAnalyticsUpdate(object analyticsData)
+        {
+            await Clients.Group("admin").SendAsync("AnalyticsUpdated", analyticsData);
+        }
+
+        // Send real-time dashboard update to all roles
+        public async Task SendDashboardUpdate(string role, object dashboardData)
+        {
+            await Clients.Group(role).SendAsync("DashboardUpdated", dashboardData);
+        }
+
+        // Send emergency alert to specific area
+        public async Task SendAreaAlert(string area, string message, string priority)
+        {
+            var alertData = new
+            {
+                Area = area,
+                Message = message,
+                Priority = priority,
+                Timestamp = DateTime.UtcNow
+            };
+
+            // Send to all users in the area
+            await Clients.Group($"area_{area}").SendAsync("AreaAlert", alertData);
+            
+            // Also send to dispatchers and admin
+            await Clients.Group("dispatchers").SendAsync("AreaAlert", alertData);
+            await Clients.Group("admin").SendAsync("AreaAlert", alertData);
+        }
+
+        // Join area-specific group for location-based alerts
+        public async Task JoinArea(string area)
+        {
+            await Groups.AddToGroupAsync(Context.ConnectionId, $"area_{area}");
+            await Clients.Group($"area_{area}").SendAsync("UserJoinedArea", Context.ConnectionId, area);
+        }
+
+        // Leave area-specific group
+        public async Task LeaveArea(string area)
+        {
+            await Groups.RemoveFromGroupAsync(Context.ConnectionId, $"area_{area}");
+            await Clients.Group($"area_{area}").SendAsync("UserLeftArea", Context.ConnectionId, area);
+        }
+
+        // Send real-time responder status update
+        public async Task SendResponderStatusUpdate(string responderId, string status, object locationData)
+        {
+            var statusData = new
+            {
+                ResponderId = responderId,
+                Status = status,
+                Location = locationData,
+                Timestamp = DateTime.UtcNow
+            };
+
+            await Clients.Group("dispatchers").SendAsync("ResponderStatusUpdated", statusData);
+            await Clients.Group("admin").SendAsync("ResponderStatusUpdated", statusData);
+            await Clients.Group("responders").SendAsync("ResponderStatusUpdated", statusData);
+        }
+
+        // Send real-time equipment status update
+        public async Task SendEquipmentStatusUpdate(string equipmentId, string status, object locationData)
+        {
+            var statusData = new
+            {
+                EquipmentId = equipmentId,
+                Status = status,
+                Location = locationData,
+                Timestamp = DateTime.UtcNow
+            };
+
+            await Clients.Group("dispatchers").SendAsync("EquipmentStatusUpdated", statusData);
+            await Clients.Group("admin").SendAsync("EquipmentStatusUpdated", statusData);
+        }
+
+        // Send real-time notification to all users
+        public async Task SendGlobalNotification(string title, string message, string type)
+        {
+            var notificationData = new
+            {
+                Title = title,
+                Message = message,
+                Type = type,
+                Timestamp = DateTime.UtcNow
+            };
+
+            await Clients.All.SendAsync("GlobalNotification", notificationData);
         }
     }
 } 

@@ -58,12 +58,7 @@ namespace RexusOps360.API.Models
         [StringLength(1000)]
         public string? CustomCss { get; set; }
 
-        // Multi-tenant support
-        [Required]
-        public int TenantId { get; set; }
 
-        [ForeignKey("TenantId")]
-        public virtual Tenant Tenant { get; set; } = null!;
 
         // Audit fields
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
@@ -161,12 +156,7 @@ namespace RexusOps360.API.Models
         [StringLength(500)]
         public string? TwitterUrl { get; set; }
 
-        // Multi-tenant support
-        [Required]
-        public int TenantId { get; set; }
 
-        [ForeignKey("TenantId")]
-        public virtual Tenant Tenant { get; set; } = null!;
 
         // Navigation properties
         public virtual ICollection<EventSpeaker> Events { get; set; } = new List<EventSpeaker>();
@@ -342,10 +332,7 @@ namespace RexusOps360.API.Models
 
         // Multi-tenant support
         [Required]
-        public int TenantId { get; set; }
 
-        [ForeignKey("TenantId")]
-        public virtual Tenant Tenant { get; set; } = null!;
 
         // Navigation properties
         public virtual ICollection<EventSponsor> Events { get; set; } = new List<EventSponsor>();

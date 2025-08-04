@@ -10,7 +10,7 @@ namespace RexusOps360.API.Services
         Task<EventResponse> CreateEventAsync(CreateEventRequest request, string userId);
         Task<EventResponse> UpdateEventAsync(int eventId, UpdateEventRequest request, string userId);
         Task<EventResponse> GetEventAsync(int eventId);
-        Task<List<EventResponse>> GetEventsAsync(int tenantId, bool includeDrafts = false);
+        Task<List<EventResponse>> GetEventsAsync(bool includeDrafts = false);
         Task<bool> DeleteEventAsync(int eventId, string userId);
         
         Task<SessionResponse> CreateSessionAsync(CreateSessionRequest request, string userId);
@@ -29,7 +29,7 @@ namespace RexusOps360.API.Services
         Task<SpeakerResponse> CreateSpeakerAsync(Speaker speaker, string userId);
         Task<SpeakerResponse> UpdateSpeakerAsync(int speakerId, Speaker speaker, string userId);
         Task<SpeakerResponse> GetSpeakerAsync(int speakerId);
-        Task<List<SpeakerResponse>> GetSpeakersAsync(int tenantId);
+        Task<List<SpeakerResponse>> GetSpeakersAsync();
         Task<bool> DeleteSpeakerAsync(int speakerId, string userId);
         
         Task<bool> AddSpeakerToEventAsync(int eventId, int speakerId, string role, bool isKeynote = false);
@@ -58,8 +58,6 @@ namespace RexusOps360.API.Services
         {
             try
             {
-                var tenantId = await GetTenantIdFromUserAsync(userId);
-                
                 var newEvent = new Event
                 {
                     Title = request.Title,
@@ -79,7 +77,6 @@ namespace RexusOps360.API.Services
                     BrandingLogoUrl = request.BrandingLogoUrl,
                     BrandingColor = request.BrandingColor,
                     CustomCss = request.CustomCss,
-                    TenantId = tenantId,
                     CreatedBy = userId,
                     UpdatedBy = userId
                 };
@@ -247,14 +244,14 @@ namespace RexusOps360.API.Services
             }
         }
 
-        public async Task<List<EventResponse>> GetEventsAsync(int tenantId, bool includeDrafts = false)
+        public async Task<List<EventResponse>> GetEventsAsync(bool includeDrafts = false)
         {
             try
             {
                 var query = _context.Events
                     .Include(e => e.Sessions)
                     .Include(e => e.Registrations)
-                    .Where(e => e.TenantId == tenantId);
+                    .AsQueryable();
 
                 if (!includeDrafts)
                     query = query.Where(e => e.Status != EventStatus.Draft);
@@ -289,7 +286,7 @@ namespace RexusOps360.API.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting events for tenant {TenantId}", tenantId);
+                _logger.LogError(ex, "Error getting events");
                 throw;
             }
         }
@@ -783,8 +780,7 @@ namespace RexusOps360.API.Services
         {
             try
             {
-                var tenantId = await GetTenantIdFromUserAsync(userId);
-                speaker.TenantId = tenantId;
+
 
                 _context.Speakers.Add(speaker);
                 await _context.SaveChangesAsync();
@@ -811,12 +807,11 @@ namespace RexusOps360.API.Services
             }
         }
 
-        public async Task<List<SpeakerResponse>> GetSpeakersAsync(int tenantId)
+        public async Task<List<SpeakerResponse>> GetSpeakersAsync()
         {
             try
             {
                 var speakers = await _context.Speakers
-                    .Where(s => s.TenantId == tenantId)
                     .OrderBy(s => s.LastName)
                     .ThenBy(s => s.FirstName)
                     .ToListAsync();
@@ -837,7 +832,7 @@ namespace RexusOps360.API.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error getting speakers for tenant {TenantId}", tenantId);
+                _logger.LogError(ex, "Error getting speakers");
                 throw;
             }
         }
@@ -1106,17 +1101,6 @@ namespace RexusOps360.API.Services
                 _logger.LogError(ex, "Error removing speaker from session");
                 throw;
             }
-        }
-
-        #endregion
-
-        #region Helper Methods
-
-        private async Task<int> GetTenantIdFromUserAsync(string userId)
-        {
-            // This would typically get the tenant ID from the user's context
-            // For now, return a default tenant ID
-            return 1;
         }
 
         #endregion

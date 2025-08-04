@@ -9,6 +9,7 @@ namespace RexusOps360.API.Services
         Task LogUserActionAsync(string userId, string action, string details, string ipAddress);
         Task LogSystemEventAsync(string eventType, string details, string severity);
         Task LogSecurityEventAsync(string eventType, string userId, string details, string ipAddress);
+        Task LogActivityAsync(string userId, string action, string details, string ipAddress);
         Task<List<AuditLog>> GetAuditLogsAsync(DateTime? startDate = null, DateTime? endDate = null, string? userId = null);
         Task<List<AuditLog>> GetSecurityEventsAsync(DateTime? startDate = null, DateTime? endDate = null);
     }
@@ -75,6 +76,25 @@ namespace RexusOps360.API.Services
                 Severity = "Error",
                 Timestamp = DateTime.UtcNow,
                 IsSuccessful = false
+            };
+
+            _context.AuditLogs.Add(auditLog);
+            await _context.SaveChangesAsync();
+        }
+
+        public async Task LogActivityAsync(string userId, string action, string details, string ipAddress)
+        {
+            var auditLog = new AuditLog
+            {
+                UserId = userId,
+                Action = action,
+                Details = details,
+                IpAddress = ipAddress,
+                EntityType = "Activity",
+                EntityId = userId,
+                Severity = "Info",
+                Timestamp = DateTime.UtcNow,
+                IsSuccessful = true
             };
 
             _context.AuditLogs.Add(auditLog);

@@ -65,6 +65,15 @@
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
         }
 
+        .logo-link {
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-link:hover {
+            transform: scale(1.05);
+        }
+
         .nav-links {
             display: flex;
             gap: 20px;
@@ -355,8 +364,12 @@
             <div class="header-left">
                 <div class="logo-section">
                     <div class="logo-bar">
-                        <img src="../static/images/rexus.png" alt="Rexus Logo" class="logo-img">
-                        <img src="../static/images/amptier.png" alt="Amptier Logo" class="logo-img">
+                        <a href="index.html" class="logo-link">
+                            <img src="assets/images/rexus.png" alt="Rexus Logo" class="logo-img">
+                        </a>
+                        <a href="index.html" class="logo-link">
+                            <img src="assets/images/amptier.png" alt="Amptier Logo" class="logo-img">
+                        </a>
                     </div>
                 </div>
                 <h1><i class="fas fa-cog"></i> Admin Panel</h1>

@@ -1,0 +1,1649 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report Emergency Incident - EMS Tampa-FL Amptier</title>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <!-- reCAPTCHA v2 -->
+    <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .header {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 0 0 20px 20px;
+            padding: 20px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+        }
+
+        .header-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .header-left h1 {
+            color: #2c3e50;
+            font-size: 2.5rem;
+            margin-bottom: 5px;
+        }
+
+        .header-left p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .logo-section {
+            margin-bottom: 15px;
+        }
+
+        .logo-bar {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            gap: 20px;
+        }
+
+        .logo-img {
+            height: 40px;
+            width: auto;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .logo-link {
+            text-decoration: none;
+            transition: transform 0.3s ease;
+        }
+
+        .logo-link:hover {
+            transform: scale(1.05);
+        }
+
+        .user-info {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .user-avatar {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #3498db, #2980b9);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+
+        .user-details {
+            text-align: right;
+        }
+
+        .user-name {
+            font-weight: 600;
+            color: #2c3e50;
+            font-size: 1.1rem;
+        }
+
+        .user-role {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+            text-transform: capitalize;
+        }
+
+        .back-btn {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 8px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .back-btn:hover {
+            background: #7f8c8d;
+        }
+
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .form-container {
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-radius: 20px;
+            padding: 40px;
+            box-shadow: 0 8px 32px rgba(0, 0, 0, 0.1);
+            margin-bottom: 30px;
+        }
+
+        .form-header {
+            text-align: center;
+            margin-bottom: 30px;
+        }
+
+        .form-header h2 {
+            color: #2c3e50;
+            font-size: 2rem;
+            margin-bottom: 10px;
+        }
+
+        .form-header p {
+            color: #7f8c8d;
+            font-size: 1.1rem;
+        }
+
+        .form-section {
+            margin-bottom: 30px;
+            border-bottom: 1px solid #ecf0f1;
+            padding-bottom: 20px;
+        }
+
+        .form-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        .form-group.full-width {
+            grid-column: 1 / -1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #2c3e50;
+        }
+
+        .form-group input,
+        .form-group select,
+        .form-group textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 1rem;
+            transition: border-color 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus,
+        .form-group textarea:focus {
+            outline: none;
+            border-color: #3498db;
+        }
+
+        .form-group textarea {
+            resize: vertical;
+            min-height: 120px;
+        }
+
+        .priority-indicator {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .priority-btn {
+            padding: 8px 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 6px;
+            background: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .priority-btn.active {
+            border-color: #e74c3c;
+            background: #e74c3c;
+            color: white;
+        }
+
+        .priority-btn.medium.active {
+            border-color: #f39c12;
+            background: #f39c12;
+        }
+
+        .priority-btn.low.active {
+            border-color: #27ae60;
+            background: #27ae60;
+        }
+
+        .priority-btn.emergency.active {
+            border-color: #c0392b;
+            background: #c0392b;
+        }
+
+        .submit-btn {
+            width: 100%;
+            background: linear-gradient(135deg, #e74c3c, #c0392b);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-top: 20px;
+        }
+
+        .submit-btn:hover {
+            background: linear-gradient(135deg, #c0392b, #a93226);
+            transform: translateY(-2px);
+        }
+
+        .submit-btn:disabled {
+            background: #95a5a6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        .loading i {
+            animation: spin 1s linear infinite;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .flash-messages {
+            margin-bottom: 20px;
+        }
+
+        .flash-message {
+            padding: 12px 15px;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            font-size: 0.9rem;
+            font-weight: 500;
+        }
+
+        .flash-success {
+            background: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .flash-error {
+            background: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        .flash-info {
+            background: #d1ecf1;
+            color: #0c5460;
+            border: 1px solid #bee5eb;
+        }
+
+        .role-badge {
+            display: inline-block;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .role-admin {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .role-dispatcher {
+            background: #f39c12;
+            color: white;
+        }
+
+        .role-responder {
+            background: #3498db;
+            color: white;
+        }
+
+        .role-public {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .form-actions {
+            display: flex;
+            gap: 15px;
+            margin-top: 30px;
+        }
+
+        .cancel-btn {
+            background: #95a5a6;
+            color: white;
+            border: none;
+            padding: 15px 30px;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .cancel-btn:hover {
+            background: #7f8c8d;
+        }
+
+        .submit-btn {
+            flex: 1;
+        }
+
+        /* reCAPTCHA Styles */
+        .recaptcha-container {
+            text-align: center;
+            margin: 20px 0;
+            padding: 20px;
+            background: rgba(52, 152, 219, 0.05);
+            border-radius: 10px;
+            border: 1px solid rgba(52, 152, 219, 0.2);
+        }
+
+        .recaptcha-note {
+            margin-top: 10px;
+            font-size: 0.9rem;
+            color: #7f8c8d;
+            text-align: center;
+        }
+
+        .recaptcha-note i {
+            color: #3498db;
+            margin-right: 5px;
+        }
+
+        .g-recaptcha {
+            display: inline-block;
+            margin: 0 auto;
+        }
+
+        .recaptcha-error {
+            color: #e74c3c;
+            font-size: 0.9rem;
+            margin-top: 5px;
+            text-align: center;
+        }
+
+        .emergency-info {
+            background: #fff3cd;
+            border: 1px solid #ffeaa7;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .emergency-info h4 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .emergency-info p {
+            color: #856404;
+            margin-bottom: 8px;
+        }
+
+        .emergency-info .emergency-number {
+            font-weight: bold;
+            color: #e74c3c;
+        }
+
+        .rate-limit-info {
+            background: #e8f4fd;
+            border: 1px solid #bee5eb;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 30px;
+        }
+
+        .rate-limit-info h4 {
+            color: #0c5460;
+            margin-bottom: 10px;
+            font-size: 1.2rem;
+        }
+
+        .rate-limit-info p {
+            color: #0c5460;
+            margin-bottom: 8px;
+        }
+
+        .rate-limit-info .login-link {
+            color: #3498db;
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .rate-limit-info .login-link:hover {
+            text-decoration: underline;
+        }
+
+        /* File Upload Styles */
+        .file-upload {
+            border: 2px dashed #3498db;
+            border-radius: 8px;
+            padding: 20px;
+            text-align: center;
+            background: rgba(52, 152, 219, 0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .file-upload:hover {
+            border-color: #2980b9;
+            background: rgba(52, 152, 219, 0.1);
+        }
+
+        .file-upload input[type="file"] {
+            display: none;
+        }
+
+        .file-upload-icon {
+            font-size: 2rem;
+            color: #3498db;
+            margin-bottom: 10px;
+        }
+
+        .file-upload-text {
+            color: #7f8c8d;
+            font-size: 0.9rem;
+        }
+
+        .file-preview {
+            margin-top: 15px;
+            display: none;
+        }
+
+        .file-preview img {
+            max-width: 200px;
+            max-height: 200px;
+            border-radius: 8px;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .file-preview .remove-file {
+            background: #e74c3c;
+            color: white;
+            border: none;
+            padding: 5px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            margin-top: 10px;
+            font-size: 0.8rem;
+        }
+
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 15px;
+            }
+            
+            .user-info {
+                flex-direction: column;
+                text-align: center;
+            }
+            
+            .form-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .form-actions {
+                flex-direction: column;
+            }
+        }
+
+        .role-guest {
+            background: #bdc3c7;
+            color: #2c3e50;
+        }
+
+        .emergency-contact-info {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+            color: white;
+            padding: 20px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            box-shadow: 0 8px 32px rgba(231, 76, 60, 0.3);
+        }
+
+        .emergency-banner h3 {
+            color: white;
+            margin-bottom: 15px;
+            font-size: 1.3rem;
+        }
+
+        .emergency-banner p {
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 5px;
+            font-size: 1rem;
+        }
+
+        .success-message, .error-message {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            min-width: 300px;
+        }
+
+        .success-message {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        .error-message {
+            background-color: #f44336;
+            color: white;
+        }
+
+        .success-content, .error-content {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+        }
+
+        .success-content h3, .error-content h3 {
+            margin: 0;
+            font-size: 1.1rem;
+        }
+
+        .success-content p, .error-content p {
+            margin: 0;
+            font-size: 0.9rem;
+        }
+
+        .success-content button, .error-content button {
+            background-color: rgba(255, 255, 255, 0.2);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            align-self: flex-end;
+        }
+
+        .success-content button:hover, .error-content button:hover {
+            background-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .emergency-alert {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background-color: #f44336;
+            color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+            z-index: 1000;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            min-width: 350px;
+        }
+
+        .alert-content {
+            flex-grow: 1;
+        }
+
+        .alert-content h3 {
+            margin-top: 0;
+            margin-bottom: 5px;
+        }
+
+        .alert-content button {
+            background-color: #4CAF50;
+            color: white;
+            padding: 8px 12px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+
+        .alert-content button:hover {
+            background-color: #388E3C;
+        }
+
+        .guest-accessible {
+            display: none;
+        }
+
+        .admin-only {
+            display: none;
+        }
+
+        .dispatcher-only {
+            display: none;
+        }
+
+        .responder-only {
+            display: none;
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <div class="header-content">
+            <div class="header-left">
+                <div class="logo-section">
+                    <div class="logo-bar">
+                        <a href="index.html" class="logo-link">
+                            <img src="assets/images/rexus.png" alt="Rexus Logo" class="logo-img">
+                        </a>
+                        <a href="index.html" class="logo-link">
+                            <img src="assets/images/amptier.png" alt="Amptier Logo" class="logo-img">
+                        </a>
+                    </div>
+                </div>
+                <h1><i class="fas fa-ambulance"></i> EMS Tampa-FL Amptier</h1>
+                <p>Report Emergency Incident</p>
+            </div>
+            <div class="user-info" id="userInfo">
+                <!-- User info will be populated by JavaScript -->
+            </div>
+        </div>
+    </div>
+
+    <div class="container">
+        <div class="emergency-info">
+            <h4><i class="fas fa-exclamation-triangle"></i> Emergency Information</h4>
+            <p><strong>For immediate emergencies, call:</strong></p>
+            <p class="emergency-number">911</p>
+            <p>This form is for non-emergency incident reporting. If you are experiencing a life-threatening emergency, please call 911 immediately.</p>
+        </div>
+
+        <div class="rate-limit-info" id="rateLimitInfo" style="display: none;">
+            <h4><i class="fas fa-clock"></i> Rate Limit Information</h4>
+            <p><strong>Public users:</strong> Limited to one report every 24 hours to prevent spam.</p>
+            <p><strong>Logged-in users:</strong> Unlimited submissions.</p>
+            <a href="login.html" class="login-link">Log in for unlimited access</a>
+        </div>
+
+        <div class="form-container">
+            <div class="form-header">
+                <h2><i class="fas fa-exclamation-triangle"></i> Report Emergency Incident</h2>
+                <p>Fill out the form below to report an incident to emergency services</p>
+            </div>
+
+            <div class="flash-messages" id="flashMessages"></div>
+
+            <form id="incidentForm">
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-map-marker-alt"></i> Incident Location
+                    </h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="incidentAddress">Street Address *</label>
+                            <input type="text" id="incidentAddress" name="incidentAddress" required placeholder="123 Main Street">
+                        </div>
+                        <div class="form-group">
+                            <label for="incidentCity">City *</label>
+                            <input type="text" id="incidentCity" name="incidentCity" required value="Tampa" placeholder="Tampa">
+                        </div>
+                        <div class="form-group">
+                            <label for="incidentState">State *</label>
+                            <input type="text" id="incidentState" name="incidentState" required value="FL" placeholder="FL">
+                        </div>
+                        <div class="form-group">
+                            <label for="incidentZip">ZIP Code *</label>
+                            <input type="text" id="incidentZip" name="incidentZip" required placeholder="33601">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-exclamation-circle"></i> Incident Details
+                    </h3>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="disasterCategory">Disaster Category *</label>
+                            <select id="disasterCategory" name="disasterCategory" required onchange="updateIncidentTypes()">
+                                <option value="">Select disaster category</option>
+                                <option value="natural">Natural Disasters</option>
+                                <option value="medical">Medical Emergencies</option>
+                                <option value="fire">Fire & Hazards</option>
+                                <option value="traffic">Traffic & Transportation</option>
+                                <option value="crime">Crime & Security</option>
+                                <option value="utility">Utility & Infrastructure</option>
+                                <option value="weather">Weather Related</option>
+                                <option value="other">Other Emergencies</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="incidentType">Incident Type *</label>
+                            <select id="incidentType" name="incidentType" required>
+                                <option value="">Select incident type</option>
+                                <!-- Options will be populated by JavaScript -->
+                            </select>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="incidentPriority">Priority Level *</label>
+                        <div class="priority-indicator">
+                            <button type="button" class="priority-btn low" data-priority="low">Low</button>
+                            <button type="button" class="priority-btn medium" data-priority="medium">Medium</button>
+                            <button type="button" class="priority-btn high active" data-priority="high">High</button>
+                            <button type="button" class="priority-btn emergency" data-priority="emergency">Emergency</button>
+                        </div>
+                        <input type="hidden" id="incidentPriority" name="incidentPriority" value="high">
+                    </div>
+                    <div class="form-group full-width">
+                        <label for="incidentDescription">Description of Incident *</label>
+                        <textarea id="incidentDescription" name="incidentDescription" required placeholder="Please provide a detailed description of what happened, including any injuries, damages, or ongoing threats..."></textarea>
+                    </div>
+                </div>
+
+                <div class="form-section">
+                    <h3 class="section-title">
+                        <i class="fas fa-camera"></i> Photo Upload (Optional)
+                    </h3>
+                    <div class="form-group full-width">
+                        <div class="file-upload" onclick="document.getElementById('incidentPhoto').click()">
+                            <div class="file-upload-icon">
+                                <i class="fas fa-cloud-upload-alt"></i>
+                            </div>
+                            <div class="file-upload-text">
+                                Click to upload a photo or drag and drop<br>
+                                <small>JPG, PNG, GIF up to 5MB</small>
+                            </div>
+                            <input type="file" id="incidentPhoto" name="incidentPhoto" accept="image/*" onchange="handleFileSelect(this)">
+                        </div>
+                        <div class="file-preview" id="filePreview">
+                            <img id="previewImage" src="" alt="Preview">
+                            <button type="button" class="remove-file" onclick="removeFile()">Remove Photo</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- reCAPTCHA Security -->
+                <div class="form-group full-width">
+                    <div class="recaptcha-container">
+                        <div class="g-recaptcha" data-sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"></div>
+                        <p class="recaptcha-note">
+                            <i class="fas fa-shield-alt"></i>
+                            This helps us prevent spam and ensure only real emergency reports are submitted.
+                        </p>
+                    </div>
+                </div>
+
+                <div class="form-actions">
+                    <a href="index.html" class="cancel-btn">
+                        <i class="fas fa-times"></i> Cancel
+                    </a>
+                    <button type="submit" class="submit-btn" id="submitBtn">
+                        <i class="fas fa-paper-plane"></i> Submit Incident Report
+                    </button>
+                </div>
+
+                <div class="loading" id="loading">
+                    <i class="fas fa-spinner"></i> Submitting report...
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <script>
+        // API Configuration
+        const API_BASE = 'http://localhost:5169/api';
+        const DEMO_MODE = true; // Set to true for testing, false for production
+
+        // =============================================================================
+        // FORM INITIALIZATION - Setup Event Listeners
+        // =============================================================================
+
+        document.addEventListener('DOMContentLoaded', function() {
+            // Setup priority buttons
+            setupPriorityButtons();
+            
+            // Setup form submission
+            setupFormSubmission();
+            
+            // Check if user is logged in and update UI accordingly
+            checkUserAuthentication();
+        });
+
+        // =============================================================================
+        // USER AUTHENTICATION CHECK - Handle Logged In vs Public Users
+        // =============================================================================
+
+        function checkUserAuthentication() {
+            const userData = localStorage.getItem('userData');
+            const userInfoDiv = document.getElementById('userInfo');
+            const rateLimitInfo = document.getElementById('rateLimitInfo');
+            
+            if (userData) {
+                // User is logged in
+                const user = JSON.parse(userData);
+                userInfoDiv.innerHTML = `
+                    <div class="user-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <div class="user-details">
+                        <div class="user-name">${user.full_name || 'John Smith'}</div>
+                        <div class="user-role">
+                            <span class="role-badge role-${user.role || 'dispatcher'}">${user.role || 'dispatcher'}</span>
+                        </div>
+                    </div>
+                    <a href="dashboard.html" class="back-btn">
+                        <i class="fas fa-arrow-left"></i> Back to Dashboard
+                    </a>
+                `;
+                // Hide rate limit info for logged-in users
+                rateLimitInfo.style.display = 'none';
+            } else {
+                // Public user
+                userInfoDiv.innerHTML = `
+                    <a href="index.html" class="back-btn">
+                        <i class="fas fa-arrow-left"></i> Back to Home
+                    </a>
+                `;
+                // Show rate limit info for public users
+                rateLimitInfo.style.display = 'block';
+            }
+        }
+
+        // =============================================================================
+        // PRIORITY BUTTONS - Handle Priority Selection
+        // =============================================================================
+
+        function setupPriorityButtons() {
+            const priorityButtons = document.querySelectorAll('.priority-btn');
+            const priorityInput = document.getElementById('incidentPriority');
+            
+            priorityButtons.forEach(btn => {
+                btn.addEventListener('click', function() {
+                    // Remove active class from all buttons
+                    priorityButtons.forEach(b => b.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    this.classList.add('active');
+                    
+                    // Update hidden input
+                    priorityInput.value = this.dataset.priority;
+                });
+            });
+        }
+
+        // =============================================================================
+        // INCIDENT TYPE CATEGORIZATION - Dynamic Incident Types
+        // =============================================================================
+
+        // Incident type definitions by disaster category
+        const incidentTypes = {
+            natural: [
+                { value: 'earthquake', label: 'Earthquake' },
+                { value: 'hurricane', label: 'Hurricane' },
+                { value: 'tornado', label: 'Tornado' },
+                { value: 'flood', label: 'Flood' },
+                { value: 'landslide', label: 'Landslide' },
+                { value: 'volcanic_eruption', label: 'Volcanic Eruption' },
+                { value: 'tsunami', label: 'Tsunami' },
+                { value: 'wildfire', label: 'Wildfire' }
+            ],
+            medical: [
+                { value: 'cardiac_arrest', label: 'Cardiac Arrest' },
+                { value: 'stroke', label: 'Stroke' },
+                { value: 'trauma', label: 'Trauma Injury' },
+                { value: 'respiratory', label: 'Respiratory Emergency' },
+                { value: 'allergic_reaction', label: 'Allergic Reaction' },
+                { value: 'overdose', label: 'Drug Overdose' },
+                { value: 'pregnancy', label: 'Pregnancy Emergency' },
+                { value: 'mental_health', label: 'Mental Health Crisis' }
+            ],
+            fire: [
+                { value: 'structure_fire', label: 'Structure Fire' },
+                { value: 'vehicle_fire', label: 'Vehicle Fire' },
+                { value: 'wildfire', label: 'Wildfire' },
+                { value: 'chemical_fire', label: 'Chemical Fire' },
+                { value: 'electrical_fire', label: 'Electrical Fire' },
+                { value: 'gas_leak', label: 'Gas Leak' },
+                { value: 'explosion', label: 'Explosion' },
+                { value: 'smoke_investigation', label: 'Smoke Investigation' }
+            ],
+            traffic: [
+                { value: 'vehicle_collision', label: 'Vehicle Collision' },
+                { value: 'pedestrian_accident', label: 'Pedestrian Accident' },
+                { value: 'motorcycle_accident', label: 'Motorcycle Accident' },
+                { value: 'bicycle_accident', label: 'Bicycle Accident' },
+                { value: 'vehicle_fire', label: 'Vehicle Fire' },
+                { value: 'vehicle_entrapment', label: 'Vehicle Entrapment' },
+                { value: 'hazardous_spill', label: 'Hazardous Material Spill' },
+                { value: 'traffic_control', label: 'Traffic Control Issue' }
+            ],
+            crime: [
+                { value: 'assault', label: 'Assault' },
+                { value: 'robbery', label: 'Robbery' },
+                { value: 'shooting', label: 'Shooting' },
+                { value: 'stabbing', label: 'Stabbing' },
+                { value: 'domestic_violence', label: 'Domestic Violence' },
+                { value: 'suspicious_person', label: 'Suspicious Person' },
+                { value: 'suspicious_vehicle', label: 'Suspicious Vehicle' },
+                { value: 'burglary', label: 'Burglary in Progress' }
+            ],
+            utility: [
+                { value: 'power_outage', label: 'Power Outage' },
+                { value: 'water_main_break', label: 'Water Main Break' },
+                { value: 'gas_leak', label: 'Gas Leak' },
+                { value: 'sewer_backup', label: 'Sewer Backup' },
+                { value: 'downed_power_line', label: 'Downed Power Line' },
+                { value: 'traffic_signal_failure', label: 'Traffic Signal Failure' },
+                { value: 'bridge_issue', label: 'Bridge Issue' },
+                { value: 'road_damage', label: 'Road Damage' }
+            ],
+            weather: [
+                { value: 'severe_storm', label: 'Severe Storm' },
+                { value: 'lightning_strike', label: 'Lightning Strike' },
+                { value: 'hail_damage', label: 'Hail Damage' },
+                { value: 'high_winds', label: 'High Winds' },
+                { value: 'flooding', label: 'Flooding' },
+                { value: 'freezing_conditions', label: 'Freezing Conditions' },
+                { value: 'heat_emergency', label: 'Heat Emergency' },
+                { value: 'tornado_warning', label: 'Tornado Warning' }
+            ],
+            other: [
+                { value: 'missing_person', label: 'Missing Person' },
+                { value: 'animal_emergency', label: 'Animal Emergency' },
+                { value: 'water_rescue', label: 'Water Rescue' },
+                { value: 'confined_space', label: 'Confined Space Emergency' },
+                { value: 'elevator_entrapment', label: 'Elevator Entrapment' },
+                { value: 'building_collapse', label: 'Building Collapse' },
+                { value: 'industrial_accident', label: 'Industrial Accident' },
+                { value: 'other', label: 'Other Emergency' }
+            ]
+        };
+
+        function updateIncidentTypes() {
+            const disasterCategory = document.getElementById('disasterCategory').value;
+            const incidentTypeSelect = document.getElementById('incidentType');
+            
+            // Clear current options
+            incidentTypeSelect.innerHTML = '<option value="">Select incident type</option>';
+            
+            if (disasterCategory && incidentTypes[disasterCategory]) {
+                // Add new options based on selected category
+                incidentTypes[disasterCategory].forEach(type => {
+                    const option = document.createElement('option');
+                    option.value = type.value;
+                    option.textContent = type.label;
+                    incidentTypeSelect.appendChild(option);
+                });
+            }
+        }
+
+        // =============================================================================
+        // FILE UPLOAD - Handle Photo Upload
+        // =============================================================================
+
+        function handleFileSelect(input) {
+            const file = input.files[0];
+            if (file) {
+                // Validate file type
+                if (!file.type.startsWith('image/')) {
+                    showFlashMessage('Please select an image file.', 'error');
+                    return;
+                }
+                
+                // Validate file size (5MB limit)
+                if (file.size > 5 * 1024 * 1024) {
+                    showFlashMessage('File size must be less than 5MB.', 'error');
+                    return;
+                }
+                
+                // Show preview
+                const reader = new FileReader();
+                reader.onload = function(e) {
+                    document.getElementById('previewImage').src = e.target.result;
+                    document.getElementById('filePreview').style.display = 'block';
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function removeFile() {
+            document.getElementById('incidentPhoto').value = '';
+            document.getElementById('filePreview').style.display = 'none';
+            document.getElementById('previewImage').src = '';
+        }
+
+        // =============================================================================
+        // FORM SUBMISSION - Handle Form Submission
+        // =============================================================================
+
+        function setupFormSubmission() {
+            const form = document.getElementById('incidentForm');
+            const submitBtn = document.getElementById('submitBtn');
+            const loading = document.getElementById('loading');
+            
+            form.addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                // Show loading state
+                submitBtn.style.display = 'none';
+                loading.style.display = 'block';
+                
+                try {
+                    // Check rate limiting first
+                    if (!showRateLimitWarning()) {
+                        submitBtn.style.display = 'block';
+                        loading.style.display = 'none';
+                        return;
+                    }
+
+                    // Collect and validate form data
+                    const formData = collectFormData();
+                    const validation = validateFormData(formData);
+                    
+                    if (!validation.isValid) {
+                        showFlashMessage(validation.message, 'error');
+                        submitBtn.style.display = 'block';
+                        loading.style.display = 'none';
+                        return;
+                    }
+                    
+                    // Submit the incident
+                    await submitIncident(formData);
+                    
+                } catch (error) {
+                    console.error('Error submitting incident:', error);
+                    showFlashMessage('Error submitting report. Please try again.', 'error');
+                    submitBtn.style.display = 'block';
+                    loading.style.display = 'none';
+                }
+            });
+        }
+
+        // =============================================================================
+        // FORM DATA COLLECTION - Gather All Form Fields
+        // =============================================================================
+
+        function collectFormData() {
+            const form = document.getElementById('incidentForm');
+            const formData = new FormData(form);
+            
+            // Convert FormData to object
+            const data = {};
+            for (let [key, value] of formData.entries()) {
+                data[key] = value;
+            }
+            
+            // Add additional metadata
+            data.timestamp = new Date().toISOString();
+            data.source = localStorage.getItem('userData') ? 'internal_create' : 'public_report';
+            data.created_by = localStorage.getItem('userData') ? JSON.parse(localStorage.getItem('userData')).id : null;
+            
+            console.log('Collected form data:', data);
+            return data;
+        }
+
+        // =============================================================================
+        // FORM VALIDATION - Validate Required Fields
+        // =============================================================================
+
+        function validateFormData(data) {
+            const requiredFields = [
+                'incidentAddress',
+                'incidentCity',
+                'incidentState',
+                'incidentZip',
+                'disasterCategory',
+                'incidentType',
+                'incidentPriority',
+                'incidentDescription'
+            ];
+            
+            for (let field of requiredFields) {
+                if (!data[field] || data[field].trim() === '') {
+                    return {
+                        isValid: false,
+                        message: `Please fill in the required field: ${field.replace(/([A-Z])/g, ' $1').toLowerCase()}`
+                    };
+                }
+            }
+
+            // Validate ZIP code format
+            const zipRegex = /^\d{5}(-\d{4})?$/;
+            if (!zipRegex.test(data.incidentZip)) {
+                return {
+                    isValid: false,
+                    message: 'Please enter a valid ZIP code (e.g., 33601 or 33601-1234)'
+                };
+            }
+
+            // Validate description length
+            if (data.incidentDescription.length < 20) {
+                return {
+                    isValid: false,
+                    message: 'Description must be at least 20 characters long'
+                };
+            }
+
+            // Validate description length (max 1000 characters)
+            if (data.incidentDescription.length > 1000) {
+                return {
+                    isValid: false,
+                    message: 'Description must be less than 1000 characters'
+                };
+            }
+
+            // Check for spam indicators
+            const spamIndicators = ['test', 'spam', 'fake', 'demo', 'example'];
+            const description = data.incidentDescription.toLowerCase();
+            if (spamIndicators.some(indicator => description.includes(indicator))) {
+                return {
+                    isValid: false,
+                    message: 'Please provide a legitimate incident description'
+                };
+            }
+            
+            return { isValid: true };
+        }
+
+        // =============================================================================
+        // RATE LIMITING - 24 Hour Limit for Public Users
+        // =============================================================================
+
+        function checkRateLimit() {
+            const userData = localStorage.getItem('userData');
+            
+            // If user is logged in, no rate limiting
+            if (userData) {
+                return { canSubmit: true };
+            }
+
+            // For public users, check rate limiting
+            const lastSubmission = localStorage.getItem('lastPublicSubmission');
+            const now = new Date().getTime();
+            const twentyFourHours = 24 * 60 * 60 * 1000; // 24 hours in milliseconds
+
+            if (lastSubmission) {
+                const timeSinceLastSubmission = now - parseInt(lastSubmission);
+                
+                if (timeSinceLastSubmission < twentyFourHours) {
+                    const remainingTime = twentyFourHours - timeSinceLastSubmission;
+                    const remainingHours = Math.floor(remainingTime / (60 * 60 * 1000));
+                    const remainingMinutes = Math.floor((remainingTime % (60 * 60 * 1000)) / (60 * 1000));
+                    
+                    return {
+                        canSubmit: false,
+                        message: `You can submit another report in ${remainingHours}h ${remainingMinutes}m. Please log in for unlimited submissions.`
+                    };
+                }
+            }
+
+            return { canSubmit: true };
+        }
+
+        function setRateLimit() {
+            const userData = localStorage.getItem('userData');
+            
+            // Only set rate limit for public users
+            if (!userData) {
+                localStorage.setItem('lastPublicSubmission', new Date().getTime().toString());
+            }
+        }
+
+        function showRateLimitWarning() {
+            const rateLimitCheck = checkRateLimit();
+            if (!rateLimitCheck.canSubmit) {
+                showFlashMessage(rateLimitCheck.message, 'error');
+                return false;
+            }
+            return true;
+        }
+
+        // =============================================================================
+        // INCIDENT SUBMISSION - Send to API
+        // =============================================================================
+
+        async function submitIncident(data) {
+            if (DEMO_MODE) {
+                // Demo mode - simulate API call
+                await simulateIncidentSubmission(data);
+            } else {
+                // Real API call
+                try {
+                    const userData = localStorage.getItem('userData');
+                    const headers = {
+                        'Content-Type': 'application/json',
+                    };
+                    
+                    // Add authorization header if user is logged in
+                    if (userData) {
+                        const authToken = localStorage.getItem('authToken');
+                        headers['Authorization'] = `Bearer ${authToken}`;
+                    }
+                    
+                    const endpoint = userData ? `${API_BASE}/incidents` : `${API_BASE}/public/incidents`;
+                    
+                    const response = await fetch(endpoint, {
+                        method: 'POST',
+                        headers: headers,
+                        body: JSON.stringify(data)
+                    });
+                    
+                    const result = await response.json();
+                    
+                    if (response.ok && result.success) {
+                        // Set rate limit for public users
+                        setRateLimit();
+                        
+                        showFlashMessage('Incident report submitted successfully! Emergency services have been notified.', 'success');
+                        
+                        // Reset form after successful submission
+                        setTimeout(() => {
+                            document.getElementById('incidentForm').reset();
+                            
+                            // Reset priority buttons
+                            document.querySelectorAll('.priority-btn').forEach(btn => btn.classList.remove('active'));
+                            document.querySelector('.priority-btn[data-priority="high"]').classList.add('active');
+                            document.getElementById('incidentPriority').value = 'high';
+                            
+                            // Reset file upload
+                            removeFile();
+                            
+                            // Reset reCAPTCHA
+                            grecaptcha.reset();
+                        }, 2000);
+                    } else {
+                        const errorMessage = result.message || 'Error submitting incident report. Please try again.';
+                        showFlashMessage(errorMessage, 'error');
+                    }
+                } catch (error) {
+                    console.error('API submission error:', error);
+                    showFlashMessage('Network error. Please check your connection and try again.', 'error');
+                }
+            }
+            
+            // Reset form buttons
+            document.getElementById('submitBtn').style.display = 'block';
+            document.getElementById('loading').style.display = 'none';
+        }
+
+        // =============================================================================
+        // DEMO MODE - Simulate Incident Submission
+        // =============================================================================
+
+        async function simulateIncidentSubmission(data) {
+            console.log('Simulating incident submission:', data);
+            
+            // Simulate network delay
+            await new Promise(resolve => setTimeout(resolve, 2000));
+            
+            // Simulate successful submission
+            showFlashMessage('Incident report submitted successfully! Emergency services have been notified. (Demo Mode)', 'success');
+            
+            // Reset form after successful submission
+            setTimeout(() => {
+                document.getElementById('incidentForm').reset();
+                
+                // Reset priority buttons
+                document.querySelectorAll('.priority-btn').forEach(btn => btn.classList.remove('active'));
+                document.querySelector('.priority-btn[data-priority="high"]').classList.add('active');
+                document.getElementById('incidentPriority').value = 'high';
+                
+                // Reset file upload
+                removeFile();
+                
+                // Reset reCAPTCHA
+                grecaptcha.reset();
+            }, 2000);
+        }
+
+        // =============================================================================
+        // UTILITY FUNCTIONS - Helper Methods
+        // =============================================================================
+
+        /**
+         * Display flash messages to the user
+         * Shows success, error, or info messages with auto-dismiss
+         * 
+         * @param {string} message - The message to display
+         * @param {string} type - Message type: 'success', 'error', or 'info'
+         */
+        function showFlashMessage(message, type) {
+            console.log('Flash message:', message, type);
+            
+            // Get the flash message container
+            const flashContainer = document.getElementById('flashMessages');
+            
+            // Create new flash message element
+            const flashMessage = document.createElement('div');
+            flashMessage.className = `flash-message flash-${type}`;
+            flashMessage.textContent = message;
+            
+            // Add message to container
+            flashContainer.appendChild(flashMessage);
+            
+            // Auto-remove message after 8 seconds for better UX
+            setTimeout(() => {
+                flashMessage.remove();
+            }, 8000);
+        }
+
+        // Check authentication status and setup accordingly
+        function checkAuthAndSetup() {
+            const userData = localStorage.getItem('userData');
+            const authToken = localStorage.getItem('authToken');
+            
+            if (userData) {
+                const user = JSON.parse(userData);
+                setupAuthenticatedUser(user);
+            } else if (authToken) {
+                // Try to get user info from token
+                fetchUserInfoFromToken(authToken);
+            } else {
+                // No authentication - setup for guest access
+                setupGuestAccess();
+            }
+        }
+
+        function setupAuthenticatedUser(user) {
+            document.getElementById('userName').textContent = user.full_name || 'User';
+            document.getElementById('userRole').textContent = user.role || 'user';
+            document.getElementById('userRole').className = `role-badge role-${user.role || 'user'}`;
+            
+            // Show/hide features based on role
+            if (user.role === 'admin') {
+                // Admin can see all features
+                document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'block');
+            } else if (user.role === 'dispatcher' || user.role === 'responder') {
+                // Dispatchers and responders can create incidents
+                document.querySelectorAll('.dispatcher-only, .responder-only').forEach(el => el.style.display = 'block');
+            }
+        }
+
+        function setupGuestAccess() {
+            document.getElementById('userName').textContent = 'Guest User';
+            document.getElementById('userRole').textContent = 'guest';
+            document.getElementById('userRole').className = 'role-badge role-guest';
+            
+            // Show emergency reporting for guests
+            document.querySelectorAll('.guest-accessible').forEach(el => el.style.display = 'block');
+            
+            // Hide admin features
+            document.querySelectorAll('.admin-only').forEach(el => el.style.display = 'none');
+            
+            // Show emergency contact info prominently
+            showEmergencyContactInfo();
+        }
+
+        function showEmergencyContactInfo() {
+            const emergencyInfo = document.createElement('div');
+            emergencyInfo.className = 'emergency-contact-info';
+            emergencyInfo.innerHTML = `
+                <div class="emergency-banner">
+                    <h3><i class="fas fa-exclamation-triangle"></i> EMERGENCY CONTACTS</h3>
+                    <p><strong>Police:</strong> 911</p>
+                    <p><strong>Fire Department:</strong> 911</p>
+                    <p><strong>Ambulance:</strong> 911</p>
+                    <p><strong>Poison Control:</strong> 1-800-222-1222</p>
+                </div>
+            `;
+            
+            const formContainer = document.querySelector('.form-container');
+            if (formContainer) {
+                formContainer.insertBefore(emergencyInfo, formContainer.firstChild);
+            }
+        }
+
+        async function fetchUserInfoFromToken(token) {
+            try {
+                const response = await fetch('http://localhost:5169/api/auth/me', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.ok) {
+                    const userData = await response.json();
+                    localStorage.setItem('userData', JSON.stringify(userData));
+                    setupAuthenticatedUser(userData);
+                } else {
+                    setupGuestAccess();
+                }
+            } catch (error) {
+                console.log('Could not fetch user info, setting up guest access');
+                setupGuestAccess();
+            }
+        }
+
+        // Initialize SignalR for real-time updates
+        let connection = null;
+        
+        function initializeSignalR() {
+            try {
+                connection = new signalR.HubConnectionBuilder()
+                    .withUrl("http://localhost:5169/emsHub")
+                    .build();
+
+                connection.on("IncidentReported", function (incidentData) {
+                    console.log("Incident reported successfully:", incidentData);
+                    showSuccessMessage("Incident reported successfully! Incident ID: " + incidentData.id);
+                });
+
+                connection.on("EmergencyAlert", function (alertData) {
+                    console.log("Emergency alert:", alertData);
+                    showEmergencyAlert(alertData);
+                });
+
+                connection.start().then(function () {
+                    console.log("SignalR Connected for incident reporting");
+                }).catch(function (err) {
+                    console.error("SignalR Connection Error:", err);
+                });
+            } catch (error) {
+                console.log("SignalR not available, continuing without real-time updates");
+            }
+        }
+
+        function showSuccessMessage(message) {
+            const successDiv = document.createElement('div');
+            successDiv.className = 'success-message';
+            successDiv.innerHTML = `
+                <div class="success-content">
+                    <h3><i class="fas fa-check-circle"></i> Success!</h3>
+                    <p>${message}</p>
+                    <button onclick="this.parentElement.parentElement.remove()">OK</button>
+                </div>
+            `;
+            document.body.appendChild(successDiv);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                successDiv.remove();
+            }, 5000);
+        }
+
+        function showEmergencyAlert(alertData) {
+            const alertDiv = document.createElement('div');
+            alertDiv.className = 'emergency-alert';
+            alertDiv.innerHTML = `
+                <div class="alert-content">
+                    <h3><i class="fas fa-exclamation-triangle"></i> EMERGENCY ALERT</h3>
+                    <p>${alertData.message}</p>
+                    <p><strong>Priority:</strong> ${alertData.priority}</p>
+                    <p><strong>Area:</strong> ${alertData.area}</p>
+                    <button onclick="this.parentElement.parentElement.remove()">Dismiss</button>
+                </div>
+            `;
+            document.body.appendChild(alertDiv);
+            
+            // Auto-remove after 10 seconds
+            setTimeout(() => {
+                alertDiv.remove();
+            }, 10000);
+        }
+
+        // Enhanced form submission for guest access
+        async function submitIncidentForm(formData) {
+            try {
+                const userData = localStorage.getItem('userData');
+                const authToken = localStorage.getItem('authToken');
+                
+                let headers = {
+                    'Content-Type': 'application/json'
+                };
+                
+                // Add authorization header if available
+                if (authToken) {
+                    headers['Authorization'] = `Bearer ${authToken}`;
+                }
+                
+                const response = await fetch('http://localhost:5169/api/incidents', {
+                    method: 'POST',
+                    headers: headers,
+                    body: JSON.stringify(formData)
+                });
+                
+                if (response.ok) {
+                    const result = await response.json();
+                    
+                    // Send real-time update via SignalR
+                    if (connection) {
+                        await connection.invoke("SendGuestIncidentReport", result);
+                    }
+                    
+                    showSuccessMessage("Emergency incident reported successfully! Incident ID: " + result.id);
+                    
+                    // Clear form
+                    document.getElementById('incidentForm').reset();
+                    
+                    // Redirect to confirmation page or dashboard
+                    setTimeout(() => {
+                        window.location.href = 'dashboard.html';
+                    }, 3000);
+                    
+                } else {
+                    const errorData = await response.json();
+                    showErrorMessage("Error reporting incident: " + (errorData.message || "Unknown error"));
+                }
+            } catch (error) {
+                console.error("Error submitting incident:", error);
+                showErrorMessage("Network error. Please try again or call 911 directly.");
+            }
+        }
+
+        function showErrorMessage(message) {
+            const errorDiv = document.createElement('div');
+            errorDiv.className = 'error-message';
+            errorDiv.innerHTML = `
+                <div class="error-content">
+                    <h3><i class="fas fa-exclamation-circle"></i> Error</h3>
+                    <p>${message}</p>
+                    <button onclick="this.parentElement.parentElement.remove()">OK</button>
+                </div>
+            `;
+            document.body.appendChild(errorDiv);
+            
+            // Auto-remove after 5 seconds
+            setTimeout(() => {
+                errorDiv.remove();
+            }, 5000);
+        }
+
+        // Initialize page
+        document.addEventListener('DOMContentLoaded', function() {
+            // Initialize SignalR
+            initializeSignalR();
+            
+            // Check authentication and setup accordingly
+            checkAuthAndSetup();
+            
+            // Setup form submission
+            const form = document.getElementById('incidentForm');
+            if (form) {
+                form.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    
+                    const formData = new FormData(form);
+                    const incidentData = {
+                        type: formData.get('type'),
+                        priority: formData.get('priority'),
+                        location: formData.get('location'),
+                        description: formData.get('description'),
+                        reporterName: formData.get('reporterName') || 'Anonymous',
+                        reporterPhone: formData.get('reporterPhone') || '',
+                        reporterEmail: formData.get('reporterEmail') || '',
+                        peopleInvolved: formData.get('peopleInvolved') || '',
+                        injuries: formData.get('injuries') || '',
+                        vehiclesInvolved: formData.get('vehiclesInvolved') || '',
+                        hazards: formData.get('hazards') || '',
+                        additionalInfo: formData.get('additionalInfo') || '',
+                        source: 'Public Report',
+                        ipAddress: '127.0.0.1' // Would be captured from request
+                    };
+                    
+                    submitIncidentForm(incidentData);
+                });
+            }
+        });
+    </script>
+</body>
+</html> 

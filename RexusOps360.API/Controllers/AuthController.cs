@@ -48,6 +48,48 @@ namespace RexusOps360.API.Controllers
         }
 
         /// <summary>
+        /// Create guest access token for emergency use
+        /// </summary>
+        /// <returns>JWT token for guest access with limited permissions</returns>
+        /// <response code="200">Guest access token generated successfully</response>
+        /// <response code="500">Internal server error</response>
+        [HttpPost("guest-access")]
+        public async Task<IActionResult> CreateGuestAccess()
+        {
+            try
+            {
+                // Get client IP address for security tracking
+                var ipAddress = GetClientIpAddress();
+                
+                // Generate guest access token
+                var response = await _authService.CreateGuestAccessAsync(ipAddress);
+
+                if (response.Success)
+                {
+                    // Return guest token with limited permissions
+                    return Ok(response);
+                }
+                else
+                {
+                    // Return error response
+                    return BadRequest(response);
+                }
+            }
+            catch (Exception ex)
+            {
+                // Log the error for debugging and monitoring
+                _logger.LogError(ex, "Error in guest access endpoint");
+                
+                // Return generic error to avoid information leakage
+                return StatusCode(500, new ApiResponse<LoginResponse>
+                {
+                    Success = false,
+                    Message = "An internal server error occurred"
+                });
+            }
+        }
+
+        /// <summary>
         /// Authenticate user and generate JWT token
         /// </summary>
         /// <param name="request">Login credentials (username/password)</param>

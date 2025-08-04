@@ -61,13 +61,49 @@ namespace RexusOps360.API.Models
         [StringLength(100)]
         public string? ReportedBy { get; set; }
         
+        // Public incident reporting fields
+        [StringLength(20)]
+        public string? ReporterPhone { get; set; }
+        
+        [StringLength(100)]
+        public string? ReporterEmail { get; set; }
+        
+        [StringLength(50)]
+        public string? ReporterRelation { get; set; }
+        
+        [StringLength(200)]
+        public string? PeopleInvolved { get; set; }
+        
+        [StringLength(200)]
+        public string? Injuries { get; set; }
+        
+        [StringLength(200)]
+        public string? VehiclesInvolved { get; set; }
+        
+        [StringLength(200)]
+        public string? Hazards { get; set; }
+        
+        [StringLength(500)]
+        public string? AdditionalInfo { get; set; }
+        
+        [StringLength(50)]
+        public string? Source { get; set; } = "Public";
+        
+        [StringLength(45)]
+        public string? IpAddress { get; set; }
+        
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
         
         public DateTime? UpdatedAt { get; set; }
+        
+        public DateTime? RespondedAt { get; set; }
         
         // Computed properties for clustering logic
         public bool IsClustered => !string.IsNullOrEmpty(ClusterId);
         
         public bool IsHotspot => SeverityLevel >= 4 || Priority == "High";
+        
+        // Navigation properties (for Entity Framework)
+        public virtual ICollection<Responder>? Responders { get; set; }
     }
 } 

@@ -82,13 +82,14 @@ builder.Services.AddScoped<IShiftSchedulingService, ShiftSchedulingService>(); /
 builder.Services.AddScoped<IIncidentClusteringService, IncidentClusteringService>(); // Incident analysis
 builder.Services.AddScoped<IHotspotDetectionService, HotspotDetectionService>(); // Hotspot detection
 builder.Services.AddScoped<ISystemIntegrationService, SystemIntegrationService>(); // External API integration
+builder.Services.AddScoped<IRealTimeTrackingService, RealTimeTrackingService>(); // Real-time incident tracking
+builder.Services.AddScoped<IRecaptchaService, RecaptchaService>(); // reCAPTCHA verification
 
 // Authentication & Authorization Services
 builder.Services.AddScoped<IJwtService, JwtService>();                        // JWT token generation/validation
 builder.Services.AddScoped<IAuthService, AuthService>();                      // User authentication/authorization
 
-// SaaS & Multi-tenant Services
-builder.Services.AddScoped<ISaasService, SaasService>();                      // Multi-tenant support
+// SaaS & Multi-tenant Services - REMOVED
 
 // Event Management Services
 builder.Services.AddScoped<IEventManagementService, EventManagementService>(); // Event planning and management

@@ -31,14 +31,16 @@ namespace RexusOps360.API.Models
         [StringLength(50)]
         public string? Department { get; set; }
 
-        [StringLength(50)]
-        public string? TenantId { get; set; } // For multi-tenant support
+
 
         [StringLength(20)]
         public string? Phone { get; set; }
 
         [StringLength(200)]
         public string? Address { get; set; }
+
+        [StringLength(50)]
+        public string? TenantId { get; set; }
 
         public bool IsActive { get; set; } = true;
 
@@ -67,6 +69,7 @@ namespace RexusOps360.API.Models
         public string FullName { get; set; } = string.Empty;
         public string Role { get; set; } = string.Empty;
         public string? TenantId { get; set; }
+
         public DateTime ExpiresAt { get; set; }
         public DateTime RefreshTokenExpiresAt { get; set; }
         public bool IsFirstLogin { get; set; } = false;

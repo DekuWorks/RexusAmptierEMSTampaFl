@@ -20,6 +20,7 @@ namespace RexusOps360.API.Services
         Task<ApiResponse<User>> UpdateUserProfileAsync(int userId, UpdateProfileRequest request);
         Task<ApiResponse<bool>> ValidateTokenAsync(string token);
         Task<ApiResponse<bool>> RevokeTokenAsync(string token, string? ipAddress);
+        Task<ApiResponse<LoginResponse>> CreateGuestAccessAsync(string? ipAddress);
     }
 
     public class AuthService : IAuthService
@@ -607,6 +608,59 @@ namespace RexusOps360.API.Services
                 _logger.LogError(ex, "Error revoking token");
                 response.Success = false;
                 response.Message = "An error occurred while revoking token.";
+            }
+
+            return response;
+        }
+
+        public async Task<ApiResponse<LoginResponse>> CreateGuestAccessAsync(string? ipAddress)
+        {
+            var response = new ApiResponse<LoginResponse>();
+
+            try
+            {
+                // Create a temporary guest user
+                var guestUser = new User
+                {
+                    Id = 0, // Temporary ID
+                    Username = $"guest_{DateTime.UtcNow.Ticks}",
+                    Email = $"guest_{DateTime.UtcNow.Ticks}@temp.com",
+                    Role = "Guest",
+                    FirstName = "Guest",
+                    LastName = "User",
+                    IsActive = true,
+                    CreatedAt = DateTime.UtcNow,
+                    TenantId = "guest"
+                };
+
+                // Generate temporary token (short expiration for security)
+                var token = _jwtService.GenerateToken(guestUser);
+                var refreshToken = GenerateRefreshToken();
+
+                var loginResponse = new LoginResponse
+                {
+                    Token = token,
+                    RefreshToken = refreshToken,
+                    Username = guestUser.Username,
+                    FullName = guestUser.FullName,
+                    Role = guestUser.Role,
+                    TenantId = guestUser.TenantId,
+                    ExpiresAt = DateTime.UtcNow.AddMinutes(30), // Short expiration for guests
+                    RefreshTokenExpiresAt = DateTime.UtcNow.AddHours(1),
+                    IsFirstLogin = true
+                };
+
+                response.Success = true;
+                response.Message = "Guest access created successfully";
+                response.Data = loginResponse;
+
+                _logger.LogInformation("Guest access created for IP: {IpAddress}", ipAddress);
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error creating guest access");
+                response.Success = false;
+                response.Message = "Error creating guest access";
             }
 
             return response;

@@ -85,9 +85,7 @@ namespace RexusOps360.API.Controllers
                 if (string.IsNullOrEmpty(userId))
                     return Unauthorized("User not authenticated");
 
-                // Get tenant ID from user context (simplified for demo)
-                var tenantId = 1; // This would come from user context
-                var events = await _eventService.GetEventsAsync(tenantId, includeDrafts);
+                var events = await _eventService.GetEventsAsync(includeDrafts);
                 return Ok(events);
             }
             catch (Exception ex)
@@ -455,9 +453,7 @@ namespace RexusOps360.API.Controllers
         {
             try
             {
-                // Get tenant ID from user context (simplified for demo)
-                var tenantId = 1; // This would come from user context
-                var speakers = await _eventService.GetSpeakersAsync(tenantId);
+                var speakers = await _eventService.GetSpeakersAsync();
                 return Ok(speakers);
             }
             catch (Exception ex)

@@ -9,6 +9,7 @@ namespace RexusOps360.API.Services
     public interface IJwtService
     {
         string GenerateToken(User user);
+        string GenerateGuestToken();
         ClaimsPrincipal? ValidateToken(string token);
     }
 
@@ -31,7 +32,7 @@ namespace RexusOps360.API.Services
                 new(ClaimTypes.NameIdentifier, user.Id.ToString()),
                 new(ClaimTypes.Name, user.Username),
                 new(ClaimTypes.Role, user.Role),
-                new("tenant_id", user.TenantId ?? ""),
+
                 new("full_name", user.FullName ?? ""),
                 new("email", user.Email ?? "")
             };
@@ -41,6 +42,32 @@ namespace RexusOps360.API.Services
                 audience: _configuration["Jwt:Audience"] ?? "RexusOps360Users",
                 claims: claims,
                 expires: DateTime.UtcNow.AddHours(8), // 8 hour expiration
+                signingCredentials: credentials
+            );
+
+            return new JwtSecurityTokenHandler().WriteToken(token);
+        }
+
+        public string GenerateGuestToken()
+        {
+            var key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_configuration["Jwt:Key"] ?? "YourSuperSecretKeyHere12345678901234567890"));
+            var credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
+
+            var claims = new List<Claim>
+            {
+                new(ClaimTypes.NameIdentifier, "guest"),
+                new(ClaimTypes.Name, "guest"),
+                new(ClaimTypes.Role, "Guest"),
+                new("full_name", "Guest User"),
+                new("email", ""),
+                new("is_guest", "true")
+            };
+
+            var token = new JwtSecurityToken(
+                issuer: _configuration["Jwt:Issuer"] ?? "RexusOps360",
+                audience: _configuration["Jwt:Audience"] ?? "RexusOps360Users",
+                claims: claims,
+                expires: DateTime.UtcNow.AddMinutes(30), // Short expiration for guest
                 signingCredentials: credentials
             );
 

@@ -73,7 +73,7 @@ function Build-Application {
     dotnet publish -c Release -o ./publish
     
     # Create Docker image
-    docker build -t $ProjectName:$Environment .
+    docker build -t ${ProjectName}:${Environment} .
     
     Set-Location ..
     Write-Status "Application built successfully ✓"
@@ -97,8 +97,8 @@ function Setup-ECR {
     
     # Tag and push image
     $ecrRepo = "$accountId.dkr.ecr.$Region.amazonaws.com/$ProjectName"
-    docker tag $ProjectName:$Environment $ecrRepo:$Environment
-    docker push $ecrRepo:$Environment
+    docker tag ${ProjectName}:${Environment} ${ecrRepo}:${Environment}
+    docker push ${ecrRepo}:${Environment}
     
     Write-Status "ECR setup completed ✓"
 }

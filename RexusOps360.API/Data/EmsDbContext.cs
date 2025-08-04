@@ -18,6 +18,7 @@ namespace RexusOps360.API.Data
         public DbSet<IntegrationData> IntegrationData { get; set; }
         public DbSet<Hotspot> Hotspots { get; set; }
         public DbSet<HotspotAlert> HotspotAlerts { get; set; }
+        public DbSet<Notification> Notifications { get; set; }
 
         // Event Management Entities
         public DbSet<Event> Events { get; set; }
@@ -429,7 +430,6 @@ namespace RexusOps360.API.Data
                 entity.Property(e => e.CreatedBy).HasMaxLength(100);
                 entity.Property(e => e.UpdatedBy).HasMaxLength(100);
                 
-                entity.HasIndex(e => e.TenantId);
                 entity.HasIndex(e => e.Status);
                 entity.HasIndex(e => e.Type);
                 entity.HasIndex(e => e.StartDate);
@@ -490,7 +490,6 @@ namespace RexusOps360.API.Data
                 entity.Property(e => e.LinkedInUrl).HasMaxLength(500);
                 entity.Property(e => e.TwitterUrl).HasMaxLength(500);
                 
-                entity.HasIndex(e => e.TenantId);
             });
 
             modelBuilder.Entity<EventSpeaker>(entity =>
@@ -550,7 +549,6 @@ namespace RexusOps360.API.Data
                 entity.Property(e => e.ContactEmail).HasMaxLength(200);
                 entity.Property(e => e.ContactPhone).HasMaxLength(20);
                 
-                entity.HasIndex(e => e.TenantId);
             });
 
             modelBuilder.Entity<EventSponsor>(entity =>
