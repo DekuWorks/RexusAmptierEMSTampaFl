@@ -2,9 +2,10 @@
 
 [![Build Status](https://img.shields.io/badge/build-passing-brightgreen)](https://github.com/DekuWorks/RexusAmptierEMSTampaFl)
 [![License](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
-[![.NET](https://img.shields.io/badge/.NET-6.0-purple.svg)](https://dotnet.microsoft.com/)
+[![.NET](https://img.shields.io/badge/.NET-9.0-purple.svg)](https://dotnet.microsoft.com/)
 [![SaaS](https://img.shields.io/badge/SaaS-Ready-orange.svg)](https://en.wikipedia.org/wiki/Software_as_a_service)
 [![AWS](https://img.shields.io/badge/AWS-Deployed-yellow.svg)](https://aws.amazon.com/)
+[![Demo](https://img.shields.io/badge/Demo-Available-green.svg)](https://github.com/DekuWorks/RexusAmptierEMSTampaFl)
 
 ## 🚨 Overview
 
@@ -16,9 +17,13 @@ RexusOps360 is a comprehensive **Emergency Management System (EMS)** and **Event
 - **Real-time Emergency Response** - Live incident tracking and coordination
 - **Multi-tenant SaaS Platform** - Support for multiple emergency organizations
 - **Mobile Responder Interface** - Field operations support
-- **GPS Tracking & Mapping** - Real-time location services
-- **Advanced Analytics** - Performance metrics and reporting
-- **Enterprise Security** - Role-based access control and authentication
+- **GPS Tracking & Mapping** - Real-time location services with interactive maps
+- **Advanced Analytics** - Performance metrics and reporting with charts
+- **Enterprise Security** - JWT-based authentication with role-based access control
+- **Public Incident Reporting** - Anonymous incident reporting without login
+- **Real-time Notifications** - Instant alerts and updates via SignalR
+- **Equipment Management** - Track and manage emergency equipment
+- **Responder Management** - Coordinate emergency personnel
 
 #### 🎯 Event Management
 - **Complete Event Lifecycle** - Planning through execution and reporting
@@ -27,6 +32,10 @@ RexusOps360 is a comprehensive **Emergency Management System (EMS)** and **Event
 - **Communication Tools** - Email, SMS, and calendar integration
 - **Analytics & Reporting** - Real-time dashboards and insights
 - **Mobile Accessibility** - Responsive design and mobile check-in
+- **Guest Access System** - Temporary access for public users
+- **Hotspot Detection** - Identify high-incident areas
+- **Shift Scheduling** - Manage responder schedules
+- **System Integration** - Weather, geocoding, and external APIs
 
 ## 🏗️ Architecture
 
@@ -34,13 +43,14 @@ RexusOps360 is a comprehensive **Emergency Management System (EMS)** and **Event
 
 | Component | Technology | Version |
 |-----------|------------|---------|
-| **Backend API** | ASP.NET Core 6 | 6.0+ |
-| **Database** | Entity Framework Core | 6.0+ |
+| **Backend API** | ASP.NET Core 9 | 9.0+ |
+| **Database** | Entity Framework Core | 9.0+ |
 | **Authentication** | JWT Tokens | - |
-| **Real-time** | SignalR | 6.0+ |
+| **Real-time** | SignalR | 1.1+ |
 | **Frontend** | HTML5, CSS3, JavaScript | - |
 | **Charts** | Chart.js | 3.7+ |
 | **UI Framework** | Bootstrap 5 | 5.1+ |
+| **Maps** | Leaflet.js | 1.9+ |
 | **Deployment** | Docker, AWS | - |
 
 ### System Components
@@ -48,26 +58,38 @@ RexusOps360 is a comprehensive **Emergency Management System (EMS)** and **Event
 ```
 RexusOps360 System/
 ├── RexusOps360.API/           # Main API backend
-│   ├── Controllers/           # API endpoints
+│   ├── Controllers/           # API endpoints (15+ controllers)
 │   │   ├── AuthController.cs
 │   │   ├── IncidentsController.cs
-│   │   ├── EventManagementController.cs
-│   │   └── SaasController.cs
+│   │   ├── DashboardController.cs
+│   │   ├── AnalyticsController.cs
+│   │   ├── MapController.cs
+│   │   ├── PublicController.cs
+│   │   ├── RealTimeController.cs
+│   │   └── EventManagementController.cs
 │   ├── Models/               # Data models
+│   │   ├── User.cs
+│   │   ├── Incident.cs
 │   │   ├── EventModels.cs
-│   │   ├── SaasModels.cs
 │   │   └── ValidationModels.cs
 │   ├── Services/             # Business logic
 │   │   ├── AuthService.cs
-│   │   ├── EventManagementService.cs
-│   │   └── SaasService.cs
+│   │   ├── RealTimeTrackingService.cs
+│   │   ├── NotificationService.cs
+│   │   └── EventManagementService.cs
+│   ├── Hubs/                 # SignalR hubs
+│   │   └── EmsHub.cs
 │   ├── Middleware/           # Custom middleware
 │   └── Configuration/        # App configuration
 ├── frontend/                 # Web interface
-│   ├── index.html           # Main EMS dashboard
-│   ├── event-management.html # Event management
-│   ├── saas-dashboard.html  # SaaS management
-│   └── mobile-responder.html # Mobile interface
+│   ├── index.html           # Login page
+│   ├── dashboard.html       # Main EMS dashboard
+│   ├── create-incident.html # Incident reporting
+│   ├── incident-management.html # Incident management
+│   ├── incident-map.html    # Interactive maps
+│   ├── mobile-responder.html # Mobile interface
+│   └── assets/              # Frontend assets
+│       └── images/          # Logo files
 └── RexusOps360.API.Tests/   # Unit tests
 ```
 
@@ -75,7 +97,7 @@ RexusOps360 System/
 
 ### Prerequisites
 
-- [.NET 6.0 SDK](https://dotnet.microsoft.com/download)
+- [.NET 9.0 SDK](https://dotnet.microsoft.com/download)
 - [Visual Studio 2022](https://visualstudio.microsoft.com/) or [VS Code](https://code.visualstudio.com/)
 - [SQL Server](https://www.microsoft.com/sql-server) or [SQLite](https://sqlite.org/)
 - [Docker](https://www.docker.com/) (for containerized deployment)
@@ -106,7 +128,29 @@ RexusOps360 System/
 5. **Access the application**
    - **Main App**: http://localhost:5169
    - **API Documentation**: http://localhost:5169/swagger
-   - **Login**: http://localhost:5169/web/login
+   - **Frontend**: Open `frontend/index.html` in your browser
+
+### 🎮 Demo Mode
+
+The application includes a comprehensive demo mode for testing:
+
+**Demo Credentials:**
+- **Admin**: `abc` / `abc123`
+- **Dispatcher**: `dispatcher1` / `pass123`
+- **Responder**: `responder1` / `pass123`
+
+**Demo Features:**
+- ✅ Mock incident data and statistics
+- ✅ Interactive dashboard with charts
+- ✅ Real-time notifications (simulated)
+- ✅ Equipment and responder management
+- ✅ Public incident reporting
+- ✅ Mobile responder interface
+- ✅ Analytics and reporting
+
+**To enable/disable demo mode:**
+- Edit `DEMO_MODE` in frontend JavaScript files
+- Set to `true` for testing, `false` for production
 
 4. **Run the application**
    ```bash
